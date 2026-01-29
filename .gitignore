@@ -27,3 +27,13 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# === IDE (Personal) ===
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# === FVM ===
+.fvm/flutter_sdk/
