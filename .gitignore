@@ -37,3 +37,7 @@ doc/api/
 
 # === FVM ===
 .fvm/flutter_sdk/
+
+./perlog/linux/*
+./perlog/windows/*
+./perlog/macos/*s

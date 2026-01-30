@@ -5,8 +5,8 @@ import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/router/routes.dart';
 
-class OCRLoading extends StatelessWidget {
-  const OCRLoading({super.key});
+class ImageUploadEdit extends StatelessWidget {
+  const ImageUploadEdit({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +19,11 @@ class OCRLoading extends StatelessWidget {
           children: [
             Column(
               children: [
-                Text('OCR 인식 수정사항'),
+                Text('Image upload edit'),
                 ElevatedButton(
                   onPressed: () {
                     if (lockEnabled) {
-                      context.go('${Routes.metadata}/${Routes.diaryAnalysis}');
+                      context.go('${Routes.metadata}/${Routes.ocrLoading}');
                     } else {
                       context.go(Routes.shell);
                     }
