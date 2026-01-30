@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/spacing_test_page.dart';
 import 'package:perlog/features/home/home_shell.dart';
 import 'package:perlog/features/main/chatbot/chatbot_page.dart';
+import 'package:perlog/features/main/metadata/image_upload_edit.dart';
 import 'package:perlog/features/main/metadata/image_upload_finished_page.dart';
 import 'package:perlog/features/main/metadata/image_upload_page.dart';
 import 'package:perlog/features/main/metadata/calendar_page.dart';
@@ -35,7 +36,7 @@ final GoRouter appRouter = GoRouter(
           const NoTransitionPage(child: KakaoLoginPage()),
     ),
 
-/// Onboarding Flow
+    /// Onboarding Flow
     GoRoute(
       path: Routes.onboarding,
       redirect: (context, state) {
@@ -70,7 +71,7 @@ final GoRouter appRouter = GoRouter(
 
     /// Main
     GoRoute(
-      path: Routes.perfumeshelf,
+      path: Routes.perfumeShelf,
       builder: (_, __) => const PerfumeShelf(),
     ),
     GoRoute(
@@ -80,19 +81,6 @@ final GoRouter appRouter = GoRouter(
 
     /// Chatbot
     GoRoute(path: Routes.chatbot, builder: (_, __) => const Chatbot()),
-
-    // /// Metadata
-    // GoRoute(path: Routes.calendar, builder: (_, __) => const Calendar()),
-    // GoRoute(path: Routes.imageUpload, builder: (_, __) => const ImageUpload()),
-    // GoRoute(
-    //   path: Routes.imageUploadFinished,
-    //   builder: (_, __) => const ImageUploadFinished(),
-    // ),
-    // GoRoute(path: Routes.ocrLoading, builder: (_, __) => const OCRLoading()),
-    // GoRoute(
-    //   path: Routes.diaryAnalysis,
-    //   builder: (_, __) => const DiaryAnalysis(),
-    // ),
 
     /// Metadata Flow
     GoRoute(
@@ -120,6 +108,12 @@ final GoRouter appRouter = GoRouter(
           builder: (_, __) => const ImageUploadFinished(),
         ),
 
+        /// 이미지 업로드 수정사항
+        GoRoute(
+          path: Routes.imageUploadEdit,
+          builder: (_, __) => const ImageUploadEdit(),
+        ),
+
         /// OCR Loading
         GoRoute(
           path: Routes.ocrLoading,
@@ -133,10 +127,33 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
 
-    /// MY Diary
-    GoRoute(path: Routes.myDiary, builder: (_, __) => const MyDiary()),
-    GoRoute(path: Routes.myAnalysis, builder: (_, __) => const MyAnalysis()),
-    GoRoute(path: Routes.myCalendar, builder: (_, __) => const MyCalendar()),
+    /// MyDiary Flow
+    GoRoute(
+      path: Routes.myDiaryMain,
+      redirect: (context, state) {
+        if (state.uri.toString() == Routes.myDiaryMain) {
+          return '${Routes.myDiaryMain}/${Routes.myDiary}';
+        } else {
+          null;
+        }
+      },
+      routes: [
+        /// 날짜 선택
+        GoRoute(path: Routes.myDiary, builder: (_, __) => const MyDiary()),
+
+        /// 이미지 업로드
+        GoRoute(
+          path: Routes.myAnalysis,
+          builder: (_, __) => const MyAnalysis(),
+        ),
+
+        /// 이미지 업로드 (완료)
+        GoRoute(
+          path: Routes.myCalendar,
+          builder: (_, __) => const MyCalendar(),
+        ),
+      ],
+    ),
 
     ////// debug
     GoRoute(

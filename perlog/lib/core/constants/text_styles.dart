@@ -16,6 +16,15 @@ class AppTextStyles {
     height: 1.2,
   );
 
+  /// Paperlogy 6 SemiBold | 28pt | LetterSpacing -5%
+  static const TextStyle headline28 = TextStyle(
+    fontFamily: paperlogy,
+    fontSize: 28,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -2.5, // 50 * -0.05
+    height: 1.2,
+  );
+
   /// Pretendard Variable Medium | 20pt
   static const TextStyle body20Medium = TextStyle(
     fontFamily: pretendardVariable,
