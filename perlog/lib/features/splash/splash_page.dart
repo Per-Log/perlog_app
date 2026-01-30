@@ -40,7 +40,25 @@ class _SplashPageState extends State<SplashPage> {
     //   return;
     // }
 
-    context.go(Routes.login);
+
+    // [테스트용 상태 설정]
+    const bool isLoggedIn = true; // 로그인이 되어 있다고 가정
+    const bool hasPin = true;     // PIN이 설정되어 있다고 가정
+
+    if (!isLoggedIn) {
+      // 로그인이 안 되어 있으면 -> 로그인 화면으로
+      context.go(Routes.login);
+      return;
+    }
+
+    if (hasPin) {
+      // PIN이 설정되어 있으면 -> 비밀번호 입력(확인) 화면으로
+      // 일단 비밀번호 재확인 페이지로 라우팅 해놓음
+      context.go('${Routes.onboarding}/${Routes.pinConfirm}');
+      return;
+    }
+
+    context.go(Routes.shell);
   }
 
   @override
