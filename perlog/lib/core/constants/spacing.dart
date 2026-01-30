@@ -17,7 +17,7 @@ class AppSpacing {
 
   /// 하단 버튼 영역
   static const EdgeInsets bottomButton =
-      EdgeInsets.fromLTRB(horizontal, 0, horizontal, 40);
+      EdgeInsets.fromLTRB(horizontal, 0, horizontal, 75);
 
   /// 카드 내부 패딩
   static const EdgeInsets card =
