@@ -5,8 +5,8 @@ import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/router/routes.dart';
 
-class Settings extends StatelessWidget {
-  const Settings({super.key});
+class Chatbot extends StatelessWidget {
+  const Chatbot({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class Settings extends StatelessWidget {
           children: [
             Center(
               child: Text(
-                'Settings page',
+                'Chatbot page',
                 style: AppTextStyles.headline50.copyWith(
                   color: AppColors.mainFont,
                 ),
