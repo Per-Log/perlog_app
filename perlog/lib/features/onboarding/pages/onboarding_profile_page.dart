@@ -7,7 +7,7 @@ class OnboardingProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool lockEnabled = true; // 여기 바꾸면서 테스트
+    bool lockEnabled = false; // 여기 바꾸면서 테스트
 
     return Scaffold(
       appBar: AppBar(title: const Text('프로필 설정')),
