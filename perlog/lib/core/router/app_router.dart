@@ -27,10 +27,15 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
 
-    /// Onboarding Flow
+/// Onboarding Flow
     GoRoute(
       path: Routes.onboarding,
-      redirect: (_, __) => '${Routes.onboarding}/${Routes.profile}',
+      redirect: (context, state) {
+        if (state.uri.toString() == Routes.onboarding) {
+          return '${Routes.onboarding}/${Routes.profile}';
+        }
+        return null;
+      },
       routes: [
         /// 이미지 / 별명 / 알림 / 잠금
         GoRoute(

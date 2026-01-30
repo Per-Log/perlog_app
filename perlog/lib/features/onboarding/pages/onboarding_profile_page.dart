@@ -7,7 +7,7 @@ class OnboardingProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool lockEnabled = false; // 여기 바꾸면서 테스트
+    bool lockEnabled = true; // 여기 바꾸면서 테스트, 사용자 존재 여부에 따라 tf 로직 필요
 
     return Scaffold(
       appBar: AppBar(title: const Text('프로필 설정')),
@@ -20,7 +20,7 @@ class OnboardingProfilePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (lockEnabled) {
-                  context.go('${Routes.onboarding}/${Routes.pinSet}');
+                  context.push('${Routes.onboarding}/${Routes.pinSet}');
                 } else {
                   context.go(Routes.shell);
                 }
