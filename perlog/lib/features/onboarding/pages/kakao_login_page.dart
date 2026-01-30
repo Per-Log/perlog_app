@@ -35,7 +35,7 @@ class KakaoLoginPage extends StatelessWidget {
                     context.go(Routes.onboarding); // 임시 라우팅
                   },
                   child: Image.asset(
-                    'images/kakao_login.png',
+                    'assets/images/kakao_login.png',
                     fit: BoxFit.contain,
                   ),
                 ),

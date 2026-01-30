@@ -61,6 +61,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/kakao_login.png
+    
+    - assets/icons/camera.png
+    - assets/icons/filled_check.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -74,9 +77,13 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Pretendard
+    - family: PretendardVariable
       fonts:
         - asset: assets/fonts/PretendardVariable.ttf
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
     - family: Paperlogy
       fonts:
         - asset: assets/fonts/Paperlogy-6SemiBold.ttf
