@@ -11,7 +11,7 @@ import 'routes.dart';
 bool isOnboarded = true;
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: Routes.paddingTest,
+  initialLocation: Routes.splash,
   routes: [
     /// Splash
     GoRoute(
@@ -22,7 +22,9 @@ final GoRouter appRouter = GoRouter(
     /// Kakao Login
     GoRoute(
       path: Routes.login,
-      builder: (_, __) => const KakaoLoginPage(),
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: KakaoLoginPage(),
+      ),
     ),
 
     /// Onboarding Flow
