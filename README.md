@@ -12,7 +12,7 @@
 
 
 
-## 📌 Commit Conventions
+## 📌 Commit Conventions   
 feat : 새로운 기능 추가  
 design : 사용자 UI 변경  
 style : 코드 수정 없이 포맷만 변경   
