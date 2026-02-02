@@ -11,6 +11,9 @@ class PinSetPage extends StatelessWidget {
         return PinEntryContent(
       title: '비밀번호를 입력해주세요.',
       buttonText: '입력 확인',
+      onBack: () {
+        context.go('${Routes.onboarding}/${Routes.profile}');
+      },
       onSubmit: () {
         context.go('${Routes.onboarding}/${Routes.pinConfirm}');
       },

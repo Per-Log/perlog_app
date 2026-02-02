@@ -73,8 +73,10 @@ class _PinEntryContentState extends State<PinEntryContent> {
               Center(
                 child: Text(
                   widget.title,
-                  style: AppTextStyles.body20Medium.copyWith(
+                  style: TextStyle(
                     color: AppColors.mainFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -84,9 +86,9 @@ class _PinEntryContentState extends State<PinEntryContent> {
                 children: List.generate(widget.pinLength, (index) {
                   final isFilled = index < _digits.length;
                   return Container(
-                    width: 19,
-                    height: 19,
-                    margin: const EdgeInsets.symmetric(horizontal: 17),
+                    width: 16,
+                    height: 16,
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isFilled ? AppColors.mainFont : AppColors.subFont,
@@ -94,7 +96,7 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   );
                 }),
               ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 60),
               _PinKeypad(
                 onDigitPressed: _addDigit,
                 onBackspacePressed: _removeDigit,
@@ -116,10 +118,12 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   ),
                   child: Text(
                     widget.buttonText,
-                    style: AppTextStyles.body16.copyWith(
+                    style: TextStyle(
                       color: _isComplete
                           ? AppColors.mainFont
                           : AppColors.subFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -142,7 +146,7 @@ class _PinKeypad extends StatelessWidget {
   final ValueChanged<int> onDigitPressed;
   final VoidCallback onBackspacePressed;
 
-  static const double _keySize = 60;
+  static const double _keySize = 50;
   static const double _keyGap = 24;
 
   @override
@@ -229,7 +233,7 @@ class _PinKey extends StatelessWidget {
                 label ?? '',
                 style: AppTextStyles.body20Medium.copyWith(
                   color: AppColors.mainFont,
-                  fontSize: 30,
+                  fontSize: 27,
                 ),
               ),
       ),

@@ -11,6 +11,9 @@ class PinConfirmPage extends StatelessWidget {
     return PinEntryContent(
       title: '한 번 더 입력해주세요.',
       buttonText: '확인 완료',
+      onBack: () {
+        context.go('${Routes.onboarding}/${Routes.pinSet}');
+      },
       onSubmit: () {
         context.go(Routes.shell);
       },
