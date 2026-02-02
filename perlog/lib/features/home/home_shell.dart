@@ -29,15 +29,11 @@ class HomeShell extends StatelessWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 17),
-            child: SizedBox(
-              height: 30.0,
-              width: 30.0,
-              child: Icon(
-                Icons.home_outlined,
-                size: 30.0,
-                color: AppColors.mainFont,
-              ),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 17),
+            child: Icon(
+              Icons.home_outlined,
+              size: 30.0,
+              color: AppColors.mainFont,
             ),
           ),
         ],
@@ -51,7 +47,7 @@ class HomeShell extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround, // 아이콘들을 일정 간격으로 배분
           children: [
             _buildBottomItem(Icons.home, '홈'),
-            _buildBottomItem(Icons.splitscreen_outlined, '나의 일기'),
+            _buildBottomItem(Icons.book, '나의 일기'),
             _buildBottomItem(Icons.settings, '설정'),
           ],
         ),
@@ -68,7 +64,11 @@ Widget _buildBottomItem(IconData icon, String label) {
     child: Column(
       mainAxisSize: MainAxisSize.min, // 중요: 컬럼 크기를 최소로
       children: [
-        Icon(icon, color: AppColors.mainFont),
+        SizedBox(
+          width: 28,
+          height: 28,
+          child: Icon(icon, color: AppColors.mainFont),
+        ),
         Text(
           label,
           style: AppTextStyles.body11.copyWith(color: AppColors.mainFont),

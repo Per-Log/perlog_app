@@ -12,6 +12,7 @@ class Routes {
   static const settings = '/settings';
 
   static const chatbot = '/chatbot';
+  static const chatbotUse = '/chatbot-use';
 
   static const perfumeSelected = '/perfume-selected';
 

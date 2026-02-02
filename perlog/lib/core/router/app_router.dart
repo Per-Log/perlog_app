@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/spacing_test_page.dart';
 import 'package:perlog/features/home/home_shell.dart';
 import 'package:perlog/features/main/chatbot/chatbot_page.dart';
+import 'package:perlog/features/main/chatbot/chatbot_page_use.dart';
 import 'package:perlog/features/main/metadata/image_upload_edit.dart';
 import 'package:perlog/features/main/metadata/image_upload_finished_page.dart';
 import 'package:perlog/features/main/metadata/image_upload_page.dart';
@@ -81,6 +82,7 @@ final GoRouter appRouter = GoRouter(
 
     /// Chatbot
     GoRoute(path: Routes.chatbot, builder: (_, __) => const Chatbot()),
+    GoRoute(path: Routes.chatbotUse, builder: (_, __) => const ChatbotUse()),
 
     /// Metadata Flow
     GoRoute(
