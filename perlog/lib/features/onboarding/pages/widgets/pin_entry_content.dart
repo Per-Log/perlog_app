@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// PIN 번호 입력을 위한 공통 레이아웃 위젯
 class PinEntryContent extends StatefulWidget {
@@ -161,7 +162,18 @@ class _PinKeypad extends StatelessWidget {
             const SizedBox(width: _keyGap),
             _PinKey(label: '0', onTap: () => onDigitPressed(0)),
             const SizedBox(width: _keyGap),
-            _PinKey(icon: Icons.backspace_outlined, onTap: onBackspacePressed),
+            _PinKey(
+              icon: SvgPicture.asset(
+                'assets/icons/arrow_left_fill.svg',
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.mainFont,
+                  BlendMode.srcIn,
+                ),
+              ),
+              onTap: onBackspacePressed),
           ],
         ),
       ],
@@ -195,7 +207,7 @@ class _PinKey extends StatelessWidget {
   const _PinKey({this.label, this.icon, required this.onTap});
 
   final String? label;
-  final IconData? icon;
+  final Widget? icon;
   final VoidCallback onTap;
 
   static const double _keySize = _PinKeypad._keySize;
@@ -212,7 +224,7 @@ class _PinKey extends StatelessWidget {
           foregroundColor: AppColors.mainFont,
         ),
         child: icon != null
-            ? Icon(icon, size: 20)
+            ? icon!
             : Text(
                 label ?? '',
                 style: AppTextStyles.body20Medium.copyWith(

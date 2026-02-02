@@ -9,7 +9,7 @@ class PinConfirmPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PinEntryContent(
-      title: '비밀번호를 다시 입력해주세요.',
+      title: '한 번 더 입력해주세요.',
       buttonText: '확인 완료',
       onSubmit: () {
         context.go(Routes.shell);

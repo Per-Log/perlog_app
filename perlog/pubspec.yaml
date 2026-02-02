@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   go_router: ^13.2.0
+  flutter_svg: ^2.0.10
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -64,6 +65,8 @@ flutter:
     
     - assets/icons/camera.png
     - assets/icons/filled_check.png
+
+    - assets/icons/arrow_left_fill.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
