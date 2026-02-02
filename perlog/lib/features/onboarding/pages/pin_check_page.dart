@@ -11,6 +11,7 @@ class PinCheckPage extends StatelessWidget {
     return PinEntryContent(
       title: 'PIN을 입력해주세요.',
       buttonText: '확인',
+      showBackButton: false,
       onSubmit: () {
         // TODO: PIN 검증 로직 연결
         context.go(Routes.shell);

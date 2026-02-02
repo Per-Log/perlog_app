@@ -12,6 +12,7 @@ class PinEntryContent extends StatefulWidget {
     required this.buttonText, // 하단 확인 버튼에 들어갈 문구
     required this.onSubmit, // PIN 입력 완료 후 버튼을 눌렀을 때의 동작
     this.onBack, // 이전 버튼 동작
+    this.showBackButton = true,
     this.pinLength = 4, // 입력받을 PIN의 길이
   });
 
@@ -19,6 +20,7 @@ class PinEntryContent extends StatefulWidget {
   final String buttonText;
   final VoidCallback onSubmit;
   final VoidCallback? onBack;
+  final bool showBackButton;
   final int pinLength;
 
   // 위 내용 받아서 아래로 상속
@@ -58,16 +60,19 @@ class _PinEntryContentState extends State<PinEntryContent> {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap:
-                      widget.onBack ?? () => Navigator.of(context).maybePop(),
-                  child: Text(
-                    '이전',
-                    style: AppTextStyles.body16.copyWith(
-                      color: AppColors.subFont,
-                    ),
-                  ),
-                ),
+                child: widget.showBackButton
+                    ? GestureDetector(
+                        onTap:
+                            widget.onBack ??
+                            () => Navigator.of(context).maybePop(),
+                        child: Text(
+                          '이전',
+                          style: AppTextStyles.body16.copyWith(
+                            color: AppColors.subFont,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
               const SizedBox(height: 51),
               Center(
