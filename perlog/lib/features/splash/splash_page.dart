@@ -42,8 +42,8 @@ class _SplashPageState extends State<SplashPage> {
 
 
     // [테스트용 상태 설정]
-    const bool isLoggedIn = true; // 로그인이 되어 있다고 가정
-    const bool hasPin = true;     // PIN이 설정되어 있다고 가정
+    const bool isLoggedIn = false; // 로그인 가정
+    const bool hasPin = false;     // PIN 가정
 
     if (!isLoggedIn) {
       // 로그인이 안 되어 있으면 -> 로그인 화면으로

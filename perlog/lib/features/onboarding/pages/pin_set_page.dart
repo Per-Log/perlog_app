@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perlog/features/onboarding/pages/widgets/pin_entry_content.dart';
 import '../../../core/router/routes.dart';
 
 class PinSetPage extends StatelessWidget {
@@ -7,16 +8,12 @@ class PinSetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('PIN 설정')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            context.go('${Routes.onboarding}/${Routes.pinConfirm}');
-          },
-          child: const Text('PIN 입력 완료'),
-        ),
-      ),
+        return PinEntryContent(
+      title: '비밀번호를 입력해주세요.',
+      buttonText: '입력 확인',
+      onSubmit: () {
+        context.go('${Routes.onboarding}/${Routes.pinConfirm}');
+      },
     );
   }
 }
