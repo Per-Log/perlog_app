@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
+import 'package:go_router/go_router.dart';
+import 'package:perlog/core/router/routes.dart';
 
 class OnboardingProfilePage extends StatefulWidget {
   const OnboardingProfilePage({super.key});
@@ -170,7 +172,9 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go('${Routes.onboarding}/${Routes.pinSet}');
+                  },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: AppColors.mainFont),
                     shape: RoundedRectangleBorder(
