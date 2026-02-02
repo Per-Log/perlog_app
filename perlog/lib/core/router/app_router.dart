@@ -18,6 +18,7 @@ import 'package:perlog/features/onboarding/pages/kakao_login_page.dart';
 import 'package:perlog/features/onboarding/pages/onboarding_profile_page.dart';
 import 'package:perlog/features/onboarding/pages/pin_confirm_page.dart';
 import 'package:perlog/features/onboarding/pages/pin_set_page.dart';
+import 'package:perlog/features/onboarding/pages/pin_check_page.dart';
 import 'package:perlog/features/setting/setting_page.dart';
 import 'package:perlog/features/splash/splash_page.dart';
 import 'routes.dart';
@@ -60,6 +61,12 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: Routes.pinConfirm,
           builder: (_, __) => const PinConfirmPage(),
+        ),
+
+        /// PIN Check
+        GoRoute(
+          path: Routes.pinCheck,
+          builder: (_, __) => const PinCheckPage(),
         ),
       ],
     ),

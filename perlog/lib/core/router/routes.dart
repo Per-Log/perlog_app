@@ -6,6 +6,7 @@ class Routes {
   static const profile = 'profile';
   static const pinSet = 'pin-set';
   static const pinConfirm = 'pin-confirm';
+  static const pinCheck = 'pin-check';
 
   static const shell = '/shell';
 
