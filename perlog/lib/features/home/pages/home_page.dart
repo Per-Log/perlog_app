@@ -1,12 +1,11 @@
+// 변경 전 perlog/lib/features/main/perfume_shelf_page.dart
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
-import 'package:perlog/core/constants/spacing.dart';
-import 'package:perlog/core/router/routes.dart';
 
-class MyAnalysis extends StatelessWidget {
-  const MyAnalysis({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class MyAnalysis extends StatelessWidget {
           children: [
             Center(
               child: Text(
-                'MyAnalysis page',
+                'Main 선반  page',
                 style: AppTextStyles.headline50.copyWith(
                   color: AppColors.mainFont,
                 ),

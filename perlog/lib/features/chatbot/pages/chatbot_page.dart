@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
-import 'package:perlog/core/constants/spacing.dart';
-import 'package:perlog/core/router/routes.dart';
 
-class ChatbotUse extends StatelessWidget {
-  const ChatbotUse({super.key});
+class Chatbot extends StatelessWidget {
+  const Chatbot({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,27 +38,17 @@ class ChatbotUse extends StatelessWidget {
       body: Column(
         children: [
           Spacer(),
-          Column(
-            children: [
-              TextField(
-                style: TextStyle(color: AppColors.mainFont, fontSize: 13.0),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(12),
-                  labelText: '오늘은 어떤 하루였나요?',
-                  labelStyle: TextStyle(
-                    fontSize: 12.0,
-                    color: AppColors.subFont,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: AppColors.subFont,
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
+          TextField(
+            style: TextStyle(color: AppColors.mainFont, fontSize: 13.0),
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(12),
+              labelText: '오늘은 어떤 하루였나요?',
+              labelStyle: TextStyle(fontSize: 12.0, color: AppColors.subFont),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.subFont, width: 1.5),
+                borderRadius: BorderRadius.circular(30),
               ),
-            ],
+            ),
           ),
         ],
       ),

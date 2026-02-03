@@ -1,24 +1,25 @@
 class Routes {
+  /// Splash
   static const splash = '/';
-  static const login = '/login';
 
+  /// Onboarding
+  static const login = '/login';
   static const onboarding = '/onboarding';
   static const profile = 'profile';
   static const pinSet = 'pin-set';
   static const pinConfirm = 'pin-confirm';
   static const pinCheck = 'pin-check';
 
+  /// Shell
   static const shell = '/shell';
-
+  static const home = '/home';
   static const settings = '/settings';
 
+  /// Chatbot
   static const chatbot = '/chatbot';
   static const chatbotUse = '/chatbot-use';
 
-  static const perfumeSelected = '/perfume-selected';
-
-  static const perfumeShelf = '/perfume-shelf';
-
+  /// Metadata
   static const metadata = '/metadata';
   static const calendar = 'calendar';
   static const imageUpload = 'image-upload';
@@ -33,6 +34,6 @@ class Routes {
   static const myAnalysis = 'my-analysis';
   static const myCalendar = 'my-calendar';
 
-  // debug
+  // Debug
   static const paddingTest = '/padding-test';
 }

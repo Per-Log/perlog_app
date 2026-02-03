@@ -30,7 +30,7 @@ class HomeShellChatbot extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () =>
-                context.go(Routes.perfumeShelf), // 상단 홈 아이콘 클릭 시 홈 이동
+                context.go(Routes.home), // 상단 홈 아이콘 클릭 시 홈 이동
             icon: Icon(
               Icons.home_outlined,
               size: 30,
@@ -52,8 +52,8 @@ class HomeShellChatbot extends StatelessWidget {
               context,
               icon: Icons.home,
               label: '홈',
-              route: Routes.perfumeShelf,
-              isSelected: location == Routes.perfumeShelf, // 현재 경로와 일치하는지 확인
+              route: Routes.home,
+              isSelected: location == Routes.home, // 현재 경로와 일치하는지 확인
             ),
             _buildBottomItem(
               context,

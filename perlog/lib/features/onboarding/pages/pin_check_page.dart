@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perlog/features/onboarding/pages/widgets/pin_entry_content.dart';
+import 'package:perlog/features/onboarding/widgets/pin_entry_content.dart';
 import '../../../core/router/routes.dart';
 
 class PinCheckPage extends StatelessWidget {
