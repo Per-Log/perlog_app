@@ -40,6 +40,12 @@ class AppSpacing {
     return (h * 0.015).clamp(8.0, 16.0);
   }
 
+  /// 중간 vertical gap (동일 섹션 내 다음 항목)
+  static double medium(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+    return (h * 0.015).clamp(16.0, 24.0);
+  }
+
   /// 큰 vertical gap (섹션 분리용)
   static double large(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -50,7 +56,7 @@ class AppSpacing {
   /// 하단 버튼 높이
   static double bottomButtonHeight(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
-    return (h * 0.07).clamp(56.0, 64.0);
+    return (h * 0.06).clamp(56.0, 64.0);
   }
 
   /// 하단 버튼 영역 padding (safe area 포함)

@@ -54,7 +54,7 @@ class _PinEntryContentState extends State<PinEntryContent> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: AppSpacing.screen,
+          padding: AppSpacing.screen(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

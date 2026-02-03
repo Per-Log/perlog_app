@@ -3,22 +3,31 @@ import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/models/notification_period.dart';
 import 'package:perlog/core/router/routes.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:perlog/features/onboarding/widgets/lock_setting_section.dart';
+import 'package:perlog/features/onboarding/widgets/notification_setting_section.dart';
+import 'package:perlog/features/onboarding/widgets/profile_image_picker.dart';
 
 class OnboardingProfilePage extends StatefulWidget {
   const OnboardingProfilePage({super.key});
 
   @override
-  State<OnboardingProfilePage> createState() =>
-      _OnboardingProfilePageState();
+  State<OnboardingProfilePage> createState() => _OnboardingProfilePageState();
 }
 
 class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   final _nicknameController = TextEditingController();
   final _focusNode = FocusNode();
 
-  bool get isCompleted =>
-      _nicknameController.text.trim().isNotEmpty;
+  bool get isCompleted => _nicknameController.text.trim().isNotEmpty;
+
+  bool notificationEnabled = true;
+  bool lockEnabled = true;
+  bool isPinSet = false;
+
+  NotificationPeriod _period = NotificationPeriod.threeDays;
 
   @override
   void dispose() {
@@ -33,71 +42,29 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: AppSpacing.screen,
+          padding: AppSpacing.screen(context),
           child: Column(
             children: [
               const SizedBox(height: 40),
 
               /// 프로필 이미지
-              Center(
-                child: SizedBox(
-                  width: 176,
-                  height: 176,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 176,
-                        height: 176,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.mainFont,
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 176 * 0.1,
-                        bottom: 176 * 0.01,
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.subBackground,
-                            border: Border.all(
-                              color: AppColors.mainFont,
-                              width: 1,
-                            ),
-                          ),
-                          child: Center(
-                            child: SizedBox(
-                              width: 17.8,
-                              height: 18,
-                              child: Image.asset(
-                                'assets/icons/camera.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              ProfileImagePicker(
+                onTap: () {
+                  // TODO: 이미지 선택 로직
+                },
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: AppSpacing.large(context)),
 
               /// 별명 입력
               Row(
                 children: [
-                  const SizedBox(width: 30),
+                  const SizedBox(width: 20),
                   Text(
                     '별명',
-                    style: AppTextStyles.body20Medium
-                        .copyWith(color: AppColors.mainFont),
+                    style: AppTextStyles.body20Medium.copyWith(
+                      color: AppColors.mainFont,
+                    ),
                   ),
                   const SizedBox(width: 20),
 
@@ -108,13 +75,14 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                       onChanged: (_) => setState(() {}),
 
                       textAlignVertical: TextAlignVertical.center,
-                      style: AppTextStyles.body18SemiBold
-                          .copyWith(color: AppColors.mainFont),
+                      style: AppTextStyles.body18SemiBold.copyWith(
+                        color: AppColors.mainFont,
+                      ),
 
                       decoration: InputDecoration(
-                        isDense: true,               
+                        isDense: true,
                         contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,                
+                          vertical: 14,
                           horizontal: 16,
                         ),
 
@@ -144,90 +112,66 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                     ),
                   ),
 
-
-                  const SizedBox(width: 30)
+                  const SizedBox(width: 30),
                 ],
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: AppSpacing.large(context)),
 
               /// 알림 설정
-              _SettingItem(
-                title: '알림 설정',
-                color: AppColors.mainFont,
+              NotificationSettingSection(
+                enabled: notificationEnabled,
+                period: _period,
+                onToggle: () {
+                  setState(() {
+                    notificationEnabled = !notificationEnabled;
+                  });
+                },
+                onChangePeriod: (value) {
+                  setState(() {
+                    _period = value;
+                  });
+                },
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.large(context)),
 
               /// 잠금 설정
-              _SettingItem(
-                title: '잠금 설정',
-                color: AppColors.mainFont,
+              LockSettingSection(
+                enabled: lockEnabled,
+                isPinSet: isPinSet,
+                onToggle: () {
+                  setState(() {
+                    lockEnabled = !lockEnabled;
+                  });
+                },
+                onSetPin: () async {
+                  await context.push('${Routes.onboarding}/${Routes.pinSet}');
+                  setState(() {
+                    isPinSet = true;
+                  });
+                },
               ),
+
 
               const Spacer(),
 
               /// 시작하기 버튼
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: () {
-                    context.go('${Routes.onboarding}/${Routes.pinSet}');
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.mainFont),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: Text(
-                    '시작하기',
-                    style: TextStyle(
-                      color: AppColors.mainFont,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              BottomButton(
+                text: '시작하기',
+                enabled: true,
+                onPressed: () {
+                  context.go(Routes.home);
+                },
+                backgroundColor: Colors.transparent,
+                borderColor: AppColors.mainFont,
+                textColor: AppColors.mainFont,
+                textStyle: AppTextStyles.body20Medium,
               ),
-
-              const SizedBox(height: 24),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-
-class _SettingItem extends StatelessWidget {
-  final String title;
-  final Color color;
-
-  const _SettingItem({
-    required this.title,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(Icons.radio_button_unchecked, color: color),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: TextStyle(
-            color: color,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Icon(Icons.help_outline, size: 16, color: color.withOpacity(0.6)),
-      ],
     );
   }
 }

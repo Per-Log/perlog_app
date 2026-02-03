@@ -28,7 +28,7 @@ class KakaoLoginPage extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: AppSpacing.bottomButton,
+                padding: AppSpacing.bottomButtonPadding(context),
                 child: GestureDetector(
                   onTap: () {
                     // TODO: 나중에 카카오 로그인 로직
