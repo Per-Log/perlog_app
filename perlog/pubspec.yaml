@@ -87,6 +87,8 @@ flutter:
       fonts:
         - asset: assets/fonts/Pretendard-SemiBold.otf
           weight: 600
+        - asset: assets/fonts/Pretendard-Medium.otf
+          weight: 500
     - family: Paperlogy
       fonts:
         - asset: assets/fonts/Paperlogy-6SemiBold.ttf

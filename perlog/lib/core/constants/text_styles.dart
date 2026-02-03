@@ -27,7 +27,7 @@ class AppTextStyles {
 
   /// Pretendard Variable Medium | 20pt
   static const TextStyle body20Medium = TextStyle(
-    fontFamily: pretendardVariable,
+    fontFamily: pretendard,
     fontSize: 20,
     fontWeight: FontWeight.w500,
     height: 1.4,
