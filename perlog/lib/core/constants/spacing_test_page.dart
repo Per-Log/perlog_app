@@ -1,93 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
+import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
 
 class PaddingTestPage extends StatelessWidget {
   const PaddingTestPage({super.key});
+
+  Widget _label(String text) {
+    return Text(
+      text,
+      style: AppTextStyles.body18.copyWith(
+        color: AppColors.mainFont,
+      ),
+    );
+  }
+
+  Widget _box(String label, double height) {
+    return Container(
+      height: height,
+      width: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.subBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(label),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Padding Test'),
+        title: const Text('Spacing Test'),
       ),
+      body: Padding(
+        padding: AppSpacing.screen(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _label('small spacing'),
+            SizedBox(height: AppSpacing.small(context)),
+            _box(
+              'height = small(${AppSpacing.small(context).toStringAsFixed(1)})',
+              AppSpacing.small(context),
+            ),
 
-      /// bottomButton 패딩 테스트용 버튼
-      bottomNavigationBar: Padding(
-        padding: AppSpacing.bottomButton,
-        child: SizedBox(
-          height: 48,
-          child: ElevatedButton(
-            onPressed: () {},
-            child: const Text('Bottom Button (AppSpacing.bottomButton)'),
-          ),
+            SizedBox(height: AppSpacing.section(context)),
+
+            _label('section spacing'),
+            SizedBox(height: AppSpacing.section(context)),
+            _box(
+              'height = section(${AppSpacing.section(context).toStringAsFixed(1)})',
+              AppSpacing.section(context),
+            ),
+
+            SizedBox(height: AppSpacing.section(context)),
+
+            _label('large spacing'),
+            SizedBox(height: AppSpacing.large(context)),
+            _box(
+              'height = large(${AppSpacing.large(context).toStringAsFixed(1)})',
+              AppSpacing.large(context),
+            ),
+
+            SizedBox(height: AppSpacing.section(context)),
+
+            _label('card padding'),
+            Container(
+              width: double.infinity,
+              padding: AppSpacing.card,
+              decoration: BoxDecoration(
+                color: AppColors.subBackground,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text('card padding 적용됨'),
+            ),
+
+            const Spacer(),
+          ],
         ),
       ),
 
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: AppSpacing.screen,
-              child: Container(
-                height: 120,
-                color: Colors.orange.withOpacity(0.35),
-                child: const Center(
-                  child: Text('AppSpacing.screen'),
-                ),
-              ),
-            ),
-            
-            Padding(
-              padding: AppSpacing.horizontalPadding,
-              child: Container(
-                height: 80,
-                color: Colors.blue.withOpacity(0.35),
-                child: const Center(
-                  child: Text('AppSpacing.horizontalPadding'),
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: AppSpacing.horizontalPadding,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: AppSpacing.card,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Card Title',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        '이 영역은 AppSpacing.card (16px) 패딩이 적용된 카드 내부 영역입니다.',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            Padding(
-              padding: AppSpacing.horizontalPadding,
-              child: Container(
-                height: 1,
-                color: Colors.red,
-              ),
-            ),
-
-          ],
+      /// Bottom Button 영역 테스트
+      bottomNavigationBar: Padding(
+        padding: AppSpacing.bottomButtonPadding(context),
+        child: BottomButton(
+          text: '시작하기',
+          enabled: true,
+          onPressed: () {},
+          backgroundColor: AppColors.background,
+          borderColor: AppColors.subBackground,
+          textColor: AppColors.mainFont,
         ),
       ),
     );
