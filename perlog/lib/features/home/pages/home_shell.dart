@@ -19,65 +19,73 @@ class HomeShell extends StatelessWidget {
     final bool isDiaryActive = location.startsWith(Routes.myDiaryMain);
     final bool isSettingsActive = location == Routes.settings;
 
-    // 3. 현재 경로에 따른 타이틀 설정
-    String appBarTitle = 'Per-Log';
-    // if (isDiaryActive) appBarTitle = '나의 일기';
-    // if (isSettingsActive) appBarTitle = '설정';
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        centerTitle: false, // 왼쪽 정렬 유지
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 17),
-          child: Text(
-            appBarTitle,
-            style: AppTextStyles.headline28.copyWith(color: AppColors.mainFont),
+        centerTitle: false,
+        titleSpacing: 21,
+        
+        title: Text(
+          'Per-Log',
+          style: AppTextStyles.headline28.copyWith(
+            color: AppColors.mainFont,
           ),
         ),
+
+        actionsPadding: const EdgeInsets.only(right: 5),
+
         actions: [
           IconButton(
             onPressed: () => context.go(Routes.chatbot),
-            icon: Icon(
-              Icons.wechat_outlined,
-              size: 30,
-              // 챗봇 활성화 시 색상 강조
-              color: AppColors.mainFont,
+            icon: Image.asset(
+              'assets/icons/chatbot.png',
+              width: 30,
+              height: 30,
             ),
           ),
-          const SizedBox(width: 17),
         ],
       ),
+
       body: child, // 내부 콘텐츠가 교체되는 영역
+
       bottomNavigationBar: BottomAppBar(
         color: AppColors.background,
-        elevation: 8,
+        elevation: 0,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            const Spacer(flex: 2),
             _buildBottomItem(
               context,
-              icon: isHomeActive ? Icons.home : Icons.home_outlined,
+              assetPath: isHomeActive
+                  ? 'assets/icons/filled_home.png'
+                  : 'assets/icons/line_home.png',
               label: '홈',
               route: Routes.home,
               isActive: isHomeActive,
             ),
+            const Spacer(flex: 5),
             _buildBottomItem(
               context,
-              icon: isDiaryActive ? Icons.book : Icons.book_outlined,
+              assetPath: isDiaryActive
+                  ? 'assets/icons/filled_diary.png'
+                  : 'assets/icons/line_diary.png',
               label: '나의 일기',
               route: Routes.myDiaryMain,
               isActive: isDiaryActive,
             ),
+            const Spacer(flex: 5),
             _buildBottomItem(
               context,
-              icon: isSettingsActive ? Icons.settings : Icons.settings_outlined,
+              assetPath: isSettingsActive
+                  ? 'assets/icons/filled_setting.png'
+                  : 'assets/icons/line_setting.png',
               label: '설정',
               route: Routes.settings,
               isActive: isSettingsActive,
             ),
+            const Spacer(flex: 2),
           ],
         ),
       ),
@@ -85,40 +93,40 @@ class HomeShell extends StatelessWidget {
   }
 
   Widget _buildBottomItem(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required String route,
-    required bool isActive,
-  }) {
-    final Color itemColor = isActive
-        ? AppColors.mainFont
-        : AppColors.mainFont.withOpacity(0.5);
+  BuildContext context, {
+  required String assetPath,
+  required String label,
+  required String route,
+  required bool isActive,
+}) {
+  final Color itemColor =
+      isActive ? AppColors.mainFont : AppColors.subFont;
 
-    return InkWell(
-      onTap: () => context.go(route),
-      borderRadius: BorderRadius.circular(10), // 클릭 피드백 범위
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 28,
-              height: 28,
-              child: Icon(icon, color: itemColor, size: 28),
+  return InkWell(
+    onTap: () => context.go(route),
+    borderRadius: BorderRadius.circular(10),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            assetPath,
+            width: 28,
+            height: 28, 
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: AppTextStyles.body12.copyWith(
+              color: itemColor,
             ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: AppTextStyles.body11.copyWith(
-                color: itemColor,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

@@ -14,7 +14,7 @@ class AppSpacing {
     final h = MediaQuery.of(context).size.height;
 
     final top = (h * 0.04).clamp(16.0, 32.0);
-    final bottom = (h * 0.08).clamp(32.0, 64.0);
+    final bottom = (h * 0.03).clamp(32.0, 64.0);
 
     return EdgeInsets.fromLTRB(
       horizontal,
