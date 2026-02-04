@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/core/constants/spacing.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,11 +15,19 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            Center(
-              child: Text(
-                'Main 선반  page',
-                style: AppTextStyles.headline50.copyWith(
-                  color: AppColors.mainFont,
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: AppSpacing.card,
+                child: BottomButton(
+                  text: "임시 업로드용 버튼",
+                  onPressed: () {},
+                  enabled: true,
+                  backgroundColor: AppColors.background,
+                  borderColor: AppColors.mainFont,
+                  textColor: AppColors.mainFont,
                 ),
               ),
             ),
