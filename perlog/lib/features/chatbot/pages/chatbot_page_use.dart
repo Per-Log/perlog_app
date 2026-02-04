@@ -92,7 +92,7 @@ Widget _buildBottomItem(IconData icon, String label) {
         ),
         Text(
           label,
-          style: AppTextStyles.body11.copyWith(color: AppColors.mainFont),
+          style: AppTextStyles.body12.copyWith(color: AppColors.mainFont),
         ),
       ],
     ),

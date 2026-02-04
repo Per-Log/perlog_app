@@ -79,7 +79,7 @@ class _HelpIconState extends State<HelpIcon> {
             ),
             Text(
               '?',
-              style: AppTextStyles.body11.copyWith(color: AppColors.mainFont)
+              style: AppTextStyles.body12.copyWith(color: AppColors.mainFont)
             ),
           ],
         ),

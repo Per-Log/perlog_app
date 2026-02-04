@@ -74,9 +74,9 @@ class AppTextStyles {
   );
 
   /// Pretendard Variable Regular | 11pt
-  static const TextStyle body11 = TextStyle(
+  static const TextStyle body12 = TextStyle(
     fontFamily: pretendardVariable,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 1.2,
   );
