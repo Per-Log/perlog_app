@@ -58,42 +58,46 @@ class _PinEntryContentState extends State<PinEntryContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SizedBox(height: AppSpacing.medium(context),),
+
               Align(
                 alignment: Alignment.centerLeft,
                 child: widget.showBackButton
-                    ? GestureDetector(
-                        onTap:
-                            widget.onBack ??
-                            () => Navigator.of(context).maybePop(),
-                        child: Text(
-                          '이전',
-                          style: AppTextStyles.body16.copyWith(
-                            color: AppColors.subFont,
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: GestureDetector(
+                          onTap: widget.onBack ??
+                              () => Navigator.of(context).maybePop(),
+                          child: Text(
+                            '이전',
+                            style: AppTextStyles.body16Medium.copyWith(
+                              color: AppColors.subFont,
+                            ),
                           ),
                         ),
                       )
                     : const SizedBox.shrink(),
               ),
-              const SizedBox(height: 51),
+
+              SizedBox(height: AppSpacing.large(context)),
+
               Center(
                 child: Text(
                   widget.title,
-                  style: TextStyle(
-                    color: AppColors.mainFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.body20Medium.copyWith(color: AppColors.mainFont)
                 ),
               ),
-              const SizedBox(height: 44),
+
+              SizedBox(height: AppSpacing.large(context)),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(widget.pinLength, (index) {
                   final isFilled = index < _digits.length;
                   return Container(
-                    width: 16,
-                    height: 16,
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    width: 20,
+                    height: 20,
+                    margin: const EdgeInsets.symmetric(horizontal: 20), // TODO: mediaquery
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isFilled ? AppColors.mainFont : AppColors.subFont,
@@ -101,11 +105,15 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   );
                 }),
               ),
-              const SizedBox(height: 60),
+
+              SizedBox(height: AppSpacing.large(context)),
+              SizedBox(height: AppSpacing.medium(context)),
+
               _PinKeypad(
                 onDigitPressed: _addDigit,
                 onBackspacePressed: _removeDigit,
               ),
+
               const Spacer(),
               SizedBox(
                 height: 56,
@@ -151,19 +159,19 @@ class _PinKeypad extends StatelessWidget {
   final ValueChanged<int> onDigitPressed;
   final VoidCallback onBackspacePressed;
 
-  static const double _keySize = 50;
-  static const double _keyGap = 24;
+  static const double _keySize = 50; // TODO: mediaquery
+  static const double _keyGap = 40; // TODO: mediaquery
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         _buildRow([1, 2, 3]),
-        const SizedBox(height: 20),
+        SizedBox(height: AppSpacing.large(context)),
         _buildRow([4, 5, 6]),
-        const SizedBox(height: 20),
+        SizedBox(height: AppSpacing.large(context)),
         _buildRow([7, 8, 9]),
-        const SizedBox(height: 20),
+        SizedBox(height: AppSpacing.large(context)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
