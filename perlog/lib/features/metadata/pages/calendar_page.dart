@@ -37,7 +37,7 @@ class Calendar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const MetadataBackButton(),
-                    SizedBox(height: AppSpacing.section(context)),
+                    SizedBox(height: AppSpacing.large(context)),
                     Row(
                       children: [
                         Text(
@@ -46,15 +46,9 @@ class Calendar extends StatelessWidget {
                             color: AppColors.mainFont,
                           ),
                         ),
-                        SizedBox(width: AppSpacing.small(context) / 2),
-                        Icon(
-                          Icons.help_outline,
-                          size: 16,
-                          color: AppColors.subFont,
-                        ),
                       ],
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.medium(context)),
                     Text(
                       '2025년 01월 15일 목요일',
                       style: AppTextStyles.body20Medium.copyWith(
