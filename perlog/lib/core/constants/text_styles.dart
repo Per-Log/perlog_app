@@ -25,6 +25,14 @@ class AppTextStyles {
     height: 1.2,
   );
 
+  /// Pretendard Variable SemiBold | 22pt
+  static const TextStyle body22 = TextStyle(
+    fontFamily: pretendard,
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    height: 1.4,
+  );
+
   /// Pretendard Variable Medium | 20pt
   static const TextStyle body20Medium = TextStyle(
     fontFamily: pretendard,
@@ -49,7 +57,7 @@ class AppTextStyles {
     height: 1.4,
   );
 
-    /// Pretendard Variable Medium | 20pt
+  /// Pretendard Variable Medium | 16pt
   static const TextStyle body16Medium = TextStyle(
     fontFamily: pretendard,
     fontSize: 16,
