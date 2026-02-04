@@ -112,8 +112,12 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   text: widget.buttonText,
                   enabled: _isComplete,
                   onPressed: widget.onSubmit,
-                  backgroundColor: Colors.transparent,
-                  borderColor: AppColors.mainFont,
+                backgroundColor: _isComplete
+                    ? AppColors.subBackground
+                    : AppColors.background,
+                borderColor: _isComplete
+                    ? Colors.transparent
+                    : AppColors.subFont,
                   textColor: AppColors.mainFont,
                   textStyle: AppTextStyles.body20Medium,
                 ),
