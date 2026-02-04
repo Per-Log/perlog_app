@@ -153,7 +153,6 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 },
               ),
 
-
               const Spacer(),
 
               /// 시작하기 버튼

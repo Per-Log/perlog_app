@@ -1,76 +1,124 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/core/router/routes.dart';
 
 class HomeShell extends StatelessWidget {
-  const HomeShell({super.key});
+  final Widget child;
+
+  const HomeShell({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
+    // 1. 현재 경로 파악
+    final String location = GoRouterState.of(context).uri.path;
+
+    // 2. 활성화 상태 정의
+    final bool isHomeActive = location == Routes.home;
+    final bool isDiaryActive = location.startsWith(Routes.myDiaryMain);
+    final bool isSettingsActive = location == Routes.settings;
+
+    // 3. 현재 경로에 따른 타이틀 설정
+    String appBarTitle = 'Per-Log';
+    if (isDiaryActive) appBarTitle = '나의 일기';
+    if (isSettingsActive) appBarTitle = '설정';
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
+        centerTitle: false, // 왼쪽 정렬 유지
         title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 17),
-          child: SizedBox(
-            width: 108,
-            height: 35,
-            child: Text(
-              'Per-Log',
-              style: AppTextStyles.headline28.copyWith(
-                color: AppColors.mainFont,
-              ),
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 17),
+          child: Text(
+            appBarTitle,
+            style: AppTextStyles.headline28.copyWith(color: AppColors.mainFont),
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 17),
-            child: Icon(
-              Icons.home_outlined,
-              size: 30.0,
+          IconButton(
+            onPressed: () => context.go(Routes.chatbot),
+            icon: Icon(
+              Icons.wechat_outlined,
+              size: 30,
+              // 챗봇 활성화 시 색상 강조
               color: AppColors.mainFont,
             ),
           ),
+          const SizedBox(width: 17),
         ],
       ),
-      body: Center(
-        child: Text('메인 화면 (Shell)', style: TextStyle(fontSize: 24)),
-      ),
+      body: child, // 내부 콘텐츠가 교체되는 영역
       bottomNavigationBar: BottomAppBar(
         color: AppColors.background,
+        elevation: 8,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround, // 아이콘들을 일정 간격으로 배분
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildBottomItem(Icons.home, '홈'),
-            _buildBottomItem(Icons.book, '나의 일기'),
-            _buildBottomItem(Icons.settings, '설정'),
+            _buildBottomItem(
+              context,
+              icon: isHomeActive ? Icons.home : Icons.home_outlined,
+              label: '홈',
+              route: Routes.home,
+              isActive: isHomeActive,
+            ),
+            _buildBottomItem(
+              context,
+              icon: isDiaryActive ? Icons.book : Icons.book_outlined,
+              label: '나의 일기',
+              route: Routes.myDiaryMain,
+              isActive: isDiaryActive,
+            ),
+            _buildBottomItem(
+              context,
+              icon: isSettingsActive ? Icons.settings : Icons.settings_outlined,
+              label: '설정',
+              route: Routes.settings,
+              isActive: isSettingsActive,
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-// 아이템 빌더 함수 (코드 중복 방지)
-Widget _buildBottomItem(IconData icon, String label) {
-  return InkWell(
-    // 클릭 효과를 위해 추가
-    onTap: () {},
-    child: Column(
-      mainAxisSize: MainAxisSize.min, // 중요: 컬럼 크기를 최소로
-      children: [
-        SizedBox(
-          width: 28,
-          height: 28,
-          child: Icon(icon, color: AppColors.mainFont),
+  Widget _buildBottomItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String route,
+    required bool isActive,
+  }) {
+    final Color itemColor = isActive
+        ? AppColors.mainFont
+        : AppColors.mainFont.withOpacity(0.5);
+
+    return InkWell(
+      onTap: () => context.go(route),
+      borderRadius: BorderRadius.circular(10), // 클릭 피드백 범위
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: Icon(icon, color: itemColor, size: 28),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: AppTextStyles.body11.copyWith(
+                color: itemColor,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
-        Text(
-          label,
-          style: AppTextStyles.body11.copyWith(color: AppColors.mainFont),
-        ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }

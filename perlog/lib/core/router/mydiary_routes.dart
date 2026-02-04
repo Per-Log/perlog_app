@@ -12,18 +12,9 @@ final myDiaryRoutes = [
       return null;
     },
     routes: [
-      GoRoute(
-        path: Routes.myDiary,
-        builder: (_, __) => const MyDiary(),
-      ),
-      GoRoute(
-        path: Routes.myAnalysis,
-        builder: (_, __) => const MyAnalysis(),
-      ),
-      GoRoute(
-        path: Routes.myCalendar,
-        builder: (_, __) => const MyCalendar(),
-      ),
+      GoRoute(path: Routes.myDiary, builder: (_, __) => const MyDiary()),
+      GoRoute(path: Routes.myAnalysis, builder: (_, __) => const MyAnalysis()),
+      GoRoute(path: Routes.myCalendar, builder: (_, __) => const MyCalendar()),
     ],
   ),
 ];

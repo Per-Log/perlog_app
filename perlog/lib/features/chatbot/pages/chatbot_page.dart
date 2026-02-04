@@ -1,90 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/text_styles.dart';
 
-class Chatbot extends StatelessWidget {
+class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
 
   @override
+  State<Chatbot> createState() => _ChatbotState();
+}
+
+class _ChatbotState extends State<Chatbot> {
+  final TextEditingController _controller = TextEditingController();
+  bool _hasText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {
+        _hasText = _controller.text.isNotEmpty;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 17),
-          child: SizedBox(
-            width: 108,
-            height: 35,
-            child: Text(
-              'Per-Log',
-              style: AppTextStyles.headline28.copyWith(
-                color: AppColors.mainFont,
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 17),
-            child: Icon(
-              Icons.home_outlined,
-              size: 30.0,
-              color: AppColors.mainFont,
-            ),
-          ),
-        ],
-      ),
-      body: Column(
+    // Scaffold 대신 Material이나 Container를 사용하여 HomeShell의 body로 들어갑니다.
+    return Material(
+      color: AppColors.background,
+      child: Column(
         children: [
-          Spacer(),
-          TextField(
-            style: TextStyle(color: AppColors.mainFont, fontSize: 13.0),
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(12),
-              labelText: '오늘은 어떤 하루였나요?',
-              labelStyle: TextStyle(fontSize: 12.0, color: AppColors.subFont),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.subFont, width: 1.5),
-                borderRadius: BorderRadius.circular(30),
+          const Expanded(child: Center(child: Text('챗봇과 대화를 시작해보세요!'))),
+
+          // 텍스트 필드 영역 (좌우 30px, 하단 30px 공백)
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 30.0,
+              right: 30.0,
+              bottom: 30.0,
+            ),
+            child: TextField(
+              controller: _controller,
+              style: TextStyle(color: AppColors.mainFont, fontSize: 13.0),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                hintText: '오늘은 어떤 하루였나요?',
+                hintStyle: TextStyle(fontSize: 12.0, color: AppColors.subFont),
+
+                // 텍스트 유무에 따라 색상이 변하는 전송 화살표
+                suffixIcon: IconButton(
+                  onPressed: _hasText
+                      ? () {
+                          print("전송: ${_controller.text}");
+                          _controller.clear();
+                        }
+                      : null,
+                  icon: Icon(
+                    Icons.arrow_circle_right_outlined,
+                    color: _hasText
+                        ? AppColors.mainFont
+                        : AppColors.subFont.withOpacity(0.5),
+                  ),
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.subFont, width: 1.5),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.mainFont, width: 1.5),
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: AppColors.background,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround, // 아이콘들을 일정 간격으로 배분
-          children: [
-            _buildBottomItem(Icons.home, '홈'),
-            _buildBottomItem(Icons.book, '나의 일기'),
-            _buildBottomItem(Icons.settings, '설정'),
-          ],
-        ),
       ),
     );
   }
-}
-
-// 아이템 빌더 함수 (코드 중복 방지)
-Widget _buildBottomItem(IconData icon, String label) {
-  return InkWell(
-    // 클릭 효과를 위해 추가
-    onTap: () {},
-    child: Column(
-      mainAxisSize: MainAxisSize.min, // 중요: 컬럼 크기를 최소로
-      children: [
-        SizedBox(
-          width: 28,
-          height: 28,
-          child: Icon(icon, color: AppColors.mainFont),
-        ),
-        Text(
-          label,
-          style: AppTextStyles.body11.copyWith(color: AppColors.mainFont),
-        ),
-      ],
-    ),
-  );
 }
