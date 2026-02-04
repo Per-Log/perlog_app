@@ -3,6 +3,7 @@ import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
 
 /// PIN 번호 입력을 위한 공통 레이아웃 위젯
 class PinEntryContent extends StatefulWidget {
@@ -14,6 +15,7 @@ class PinEntryContent extends StatefulWidget {
     this.onBack, // 이전 버튼 동작
     this.showBackButton = true,
     this.pinLength = 4, // 입력받을 PIN의 길이
+    this.contentPadding,
   });
 
   final String title;
@@ -22,6 +24,7 @@ class PinEntryContent extends StatefulWidget {
   final VoidCallback? onBack;
   final bool showBackButton;
   final int pinLength;
+  final EdgeInsetsGeometry? contentPadding;
 
   // 위 내용 받아서 아래로 상속
   @override
@@ -54,7 +57,7 @@ class _PinEntryContentState extends State<PinEntryContent> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: AppSpacing.screen(context),
+          padding: widget.contentPadding ?? AppSpacing.screen(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -74,18 +77,16 @@ class _PinEntryContentState extends State<PinEntryContent> {
                       )
                     : const SizedBox.shrink(),
               ),
-              const SizedBox(height: 51),
+              SizedBox(height: AppSpacing.large(context)),
               Center(
                 child: Text(
                   widget.title,
-                  style: TextStyle(
+                  style: AppTextStyles.body20Medium.copyWith(
                     color: AppColors.mainFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 44),
+              SizedBox(height: AppSpacing.medium(context)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(widget.pinLength, (index) {
@@ -101,39 +102,24 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   );
                 }),
               ),
-              const SizedBox(height: 60),
+              SizedBox(height: AppSpacing.large(context)),
               _PinKeypad(
                 onDigitPressed: _addDigit,
                 onBackspacePressed: _removeDigit,
               ),
               const Spacer(),
-              SizedBox(
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: _isComplete ? widget.onSubmit : null,
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: _isComplete
-                          ? AppColors.mainFont
-                          : AppColors.subFont,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: Text(
-                    widget.buttonText,
-                    style: TextStyle(
-                      color: _isComplete
-                          ? AppColors.mainFont
-                          : AppColors.subFont,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+              Padding(
+                padding: AppSpacing.bottomButtonPadding(context),
+                child: BottomButton(
+                  text: widget.buttonText,
+                  enabled: _isComplete,
+                  onPressed: widget.onSubmit,
+                  backgroundColor: Colors.transparent,
+                  borderColor: AppColors.mainFont,
+                  textColor: AppColors.mainFont,
+                  textStyle: AppTextStyles.body20Medium,
                 ),
               ),
-              const SizedBox(height: 16),
             ],
           ),
         ),
