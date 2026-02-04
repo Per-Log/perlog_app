@@ -182,7 +182,7 @@ class _ChatbotState extends State<Chatbot> {
           maxWidth: MediaQuery.of(context).size.width * 0.7,
         ),
         decoration: BoxDecoration(
-          color: isMe ? AppColors.mainFont : Colors.white,
+          color: isMe ? AppColors.subBackground : AppColors.selectedBackground,
           border: isMe
               ? null
               : Border.all(color: AppColors.subFont.withOpacity(0.3)),
@@ -196,7 +196,7 @@ class _ChatbotState extends State<Chatbot> {
         child: Text(
           message,
           style: TextStyle(
-            color: isMe ? Colors.white : AppColors.mainFont,
+            color: isMe ? AppColors.mainFont : AppColors.mainFont,
             fontSize: 14,
           ),
         ),
