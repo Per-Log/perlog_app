@@ -32,7 +32,7 @@ class BottomButton extends StatelessWidget {
       width: double.infinity,
       height: height,
       child: AnimatedScale(
-        scale: enabled ? 1.0 : 0.97,
+        scale: 1.0,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         child: AnimatedOpacity(
