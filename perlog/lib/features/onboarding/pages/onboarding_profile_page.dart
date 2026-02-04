@@ -134,7 +134,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 },
               ),
 
-              SizedBox(height: AppSpacing.large(context)),
+              SizedBox(height: AppSpacing.medium(context)),
 
               /// 잠금 설정
               LockSettingSection(

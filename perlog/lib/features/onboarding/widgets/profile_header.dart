@@ -37,8 +37,8 @@ class ProfileHeader extends StatelessWidget {
             title,
             style: AppTextStyles.body20Medium.copyWith(color: color),
           ),
-          SizedBox(width: AppSpacing.small(context)),
-          HelpIcon(textColor: color, message: message),
+          // SizedBox(width: AppSpacing.small(context)),
+          // HelpIcon(textColor: color, message: message),
         ],
       ),
     );
