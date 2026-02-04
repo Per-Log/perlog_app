@@ -14,7 +14,7 @@ class PinCheckPage extends StatelessWidget {
       showBackButton: false,
       onSubmit: () {
         // TODO: PIN 검증 로직 연결
-        context.go(Routes.shell);
+        context.go(Routes.home);
       },
     );
   }
