@@ -15,7 +15,7 @@ class PinConfirmPage extends StatelessWidget {
         context.go('${Routes.onboarding}/${Routes.pinSet}');
       },
       onSubmit: () {
-        context.go(Routes.shell);
+        context.go('${Routes.onboarding}/${Routes.profile}');
       },
     );
   }

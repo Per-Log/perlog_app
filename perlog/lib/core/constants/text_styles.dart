@@ -49,6 +49,14 @@ class AppTextStyles {
     height: 1.4,
   );
 
+    /// Pretendard Variable Medium | 20pt
+  static const TextStyle body16Medium = TextStyle(
+    fontFamily: pretendard,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.4,
+  );
+
   /// Pretendard Variable Regular | 16pt
   static const TextStyle body16 = TextStyle(
     fontFamily: pretendardVariable,
