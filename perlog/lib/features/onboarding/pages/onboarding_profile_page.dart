@@ -162,7 +162,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 enabled: isCompleted,
                 onPressed: isCompleted
                     ? () {
-                        context.go(Routes.home);
+                        context.go(Routes.shell);
                       }
                     : null,
                 backgroundColor:
