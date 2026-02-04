@@ -159,12 +159,16 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
               /// 시작하기 버튼
               BottomButton(
                 text: '시작하기',
-                enabled: true,
-                onPressed: () {
-                  context.go(Routes.home);
-                },
-                backgroundColor: Colors.transparent,
-                borderColor: AppColors.mainFont,
+                enabled: isCompleted,
+                onPressed: isCompleted
+                    ? () {
+                        context.go(Routes.home);
+                      }
+                    : null,
+                backgroundColor:
+                    isCompleted ? AppColors.subBackground : AppColors.background,
+                borderColor: 
+                    isCompleted ? Colors.transparent : AppColors.subFont,
                 textColor: AppColors.mainFont,
                 textStyle: AppTextStyles.body20Medium,
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
 import '../constants/text_styles.dart';
 import '../constants/spacing.dart';
 
@@ -9,7 +8,6 @@ class BottomButton extends StatelessWidget {
   final bool enabled;
 
   final Color backgroundColor;
-  final Color disabledBackgroundColor;
   final Color borderColor;
   final Color textColor;
 
@@ -23,7 +21,6 @@ class BottomButton extends StatelessWidget {
     required this.backgroundColor,
     required this.borderColor,
     required this.textColor,
-    this.disabledBackgroundColor = AppColors.background,
     this.textStyle
   });
 
@@ -36,18 +33,20 @@ class BottomButton extends StatelessWidget {
       height: height,
       child: ElevatedButton(
         onPressed: enabled ? onPressed : null,
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: enabled ? backgroundColor : disabledBackgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(height / 2),
-            side: BorderSide(color: enabled ? borderColor : Colors.transparent),
+        style: ButtonStyle(
+          elevation: WidgetStateProperty.all(0),
+          backgroundColor: WidgetStateProperty.all(backgroundColor),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(height / 2),
+              side: BorderSide(color: borderColor),
+            ),
           ),
         ),
         child: Text(
           text,
           style: (textStyle ?? AppTextStyles.body18SemiBold).copyWith(
-            color: enabled ? textColor : AppColors.subFont,
+            color: textColor,
           ),
         ),
       ),
