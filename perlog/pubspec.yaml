@@ -68,6 +68,7 @@ flutter:
 
     - assets/icons/arrow_left_fill.svg
     - assets/icons/right_arrow_circle.png
+    - assets/icons/chatbot.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

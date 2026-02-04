@@ -40,11 +40,10 @@ class HomeShell extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () => context.go(Routes.chatbot),
-            icon: Icon(
-              Icons.wechat_outlined,
-              size: 30,
-              // 챗봇 활성화 시 색상 강조
-              color: AppColors.mainFont,
+            icon: Image.asset(
+              'assets/icons/chatbot.png',
+              width: 30,
+              height: 30,
             ),
           ),
           const SizedBox(width: 17),
