@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:go_router/go_router.dart';
+import 'package:perlog/core/router/routes.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -23,7 +25,9 @@ class HomePage extends StatelessWidget {
                 padding: AppSpacing.card,
                 child: BottomButton(
                   text: "임시 업로드용 버튼",
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go('${Routes.metadata}/${Routes.calendar}');
+                  },
                   enabled: true,
                   backgroundColor: AppColors.background,
                   borderColor: AppColors.mainFont,
