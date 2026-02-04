@@ -86,15 +86,15 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   ),
                 ),
               ),
-              SizedBox(height: AppSpacing.medium(context)),
+              SizedBox(height: AppSpacing.large(context)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(widget.pinLength, (index) {
                   final isFilled = index < _digits.length;
                   return Container(
-                    width: 16,
-                    height: 16,
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    width: 20,
+                    height: 20,
+                    margin: const EdgeInsets.symmetric(horizontal: 17),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isFilled ? AppColors.mainFont : AppColors.subFont,
@@ -108,9 +108,7 @@ class _PinEntryContentState extends State<PinEntryContent> {
                 onBackspacePressed: _removeDigit,
               ),
               const Spacer(),
-              Padding(
-                padding: AppSpacing.bottomButtonPadding(context),
-                child: BottomButton(
+              BottomButton(
                   text: widget.buttonText,
                   enabled: _isComplete,
                   onPressed: widget.onSubmit,
@@ -119,7 +117,6 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   textColor: AppColors.mainFont,
                   textStyle: AppTextStyles.body20Medium,
                 ),
-              ),
             ],
           ),
         ),
@@ -137,7 +134,7 @@ class _PinKeypad extends StatelessWidget {
   final ValueChanged<int> onDigitPressed;
   final VoidCallback onBackspacePressed;
 
-  static const double _keySize = 50;
+  static const double _keySize = 70;
   static const double _keyGap = 24;
 
   @override
@@ -160,8 +157,8 @@ class _PinKeypad extends StatelessWidget {
             _PinKey(
               icon: SvgPicture.asset(
                 'assets/icons/arrow_left_fill.svg',
-                width: 20,
-                height: 20,
+                width: 25,
+                height: 25,
                 fit: BoxFit.contain,
                 colorFilter: const ColorFilter.mode(
                   AppColors.mainFont,
@@ -224,7 +221,7 @@ class _PinKey extends StatelessWidget {
                 label ?? '',
                 style: AppTextStyles.body20Medium.copyWith(
                   color: AppColors.mainFont,
-                  fontSize: 27,
+                  fontSize: 30,
                 ),
               ),
       ),
