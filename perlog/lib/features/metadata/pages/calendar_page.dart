@@ -5,6 +5,7 @@ import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:perlog/features/metadata/widgets/back_button.dart';
 
 class Calendar extends StatelessWidget {
   const Calendar({super.key});
@@ -16,6 +17,7 @@ class Calendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final calendarCells = _buildCalendarCells();
+    final screenPadding = AppSpacing.screen(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -23,79 +25,49 @@ class Calendar extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.horizontal,
-                8,
-                AppSpacing.horizontal,
-                0,
-              ),
-              child: TextButton(
-                onPressed: () => context.pop(),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.mainFont,
-                  padding: EdgeInsets.zero,
-                ),
-                child: Text(
-                  '이전',
-                  style: AppTextStyles.body16Medium.copyWith(
-                    color: AppColors.mainFont,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.horizontal,
-                4,
-                AppSpacing.horizontal,
-                0,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    '원하는 날짜를 선택해주세요.',
-                    style: AppTextStyles.body16.copyWith(
-                      color: AppColors.mainFont,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Icon(
-                    Icons.help_outline,
-                    size: 16,
-                    color: AppColors.subFont,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.horizontal,
-                6,
-                AppSpacing.horizontal,
-                0,
-              ),
-              child: Text(
-                '2025년 01월 15일 목요일',
-                style: AppTextStyles.body20Medium.copyWith(
-                  color: AppColors.mainFont,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.horizontal,
+                padding: EdgeInsets.fromLTRB(
+                  screenPadding.left,
+                  screenPadding.top,
+                  screenPadding.right,
+                  0,
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const MetadataBackButton(),
+                    SizedBox(height: AppSpacing.section(context)),
+                    Row(
+                      children: [
+                        Text(
+                          '원하는 날짜를 선택해주세요.',
+                          style: AppTextStyles.body16.copyWith(
+                            color: AppColors.mainFont,
+                          ),
+                        ),
+                        SizedBox(width: AppSpacing.small(context) / 2),
+                        Icon(
+                          Icons.help_outline,
+                          size: 16,
+                          color: AppColors.subFont,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppSpacing.small(context)),
+                    Text(
+                      '2025년 01월 15일 목요일',
+                      style: AppTextStyles.body20Medium.copyWith(
+                        color: AppColors.mainFont,
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.medium(context)),
                     _MonthHeader(
                       monthLabel: '2025년 01월',
                       onPrevious: () {},
                       onNext: () {},
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: AppSpacing.small(context)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: _weekdayLabels
@@ -112,7 +84,7 @@ class Calendar extends StatelessWidget {
                           )
                           .toList(),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: AppSpacing.small(context)),
                     GridView.builder(
                       itemCount: calendarCells.length,
                       shrinkWrap: true,
@@ -120,8 +92,8 @@ class Calendar extends StatelessWidget {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 7,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 4,
+                        mainAxisSpacing: AppSpacing.cardPadding / 2,
+                        crossAxisSpacing: AppSpacing.cardPadding / 4,
                         childAspectRatio: 1.2,
                       ),
                       itemBuilder: (context, index) {
@@ -134,19 +106,6 @@ class Calendar extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-            ),
-            Padding(
-              padding: AppSpacing.bottomButtonPadding(context),
-              child: BottomButton(
-                text: '날짜 설정 완료',
-                onPressed: () {
-                  context.go('${Routes.metadata}/${Routes.imageUpload}');
-                },
-                enabled: true,
-                backgroundColor: AppColors.subBackground,
-                borderColor: AppColors.subBackground,
-                textColor: AppColors.mainFont,
               ),
             ),
           ],
@@ -185,7 +144,10 @@ class _MonthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.cardPadding / 2,
+        vertical: AppSpacing.cardPadding / 2,
+      ),
       decoration: BoxDecoration(
         color: AppColors.subBackground,
         borderRadius: BorderRadius.circular(999),
@@ -222,10 +184,7 @@ class _MonthHeader extends StatelessWidget {
 }
 
 class _CalendarDay extends StatelessWidget {
-  const _CalendarDay({
-    required this.day,
-    required this.isSelected,
-  });
+  const _CalendarDay({required this.day, required this.isSelected});
 
   final int? day;
   final bool isSelected;
@@ -249,9 +208,7 @@ class _CalendarDay extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           '$day',
-          style: AppTextStyles.body14.copyWith(
-            color: AppColors.mainFont,
-          ),
+          style: AppTextStyles.body14.copyWith(color: AppColors.mainFont),
         ),
       ),
     );
