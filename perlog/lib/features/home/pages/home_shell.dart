@@ -21,8 +21,8 @@ class HomeShell extends StatelessWidget {
 
     // 3. 현재 경로에 따른 타이틀 설정
     String appBarTitle = 'Per-Log';
-    if (isDiaryActive) appBarTitle = '나의 일기';
-    if (isSettingsActive) appBarTitle = '설정';
+    // if (isDiaryActive) appBarTitle = '나의 일기';
+    // if (isSettingsActive) appBarTitle = '설정';
 
     return Scaffold(
       backgroundColor: AppColors.background,
