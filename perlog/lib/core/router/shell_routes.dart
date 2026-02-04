@@ -17,7 +17,7 @@ final shellRoutes = [
         // 주의: Routes.home이 "/home"이라면 아래처럼 슬래시를 제거한 문자열을 직접 넣거나
         // Routes.dart에서 슬래시가 없는 상수를 별도로 만드시는 것을 추천합니다.
         path: '/home', // ShellRoute의 첫 번째 자식은 절대 경로(/)를 가질 수 있습니다.
-        builder: (_, __) => const HomePage(),
+        builder: (_, __) => const  HomePage(),
       ),
 
       /// [나의 일기 탭]
