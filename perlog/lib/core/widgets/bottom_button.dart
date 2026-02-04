@@ -31,22 +31,31 @@ class BottomButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: height,
-      child: ElevatedButton(
-        onPressed: enabled ? onPressed : null,
-        style: ButtonStyle(
-          elevation: WidgetStateProperty.all(0),
-          backgroundColor: WidgetStateProperty.all(backgroundColor),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(height / 2),
-              side: BorderSide(color: borderColor),
+      child: AnimatedScale(
+        scale: enabled ? 1.0 : 0.97,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        child: AnimatedOpacity(
+          opacity: 1.0,
+          duration: const Duration(milliseconds: 200),
+          child: ElevatedButton(
+            onPressed: enabled ? onPressed : null,
+            style: ButtonStyle(
+              elevation: WidgetStateProperty.all(0),
+              backgroundColor: WidgetStateProperty.all(backgroundColor),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(height / 2),
+                  side: BorderSide(color: borderColor),
+                ),
+              ),
             ),
-          ),
-        ),
-        child: Text(
-          text,
-          style: (textStyle ?? AppTextStyles.body18SemiBold).copyWith(
-            color: textColor,
+            child: Text(
+              text,
+              style: (textStyle ?? AppTextStyles.body18SemiBold).copyWith(
+                color: textColor,
+              ),
+            ),
           ),
         ),
       ),
