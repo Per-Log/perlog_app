@@ -8,8 +8,8 @@ import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:table_calendar/table_calendar.dart';
- 
-class Calendar extends StatefulWidget  {
+
+class Calendar extends StatefulWidget {
   const Calendar({super.key});
 
   @override
@@ -69,122 +69,131 @@ class _CalendarState extends State<Calendar> {
         child: Column(
           children: [
             Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(
-                    screenPadding.left,
-                    screenPadding.top,
-                    screenPadding.right,
-                    0,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MetadataBackButton(
-                        onTap: () => context.go(Routes.home)
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                  screenPadding.left,
+                  screenPadding.top,
+                  screenPadding.right,
+                  0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MetadataBackButton(onTap: () => context.go(Routes.home)),
+                    SizedBox(height: AppSpacing.large(context)),
+                    Text(
+                      '원하는 날짜를 선택해주세요.',
+                      style: AppTextStyles.body16.copyWith(
+                        color: AppColors.mainFont,
                       ),
-                      SizedBox(height: AppSpacing.large(context)),
-                      Text(
-                        '원하는 날짜를 선택해주세요.',
-                        style: AppTextStyles.body16.copyWith(
-                          color: AppColors.mainFont,
-                        ),
+                    ),
+                    SizedBox(height: AppSpacing.medium(context)),
+                    Text(
+                      selectedLabel,
+                      style: AppTextStyles.body20Medium.copyWith(
+                        color: AppColors.mainFont,
                       ),
-                      SizedBox(height: AppSpacing.medium(context)),
-                      Text(
-                        selectedLabel,
-                        style: AppTextStyles.body20Medium.copyWith(
-                          color: AppColors.mainFont,
-                        ),
+                    ),
+                    SizedBox(height: AppSpacing.section(context)),
+                    _MonthHeader(
+                      monthLabel: monthLabel,
+                      onPrevious: _handlePreviousMonth,
+                      onNext: _handleNextMonth,
+                    ),
+                    SizedBox(height: AppSpacing.small(context)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      SizedBox(height: AppSpacing.section(context)),
-                      _MonthHeader(
-                        monthLabel: monthLabel,
-                        onPrevious: _handlePreviousMonth,
-                        onNext: _handleNextMonth,
+                      decoration: BoxDecoration(
+                        color: AppColors.calendar,
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                      SizedBox(height: AppSpacing.small(context)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: _weekdayLabels
-                            .map(
-                              (label) => Expanded(
-                                child: Text(
-                                  label,
-                                  textAlign: TextAlign.center,
-                                  style: AppTextStyles.body14.copyWith(
-                                    color: AppColors.subFont,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: _weekdayLabels
+                                .map(
+                                  (label) => Expanded(
+                                    child: Text(
+                                      label,
+                                      textAlign: TextAlign.center,
+                                      style: AppTextStyles.body12.copyWith(
+                                        color: AppColors.subFont,
+                                      ),
+                                    ),
                                   ),
+                                )
+                                .toList(),
+                          ),
+                          SizedBox(height: AppSpacing.small(context)),
+                          TableCalendar(
+                            locale: 'ko_KR',
+                            firstDay: _firstDay,
+                            lastDay: _lastDay,
+                            focusedDay: _focusedDay,
+                            selectedDayPredicate: (day) {
+                              return isSameDay(_selectedDay, day);
+                            },
+                            onDaySelected: _handleDaySelected,
+                            onPageChanged: _handlePageChanged,
+                            onCalendarCreated: (controller) {
+                              _pageController = controller;
+                            },
+                            headerVisible: false,
+                            daysOfWeekVisible: false,
+                            calendarFormat: CalendarFormat.month,
+                            availableGestures:
+                                AvailableGestures.horizontalSwipe,
+                            rowHeight: 42,
+                            calendarStyle: CalendarStyle(
+                              defaultTextStyle: AppTextStyles.body12.copyWith(
+                                color: Color(0xFFB28A5F),
+                                fontWeight: FontWeight.w600
+                              ),
+                              weekendTextStyle: AppTextStyles.body12.copyWith(
+                                color: Color(0xFFB28A5F),
+                                fontWeight: FontWeight.w600
+                              ),
+                              todayTextStyle: AppTextStyles.body12.copyWith(
+                                color: Color(0xFFB28A5F),
+                                fontWeight: FontWeight.w600
+                              ),
+                              todayDecoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              selectedDecoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.background,
+                                border: Border.all(
+                                  color: AppColors.mainFont,
+                                  width: 1.5,
                                 ),
                               ),
-                            )
-                            .toList(),
-                      ),
-                      SizedBox(height: AppSpacing.small(context)),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.cardPadding / 2,
-                          vertical: AppSpacing.cardPadding / 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.subBackground,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: TableCalendar(
-                          locale: 'ko_KR',
-                          firstDay: _firstDay,
-                          lastDay: _lastDay,
-                          focusedDay: _focusedDay,
-                          selectedDayPredicate: (day) {
-                            return isSameDay(_selectedDay, day);
-                          },
-                          onDaySelected: _handleDaySelected,
-                          onPageChanged: _handlePageChanged,
-                          onCalendarCreated: (controller) {
-                            _pageController = controller;
-                          },
-                          headerVisible: false,
-                          daysOfWeekVisible: false,
-                          calendarFormat: CalendarFormat.month,
-                          availableGestures: AvailableGestures.horizontalSwipe,
-                          rowHeight: 42,
-                          calendarStyle: CalendarStyle(
-                            defaultTextStyle: AppTextStyles.body14.copyWith(
-                              color: AppColors.mainFont,
-                            ),
-                            weekendTextStyle: AppTextStyles.body14.copyWith(
-                              color: AppColors.mainFont,
-                            ),
-                            todayTextStyle: AppTextStyles.body14.copyWith(
-                              color: AppColors.mainFont,
-                            ),
-                            todayDecoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.transparent,
-                            ),
-                            selectedDecoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
+                              selectedTextStyle: AppTextStyles.body12.copyWith(
                                 color: AppColors.mainFont,
-                                width: 1.5,
+                                fontWeight: FontWeight.w600
+                              ),
+                              cellMargin: const EdgeInsets.symmetric(
+                                vertical: 4,
                               ),
                             ),
-                            selectedTextStyle: AppTextStyles.body14.copyWith(
-                              color: AppColors.mainFont,
+                            daysOfWeekStyle: DaysOfWeekStyle(
+                              dowTextFormatter: (date, _) {
+                                return _weekdayLabels[date.weekday - 1];
+                              },
                             ),
-                            cellMargin: const EdgeInsets.symmetric(vertical: 4),
                           ),
-                          daysOfWeekStyle: DaysOfWeekStyle(
-                            dowTextFormatter: (date, _) {
-                              return _weekdayLabels[date.weekday - 1];
-                            },
-                          ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
+            ),
+            Padding(
               padding: AppSpacing.bottomButtonPadding(context),
               child: BottomButton(
                 text: '날짜 설정 완료',
@@ -220,10 +229,7 @@ class _MonthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 15,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
         color: AppColors.subBackground,
         borderRadius: BorderRadius.circular(999),
@@ -241,9 +247,7 @@ class _MonthHeader extends StatelessWidget {
           ),
           Text(
             monthLabel,
-            style: AppTextStyles.body18.copyWith(
-              color: AppColors.mainFont,
-            ),
+            style: AppTextStyles.body18.copyWith(color: AppColors.mainFont),
           ),
           IconButton(
             onPressed: onNext,

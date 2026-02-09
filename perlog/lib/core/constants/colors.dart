@@ -8,4 +8,5 @@ class AppColors {
 
   static const mainFont = Color(0xFFB35C00);
   static const subFont = Color(0xFFD6C2A0);
+  static const calendar = Color(0xFFFFFFFF);
 }
