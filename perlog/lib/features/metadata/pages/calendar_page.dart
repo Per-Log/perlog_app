@@ -1,124 +1,204 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/metadata/widgets/back_button.dart';
+import 'package:table_calendar/table_calendar.dart';
  
-class Calendar extends StatelessWidget {
+class Calendar extends StatefulWidget  {
   const Calendar({super.key});
 
-  static const int _selectedDay = 15;
-  static const int _startOffset = 2; // 2025-01-01 is Wednesday with Monday as start.
-  static const int _daysInMonth = 31;
+  @override
+  State<Calendar> createState() => _CalendarState();
+}
+
+class _CalendarState extends State<Calendar> {
+  static final DateTime _firstDay = DateTime(2000, 1, 1);
+  static final DateTime _lastDay = DateTime(2100, 12, 31);
+
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay = DateTime.now();
+  PageController? _pageController;
+
+  void _handleDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+      });
+    }
+  }
+
+  void _handlePageChanged(DateTime focusedDay) {
+    setState(() {
+      _focusedDay = focusedDay;
+    });
+  }
+
+  void _handlePreviousMonth() {
+    _pageController?.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _handleNextMonth() {
+    _pageController?.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final calendarCells = _buildCalendarCells();
     final screenPadding = AppSpacing.screen(context);
+    final selectedDay = _selectedDay ?? _focusedDay;
+    final selectedLabel = DateFormat(
+      'yyyy년 MM월 dd일 EEEE',
+      'ko_KR',
+    ).format(selectedDay);
+    final monthLabel = DateFormat('yyyy년 MM월', 'ko_KR').format(_focusedDay);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  screenPadding.left,
-                  screenPadding.top,
-                  screenPadding.right,
-                  0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const MetadataBackButton(),
-                    SizedBox(height: AppSpacing.large(context)),
-                    Row(
-                      children: [
-                        Text(
-                          '원하는 날짜를 선택해주세요.',
-                          style: AppTextStyles.body16.copyWith(
-                            color: AppColors.mainFont,
-                          ),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    screenPadding.left,
+                    screenPadding.top,
+                    screenPadding.right,
+                    0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const MetadataBackButton(),
+                      SizedBox(height: AppSpacing.large(context)),
+                      Text(
+                        '원하는 날짜를 선택해주세요.',
+                        style: AppTextStyles.body16.copyWith(
+                          color: AppColors.mainFont,
                         ),
-                      ],
-                    ),
-                    SizedBox(height: AppSpacing.medium(context)),
-                    Text(
-                      '2025년 01월 15일 목요일',
-                      style: AppTextStyles.body20Medium.copyWith(
-                        color: AppColors.mainFont,
                       ),
-                    ),
-                    SizedBox(height: AppSpacing.medium(context)),
-                    _MonthHeader(
-                      monthLabel: '2025년 01월',
-                      onPrevious: () {},
-                      onNext: () {},
-                    ),
-                    SizedBox(height: AppSpacing.small(context)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: _weekdayLabels
-                          .map(
-                            (label) => Expanded(
-                              child: Text(
-                                label,
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.body14.copyWith(
-                                  color: AppColors.subFont,
+                      SizedBox(height: AppSpacing.medium(context)),
+                      Text(
+                        selectedLabel,
+                        style: AppTextStyles.body20Medium.copyWith(
+                          color: AppColors.mainFont,
+                        ),
+                      ),
+                      SizedBox(height: AppSpacing.medium(context)),
+                      _MonthHeader(
+                        monthLabel: monthLabel,
+                        onPrevious: _handlePreviousMonth,
+                        onNext: _handleNextMonth,
+                      ),
+                      SizedBox(height: AppSpacing.small(context)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: _weekdayLabels
+                            .map(
+                              (label) => Expanded(
+                                child: Text(
+                                  label,
+                                  textAlign: TextAlign.center,
+                                  style: AppTextStyles.body14.copyWith(
+                                    color: AppColors.subFont,
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                    SizedBox(height: AppSpacing.small(context)),
-                    GridView.builder(
-                      itemCount: calendarCells.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 7,
-                        mainAxisSpacing: AppSpacing.cardPadding / 2,
-                        crossAxisSpacing: AppSpacing.cardPadding / 4,
-                        childAspectRatio: 1.2,
+                            )
+                            .toList(),
                       ),
-                      itemBuilder: (context, index) {
-                        final day = calendarCells[index];
-                        return _CalendarDay(
-                          day: day,
-                          isSelected: day == _selectedDay,
-                        );
-                      },
-                    ),
-                  ],
+                      SizedBox(height: AppSpacing.small(context)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.cardPadding / 2,
+                          vertical: AppSpacing.cardPadding / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.subBackground,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: TableCalendar(
+                          locale: 'ko_KR',
+                          firstDay: _firstDay,
+                          lastDay: _lastDay,
+                          focusedDay: _focusedDay,
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
+                          onDaySelected: _handleDaySelected,
+                          onPageChanged: _handlePageChanged,
+                          onCalendarCreated: (controller) {
+                            _pageController = controller;
+                          },
+                          headerVisible: false,
+                          daysOfWeekVisible: false,
+                          calendarFormat: CalendarFormat.month,
+                          availableGestures: AvailableGestures.horizontalSwipe,
+                          rowHeight: 42,
+                          calendarStyle: CalendarStyle(
+                            defaultTextStyle: AppTextStyles.body14.copyWith(
+                              color: AppColors.mainFont,
+                            ),
+                            weekendTextStyle: AppTextStyles.body14.copyWith(
+                              color: AppColors.mainFont,
+                            ),
+                            todayTextStyle: AppTextStyles.body14.copyWith(
+                              color: AppColors.mainFont,
+                            ),
+                            todayDecoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.transparent,
+                            ),
+                            selectedDecoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.mainFont,
+                                width: 1.5,
+                              ),
+                            ),
+                            selectedTextStyle: AppTextStyles.body14.copyWith(
+                              color: AppColors.mainFont,
+                            ),
+                            cellMargin: const EdgeInsets.symmetric(vertical: 4),
+                          ),
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                            dowTextFormatter: (date, _) {
+                              return _weekdayLabels[date.weekday - 1];
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+              Padding(
+              padding: AppSpacing.bottomButtonPadding(context),
+              child: BottomButton(
+                text: '날짜 설정 완료',
+                onPressed: () {
+                  context.go('${Routes.metadata}/${Routes.imageUpload}');
+                },
+                enabled: true,
+                backgroundColor: AppColors.subBackground,
+                borderColor: AppColors.subBackground,
+                textColor: AppColors.mainFont,
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  List<int?> _buildCalendarCells() {
-    final cells = <int?>[
-      ...List<int?>.filled(_startOffset, null),
-      ...List<int?>.generate(_daysInMonth, (index) => index + 1),
-    ];
-
-    while (cells.length % 7 != 0) {
-      cells.add(null);
-    }
-
-    return cells;
   }
 }
 
@@ -172,38 +252,6 @@ class _MonthHeader extends StatelessWidget {
             constraints: const BoxConstraints(),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CalendarDay extends StatelessWidget {
-  const _CalendarDay({required this.day, required this.isSelected});
-
-  final int? day;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    if (day == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Center(
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: isSelected
-              ? Border.all(color: AppColors.mainFont, width: 1.5)
-              : null,
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          '$day',
-          style: AppTextStyles.body14.copyWith(color: AppColors.mainFont),
-        ),
       ),
     );
   }
