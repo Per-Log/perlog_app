@@ -79,7 +79,9 @@ class _CalendarState extends State<Calendar> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const MetadataBackButton(),
+                      MetadataBackButton(
+                        onTap: () => context.go(Routes.home)
+                      ),
                       SizedBox(height: AppSpacing.large(context)),
                       Text(
                         '원하는 날짜를 선택해주세요.',
