@@ -28,7 +28,7 @@ class _CalendarState extends State<Calendar> {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
+        _focusedDay = selectedDay;
       });
     }
   }
@@ -100,11 +100,11 @@ class _CalendarState extends State<Calendar> {
                       onPrevious: _handlePreviousMonth,
                       onNext: _handleNextMonth,
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.medium(context)),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
-                        vertical: 10,
+                        vertical: 16,
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.calendar,
@@ -147,11 +147,15 @@ class _CalendarState extends State<Calendar> {
                             calendarFormat: CalendarFormat.month,
                             availableGestures:
                                 AvailableGestures.horizontalSwipe,
-                            rowHeight: 42,
+                            rowHeight: 62,
                             calendarStyle: CalendarStyle(
                               defaultTextStyle: AppTextStyles.body12.copyWith(
                                 color: Color(0xFFB28A5F),
                                 fontWeight: FontWeight.w600
+                              ),
+                              outsideTextStyle: AppTextStyles.body12.copyWith(
+                                color: Color(0xFFc2c0be),
+                                fontWeight: FontWeight.w600,
                               ),
                               weekendTextStyle: AppTextStyles.body12.copyWith(
                                 color: Color(0xFFB28A5F),
@@ -177,12 +181,38 @@ class _CalendarState extends State<Calendar> {
                                 fontWeight: FontWeight.w600
                               ),
                               cellMargin: const EdgeInsets.symmetric(
-                                vertical: 4,
+                                vertical: 6,
                               ),
                             ),
                             daysOfWeekStyle: DaysOfWeekStyle(
                               dowTextFormatter: (date, _) {
                                 return _weekdayLabels[date.weekday - 1];
+                              },
+                            ),
+                            calendarBuilders: CalendarBuilders(
+                              selectedBuilder: (context, day, focusedDay) {
+                                return Center(
+                                  child: Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.background,
+                                      border: Border.all(
+                                        color: AppColors.mainFont,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      '${day.day}',
+                                      style: AppTextStyles.body12.copyWith(
+                                        color: AppColors.mainFont,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                           ),
@@ -213,7 +243,7 @@ class _CalendarState extends State<Calendar> {
   }
 }
 
-const _weekdayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const _weekdayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 class _MonthHeader extends StatelessWidget {
   const _MonthHeader({
@@ -229,7 +259,7 @@ class _MonthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
       decoration: BoxDecoration(
         color: AppColors.subBackground,
         borderRadius: BorderRadius.circular(999),
@@ -247,7 +277,10 @@ class _MonthHeader extends StatelessWidget {
           ),
           Text(
             monthLabel,
-            style: AppTextStyles.body18.copyWith(color: AppColors.mainFont),
+            style: AppTextStyles.body18.copyWith(
+              color: AppColors.mainFont,
+              fontSize: 20,
+            ),
           ),
           IconButton(
             onPressed: onNext,
