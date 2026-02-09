@@ -96,7 +96,7 @@ class _CalendarState extends State<Calendar> {
                           color: AppColors.mainFont,
                         ),
                       ),
-                      SizedBox(height: AppSpacing.medium(context)),
+                      SizedBox(height: AppSpacing.section(context)),
                       _MonthHeader(
                         monthLabel: monthLabel,
                         onPrevious: _handlePreviousMonth,
@@ -221,8 +221,8 @@ class _MonthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.cardPadding / 2,
-        vertical: AppSpacing.cardPadding / 2,
+        horizontal: 15,
+        vertical: 15,
       ),
       decoration: BoxDecoration(
         color: AppColors.subBackground,
@@ -234,21 +234,21 @@ class _MonthHeader extends StatelessWidget {
           IconButton(
             onPressed: onPrevious,
             icon: const Icon(Icons.chevron_left),
-            color: AppColors.mainFont,
+            color: AppColors.subFont,
             splashRadius: 18,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
           Text(
             monthLabel,
-            style: AppTextStyles.body16Medium.copyWith(
+            style: AppTextStyles.body18.copyWith(
               color: AppColors.mainFont,
             ),
           ),
           IconButton(
             onPressed: onNext,
             icon: const Icon(Icons.chevron_right),
-            color: AppColors.mainFont,
+            color: AppColors.subFont,
             splashRadius: 18,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
