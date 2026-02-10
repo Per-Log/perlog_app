@@ -7,6 +7,7 @@ import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/metadata/widgets/back_button.dart';
+import 'package:perlog/features/metadata/widgets/calendar_warning_popup.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
@@ -24,7 +25,33 @@ class _CalendarState extends State<Calendar> {
   DateTime? _selectedDay = DateTime.now();
   PageController? _pageController;
 
+  static const String _pastLimitMessage = '최대 3일 전까지 선택할 수 있어요!\n다시 선택해주세요.';
+  static const String _futureMessage = '그 날의 일기는 아직 쓰지 못해요!\n다시 선택해주세요.';
+
+  DateTime get _today {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
   void _handleDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    final normalizedSelected = DateTime(
+      selectedDay.year,
+      selectedDay.month,
+      selectedDay.day,
+    );
+    final today = _today;
+    final daysFromToday = normalizedSelected.difference(today).inDays;
+
+    if (daysFromToday > 0) {
+      _showDateWarning(_futureMessage);
+      return;
+    }
+
+    if (daysFromToday < -3) {
+      _showDateWarning(_pastLimitMessage);
+      return;
+    }
+
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
@@ -51,6 +78,29 @@ class _CalendarState extends State<Calendar> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
+  }
+
+  Future<void> _showDateWarning(String message) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return CalendarWarningPopup(
+          message: message,
+          onClose: () => Navigator.of(dialogContext).pop(),
+        );
+      },
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    final today = _today;
+    setState(() {
+      _selectedDay = today;
+      _focusedDay = today;
+    });
   }
 
   @override
