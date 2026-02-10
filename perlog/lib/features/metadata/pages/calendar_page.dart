@@ -138,14 +138,14 @@ class _CalendarState extends State<Calendar> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     MetadataBackButton(onTap: () => context.go(Routes.home)),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.medium(context)),
                     Text(
                       '원하는 날짜를 선택해주세요.',
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),
                     ),
-                    SizedBox(height: AppSpacing.medium(context)),
+                    SizedBox(height: AppSpacing.small(context)),
                     Text(
                       selectedLabel,
                       style: AppTextStyles.body20Medium.copyWith(
@@ -282,7 +282,12 @@ class _CalendarState extends State<Calendar> {
               ),
             ),
             Padding(
-              padding: AppSpacing.bottomButtonPadding(context),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.horizontal,
+                0,
+                AppSpacing.horizontal,
+                screenPadding.bottom,
+              ),              
               child: BottomButton(
                 text: '날짜 설정 완료',
                 onPressed: () {
@@ -322,7 +327,7 @@ class _MonthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       decoration: BoxDecoration(
         color: AppColors.subBackground,
         borderRadius: BorderRadius.circular(999),
