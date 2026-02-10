@@ -25,8 +25,9 @@ class _CalendarState extends State<Calendar> {
   DateTime? _selectedDay = DateTime.now();
   PageController? _pageController;
 
-  static const String _pastLimitMessage = '최대 3일 전까지 선택할 수 있어요!\n다시 선택해주세요.';
-  static const String _futureMessage = '그 날의 일기는 아직 쓰지 못해요!\n다시 선택해주세요.';
+  static const String _pastLimitPrimaryMessage = '최대 3일 전까지 선택 가능해요!';
+  static const String _futurePrimaryMessage = '그 날의 일기는 아직 쓰지 못해요!';
+  static const String _retryMessage = '다시 선택해주세요.';
 
   DateTime get _today {
     final now = DateTime.now();
@@ -43,12 +44,12 @@ class _CalendarState extends State<Calendar> {
     final daysFromToday = normalizedSelected.difference(today).inDays;
 
     if (daysFromToday > 0) {
-      _showDateWarning(_futureMessage);
+      _showDateWarning(_futurePrimaryMessage);
       return;
     }
 
     if (daysFromToday < -3) {
-      _showDateWarning(_pastLimitMessage);
+      _showDateWarning(_pastLimitPrimaryMessage);
       return;
     }
 
@@ -80,13 +81,15 @@ class _CalendarState extends State<Calendar> {
     );
   }
 
-  Future<void> _showDateWarning(String message) async {
+  Future<void> _showDateWarning(String primaryMessage) async {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return CalendarWarningPopup(
-          message: message,
+          primaryMessage: primaryMessage,
+          secondaryMessage: _retryMessage,
+          messageSpacing: 18,
           onClose: () => Navigator.of(dialogContext).pop(),
         );
       },
@@ -101,6 +104,11 @@ class _CalendarState extends State<Calendar> {
       _selectedDay = today;
       _focusedDay = today;
     });
+  }
+
+  double _calendarRowHeight(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+    return (h * 0.075).clamp(52.0, 68.0);
   }
 
   @override
@@ -130,7 +138,7 @@ class _CalendarState extends State<Calendar> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     MetadataBackButton(onTap: () => context.go(Routes.home)),
-                    SizedBox(height: AppSpacing.large(context)),
+                    SizedBox(height: AppSpacing.small(context)),
                     Text(
                       '원하는 날짜를 선택해주세요.',
                       style: AppTextStyles.body16.copyWith(
@@ -144,7 +152,7 @@ class _CalendarState extends State<Calendar> {
                         color: AppColors.mainFont,
                       ),
                     ),
-                    SizedBox(height: AppSpacing.section(context)),
+                    SizedBox(height: AppSpacing.medium(context)),
                     _MonthHeader(
                       monthLabel: monthLabel,
                       onPrevious: _handlePreviousMonth,
@@ -197,7 +205,7 @@ class _CalendarState extends State<Calendar> {
                             calendarFormat: CalendarFormat.month,
                             availableGestures:
                                 AvailableGestures.horizontalSwipe,
-                            rowHeight: 62,
+                            rowHeight: _calendarRowHeight(context),
                             calendarStyle: CalendarStyle(
                               defaultTextStyle: AppTextStyles.body12.copyWith(
                                 color: Color(0xFFB28A5F),
@@ -306,10 +314,15 @@ class _MonthHeader extends StatelessWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
+  double _calendarRowHeight(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+    return (h * 0.075).clamp(52.0, 68.0);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
       decoration: BoxDecoration(
         color: AppColors.subBackground,
         borderRadius: BorderRadius.circular(999),

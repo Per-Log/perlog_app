@@ -5,11 +5,15 @@ import 'package:perlog/core/constants/text_styles.dart';
 class CalendarWarningPopup extends StatelessWidget {
   const CalendarWarningPopup({
     super.key,
-    required this.message,
+    required this.primaryMessage,
     required this.onClose,
+    this.secondaryMessage = '다시 선택해주세요.',
+    this.messageSpacing = 15,
   });
 
-  final String message;
+  final String primaryMessage;
+  final String secondaryMessage;
+  final double messageSpacing;
   final VoidCallback onClose;
 
   @override
@@ -43,12 +47,20 @@ class CalendarWarningPopup extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              message,
+              primaryMessage,
               textAlign: TextAlign.center,
               style: AppTextStyles.body20Medium.copyWith(
                 color: AppColors.mainFont,
-                height: 1.6,
-                fontSize: 20,
+                fontSize: 18,
+              ),
+            ),
+            SizedBox(height: messageSpacing),
+            Text(
+              secondaryMessage,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body20Medium.copyWith(
+                color: AppColors.mainFont,
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 24),
@@ -68,7 +80,7 @@ class CalendarWarningPopup extends StatelessWidget {
                   '닫기',
                   style: AppTextStyles.body20Medium.copyWith(
                     color: AppColors.mainFont,
-                    fontSize: 24,
+                    fontSize: 18,
                   ),
                 ),
               ),
