@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/router/app_router.dart';
+
 import 'package:intl/date_symbol_data_local.dart'; // 패키지 임포트 확인
 
 // 1. main 함수를 async로 변경
@@ -15,6 +16,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
