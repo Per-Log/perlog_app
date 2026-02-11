@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   go_router: ^13.2.0
   flutter_svg: ^2.0.10
+  intl: ^0.19.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -77,7 +79,12 @@ flutter:
     - assets/icons/filled_diary.png
     - assets/icons/line_setting.png
     - assets/icons/filled_setting.png
-
+    - assets/icons/filled_bubble.png
+    - assets/icons/line_bubble.png
+    - assets/icons/cactus_1.png
+    - assets/icons/cactus_2.png
+    - assets/icons/perfume_frame.png
+    - assets/icons/perfume_color.svg
 
 
 

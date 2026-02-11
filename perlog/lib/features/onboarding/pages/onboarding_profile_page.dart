@@ -159,14 +159,12 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
               BottomButton(
                 text: '시작하기',
                 enabled: isCompleted,
-                onPressed: isCompleted
-                    ? () {
-                        context.go(Routes.shell);
-                      }
-                    : null,
+                onPressed: () {
+                  context.go(Routes.shell);
+                },
                 backgroundColor:
                     isCompleted ? AppColors.subBackground : AppColors.background,
-                borderColor: 
+                borderColor:
                     isCompleted ? Colors.transparent : AppColors.subFont,
                 textColor: AppColors.mainFont,
                 textStyle: AppTextStyles.body20Medium,
