@@ -66,6 +66,8 @@ flutter:
   assets:
     - assets/images/kakao_login.png
 
+    - assets/icons/perfume.png
+
     - assets/icons/camera.png
     - assets/icons/filled_check.png
 
