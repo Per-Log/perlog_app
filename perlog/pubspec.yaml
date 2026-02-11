@@ -33,9 +33,12 @@ dependencies:
   go_router: ^13.2.0
   flutter_svg: ^2.0.10
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  intl: ^0.20.2
+  table_calendar: ^3.1.3
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +65,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/kakao_login.png
+    - assets/images/perfume_shelf.png
     
     - assets/icons/camera.png
     - assets/icons/filled_check.png
@@ -75,6 +79,13 @@ flutter:
     - assets/icons/filled_diary.png
     - assets/icons/line_setting.png
     - assets/icons/filled_setting.png
+    - assets/icons/filled_bubble.png
+    - assets/icons/line_bubble.png
+    - assets/icons/cactus_1.png
+    - assets/icons/cactus_2.png
+    - assets/icons/perfume_frame.png
+    - assets/icons/perfume_color.svg
+    - assets/icons/perfume.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
