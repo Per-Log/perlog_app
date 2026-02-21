@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 
 class DiaryAnalysis extends StatelessWidget {
-  const DiaryAnalysis({super.key});
+  const DiaryAnalysis({super.key, this.args});
+  final MetadataImageData? args;
 
   @override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
+    final selectedDate = args?.selectedDate ?? DateTime.now();
+    final formattedDate = DateFormat(
+      'yyyy년 MM월 dd일 EEEE,',
+      'ko_KR',
+    ).format(selectedDate);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -31,7 +39,7 @@ class DiaryAnalysis extends StatelessWidget {
                   children: [
                     // 이전 버튼은 기획상 없으므로 바로 텍스트 시작
                     Text(
-                      '2025년 1월 15일 목요일,',
+                      formattedDate,
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),

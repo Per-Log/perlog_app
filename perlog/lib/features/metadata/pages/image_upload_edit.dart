@@ -15,7 +15,8 @@ import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/services/metadata_image_storage_service.dart';
 
 class ImageUploadEdit extends StatefulWidget {
-  const ImageUploadEdit({super.key});
+  const ImageUploadEdit({super.key, this.args});
+  final MetadataImageData? args;
 
   @override
   State<ImageUploadEdit> createState() => _ImageUploadEditState();
@@ -47,7 +48,9 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
 
       context.go(
         '${Routes.metadata}/${Routes.imageUploadFinished}',
+        // 💡 기존 날짜에 새로운 이미지 URL을 덮어씌움
         extra: MetadataImageData(
+          selectedDate: widget.args?.selectedDate ?? DateTime.now(),
           publicUrl: uploadedImageUrl,
           width: imageSize.$1,
           height: imageSize.$2,
@@ -72,7 +75,7 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
     return (image.width.toDouble(), image.height.toDouble());
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
 
@@ -99,9 +102,8 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
                   children: [
                     // 이전 버튼 위 여백 제거
                     MetadataBackButton(
-                      onTap: () => context.go(
-                        '${Routes.metadata}/${Routes.imageUpload}',
-                      ),
+                      onTap: () =>
+                          context.go('${Routes.metadata}/${Routes.calendar}'),
                     ),
                     SizedBox(height: AppSpacing.large(context)),
                     Text(
@@ -123,37 +125,44 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
                       ),
                     ),
                     SizedBox(height: AppSpacing.vertical),
-                    Center(
-                      child: SizedBox(
-                        width: 393,
-                        height: 498,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.subBackground,
-                            elevation: 0.0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: _isUploading ? null : _pickAndUploadImage,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _isUploading ? '업로드 중...' : '이미지 업로드',
-                                style: AppTextStyles.body20Medium.copyWith(
-                                  color: AppColors.subFont,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Center(
+                          child: SizedBox(
+                            width: 393,
+                            height: double.infinity, // 세로만 꽉 채우기
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.subBackground,
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                _isUploading
-                                    ? Icons.sync
-                                    : Icons.camera_alt_outlined,
-                                size: 28,
-                                color: AppColors.subFont,
+                              onPressed: _isUploading
+                                  ? null
+                                  : _pickAndUploadImage,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _isUploading ? '업로드 중...' : '이미지 업로드',
+                                    style: AppTextStyles.body20Medium.copyWith(
+                                      color: AppColors.subFont,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    _isUploading
+                                        ? Icons.sync
+                                        : Icons.camera_alt_outlined,
+                                    size: 28,
+                                    color: AppColors.subFont,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),

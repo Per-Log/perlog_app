@@ -160,7 +160,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 text: '시작하기',
                 enabled: isCompleted,
                 onPressed: () {
-                  context.go(Routes.shell);
+                  context.go(Routes.home);
                 },
                 backgroundColor:
                     isCompleted ? AppColors.subBackground : AppColors.background,

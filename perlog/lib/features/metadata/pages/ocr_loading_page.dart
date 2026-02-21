@@ -12,9 +12,8 @@ import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class OCRLoading extends StatefulWidget {
-  const OCRLoading({super.key, this.imageData});
-
-  final MetadataImageData? imageData;
+  const OCRLoading({super.key, this.args});
+  final MetadataImageData? args; // 변수명 일치
 
   @override
   State<OCRLoading> createState() => _OCRLoadingState();
@@ -49,10 +48,16 @@ class _OCRLoadingState extends State<OCRLoading> {
   void _handleNavigation() {
     if (_isCleanImage) {
       // 성공 시: 일기 분석 페이지로 자동 이동
-      context.go('${Routes.metadata}/${Routes.diaryAnalysis}');
+      context.go(
+        '${Routes.metadata}/${Routes.diaryAnalysis}',
+        extra: widget.args,
+      );
     } else {
       // 실패 시: 이미지 편집(수정) 페이지로 자동 이동
-      context.go('${Routes.metadata}/${Routes.imageUploadEdit}');
+      context.go(
+        '${Routes.metadata}/${Routes.imageUploadEdit}',
+        extra: widget.args,
+      );
     }
   }
 
@@ -62,7 +67,7 @@ class _OCRLoadingState extends State<OCRLoading> {
     super.dispose();
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
 
@@ -85,9 +90,8 @@ class _OCRLoadingState extends State<OCRLoading> {
                   children: [
                     // 이전 버튼 위 여백 제거
                     MetadataBackButton(
-                      onTap: () => context.go(
-                        '${Routes.metadata}/${Routes.imageUpload}',
-                      ),
+                      onTap: () =>
+                          context.go('${Routes.metadata}/${Routes.calendar}'),
                     ),
                     SizedBox(height: AppSpacing.large(context)),
                     Text(
@@ -104,39 +108,41 @@ class _OCRLoadingState extends State<OCRLoading> {
                     ),
                     SizedBox(height: AppSpacing.vertical),
                     // 이미지 영역
-                    Center(
-                      child: SizedBox(
-                        width: 393,
-                        height: 498,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.subBackground,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: widget.imageData == null
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '이미지 분석 중...',
-                                      style: AppTextStyles.body20Medium
-                                          .copyWith(color: AppColors.subFont),
+                    Expanded(
+                      child: Center(
+                        child: SizedBox(
+                          width: 393,
+                          height: double.infinity, // 세로만 꽉 채우기
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.subBackground,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: widget.args?.publicUrl == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '이미지 분석 중...',
+                                        style: AppTextStyles.body20Medium
+                                            .copyWith(color: AppColors.subFont),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Icon(
+                                        Icons.camera_alt_outlined,
+                                        size: 28,
+                                        color: AppColors.subFont,
+                                      ),
+                                    ],
+                                  )
+                                : UploadPreview(
+                                    imageProvider: NetworkImage(
+                                      widget.args!.publicUrl!,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 28,
-                                      color: AppColors.subFont,
-                                    ),
-                                  ],
-                                )
-                              : UploadPreview(
-                                  imageProvider: NetworkImage(
-                                    widget.imageData!.publicUrl,
+                                    imageWidth: widget.args!.width!,
+                                    imageHeight: widget.args!.height!,
                                   ),
-                                  imageWidth: widget.imageData!.width,
-                                  imageHeight: widget.imageData!.height,
-                                ),
+                          ),
                         ),
                       ),
                     ),
@@ -162,6 +168,7 @@ class _OCRLoadingState extends State<OCRLoading> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 24), // 💡 하단 화면 엣지와의 여백 추가
                   ],
                 ),
               ),

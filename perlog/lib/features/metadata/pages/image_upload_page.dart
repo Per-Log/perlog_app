@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // 💡 DateFormat을 위해 추가
 import 'package:image_picker/image_picker.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
@@ -15,7 +16,8 @@ import 'package:perlog/features/metadata/services/metadata_image_storage_service
 import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class ImageUpload extends StatefulWidget {
-  const ImageUpload({super.key});
+  const ImageUpload({super.key, this.args});
+  final MetadataImageData? args;
 
   @override
   State<ImageUpload> createState() => _ImageUploadState();
@@ -58,7 +60,9 @@ class _ImageUploadState extends State<ImageUpload> {
 
       context.go(
         '${Routes.metadata}/${Routes.imageUploadFinished}',
+        // 💡 날짜 데이터를 유지하면서 이미지 데이터 병합
         extra: MetadataImageData(
+          selectedDate: widget.args?.selectedDate ?? DateTime.now(),
           publicUrl: uploadedImageUrl,
           width: imageSize.$1,
           height: imageSize.$2,
@@ -82,11 +86,16 @@ class _ImageUploadState extends State<ImageUpload> {
     final image = frame.image;
     return (image.width.toDouble(), image.height.toDouble());
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
     final isImageUploaded = _uploadedImageUrl != null;
+    final selectedDate = widget.args?.selectedDate ?? DateTime.now();
+    final formattedDate = DateFormat(
+      'yyyy년 MM월 dd일 EEEE',
+      'ko_KR',
+    ).format(selectedDate);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -119,7 +128,7 @@ class _ImageUploadState extends State<ImageUpload> {
                     ),
                     SizedBox(height: AppSpacing.small(context)),
                     Text(
-                      '오늘은 2025년 1월 15일 목요일이에요.',
+                      formattedDate,
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),
@@ -127,55 +136,69 @@ class _ImageUploadState extends State<ImageUpload> {
                     SizedBox(height: AppSpacing.vertical),
 
                     // 이미지 업로드 버튼
-                    Center(
-                      child: SizedBox(
-                        width: 393,
-                        height: 498,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isImageUploaded
-                                ? const Color(0xFFE5D9C5)
-                                : AppColors.subBackground,
-                            elevation: 0.0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            side: isImageUploaded
-                                ? BorderSide(
-                                    color: AppColors.mainFont,
-                                    width: 1,
-                                  )
-                                : BorderSide.none,
-                            padding: EdgeInsets.zero,
-                          ),
-                          onPressed: _isUploading ? null : _handleImageUpload,
-                          child:
-                              _previewBytes != null &&
-                                  _imageWidth != null &&
-                                  _imageHeight != null
-                              ? UploadPreview(
-                                  imageProvider: MemoryImage(_previewBytes!),
-                                  imageWidth: _imageWidth!,
-                                  imageHeight: _imageHeight!,
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      _isUploading
-                                          ? Icons.sync
-                                          : Icons.camera_alt_outlined,
-                                      size: 48,
-                                      color: AppColors.subFont,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      _isUploading ? '업로드 중...' : '이미지 업로드',
-                                      style: AppTextStyles.body20Medium
-                                          .copyWith(color: AppColors.subFont),
-                                    ),
-                                  ],
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 35,
+                        ), // 하단 버튼과의 여백
+                        child: Center(
+                          child: SizedBox(
+                            width: 393,
+                            height: double.infinity, // 세로만 꽉 채우기
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isImageUploaded
+                                    ? const Color(0xFFE5D9C5)
+                                    : AppColors.subBackground,
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
+                                side: isImageUploaded
+                                    ? BorderSide(
+                                        color: AppColors.mainFont,
+                                        width: 1,
+                                      )
+                                    : BorderSide.none,
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: _isUploading
+                                  ? null
+                                  : _handleImageUpload,
+                              child:
+                                  _previewBytes != null &&
+                                      _imageWidth != null &&
+                                      _imageHeight != null
+                                  ? UploadPreview(
+                                      imageProvider: MemoryImage(
+                                        _previewBytes!,
+                                      ),
+                                      imageWidth: _imageWidth!,
+                                      imageHeight: _imageHeight!,
+                                    )
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          _isUploading
+                                              ? Icons.sync
+                                              : Icons.camera_alt_outlined,
+                                          size: 48,
+                                          color: AppColors.subFont,
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          _isUploading ? '업로드 중...' : '이미지 업로드',
+                                          style: AppTextStyles.body20Medium
+                                              .copyWith(
+                                                color: AppColors.subFont,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -196,10 +219,12 @@ class _ImageUploadState extends State<ImageUpload> {
                 onPressed: isImageUploaded
                     ? () => context.go(
                         '${Routes.metadata}/${Routes.ocrLoading}',
+                        // 💡 날짜 데이터 유지
                         extra: MetadataImageData(
-                          publicUrl: _uploadedImageUrl!,
-                          width: _imageWidth!,
-                          height: _imageHeight!,
+                          selectedDate: selectedDate,
+                          publicUrl: _uploadedImageUrl,
+                          width: _imageWidth,
+                          height: _imageHeight,
                         ),
                       )
                     : () {},

@@ -1,11 +1,13 @@
 class MetadataImageData {
   const MetadataImageData({
-    required this.publicUrl,
-    required this.width,
-    required this.height,
+    required this.selectedDate,
+    this.publicUrl,
+    this.width,
+    this.height,
   });
 
-  final String publicUrl;
-  final double width;
-  final double height;
+  final DateTime selectedDate;
+  final String? publicUrl;
+  final double? width;
+  final double? height;
 }

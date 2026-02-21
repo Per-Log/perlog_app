@@ -14,24 +14,30 @@ final metadataRoutes = [
     },
     routes: [
       GoRoute(path: Routes.calendar, builder: (_, __) => const Calendar()),
-      GoRoute(path: Routes.imageUpload, builder: (_, __) => const ImageUpload()),
+      GoRoute(
+        path: Routes.imageUpload,
+        builder: (_, state) =>
+            ImageUpload(args: state.extra as MetadataImageData?),
+      ),
       GoRoute(
         path: Routes.imageUploadFinished,
         builder: (_, state) =>
-            ImageUploadFinished(imageData: state.extra as MetadataImageData?),
+            ImageUploadFinished(args: state.extra as MetadataImageData?),
       ),
       GoRoute(
         path: Routes.imageUploadEdit,
-        builder: (_, __) => const ImageUploadEdit(),
+        builder: (_, state) =>
+            ImageUploadEdit(args: state.extra as MetadataImageData?),
       ),
       GoRoute(
         path: Routes.ocrLoading,
         builder: (_, state) =>
-            OCRLoading(imageData: state.extra as MetadataImageData?),
+            OCRLoading(args: state.extra as MetadataImageData?),
       ),
       GoRoute(
         path: Routes.diaryAnalysis,
-        builder: (_, __) => const DiaryAnalysis(),
+        builder: (_, state) =>
+            DiaryAnalysis(args: state.extra as MetadataImageData?),
       ),
     ],
   ),

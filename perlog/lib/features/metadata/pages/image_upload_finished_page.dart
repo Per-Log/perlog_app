@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
@@ -11,14 +12,18 @@ import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class ImageUploadFinished extends StatelessWidget {
-  const ImageUploadFinished({super.key, this.imageData});
+  const ImageUploadFinished({super.key, this.args});
+  final MetadataImageData? args; // 이름 변경
 
-  final MetadataImageData? imageData;
-
-@override
+  @override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
-    final hasImage = imageData != null;
+    final hasImage = args?.publicUrl != null;
+    final selectedDate = args?.selectedDate ?? DateTime.now();
+    final formattedDate = DateFormat(
+      'yyyy년 MM월 dd일 EEEE',
+      'ko_KR',
+    ).format(selectedDate);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -39,9 +44,8 @@ class ImageUploadFinished extends StatelessWidget {
                   children: [
                     // 이전 버튼 위 여백 제거
                     MetadataBackButton(
-                      onTap: () => context.go(
-                        '${Routes.metadata}/${Routes.imageUpload}',
-                      ),
+                      onTap: () =>
+                          context.go('${Routes.metadata}/${Routes.calendar}'),
                     ),
                     SizedBox(height: AppSpacing.large(context)),
                     Text(
@@ -52,44 +56,52 @@ class ImageUploadFinished extends StatelessWidget {
                     ),
                     SizedBox(height: AppSpacing.small(context)),
                     Text(
-                      '오늘은 2025년 1월 15일 목요일이에요.',
+                      formattedDate,
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),
                     ),
                     SizedBox(height: AppSpacing.vertical),
-                    Center(
-                      child: SizedBox(
-                        width: 393,
-                        height: 498,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.subBackground,
-                            elevation: 0.0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          onPressed: () {},
-                          child: !hasImage
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '이미지 없음',
-                                      style: AppTextStyles.body20Medium
-                                          .copyWith(color: AppColors.subFont),
-                                    ),
-                                  ],
-                                )
-                              : UploadPreview(
-                                  imageProvider: NetworkImage(
-                                    imageData!.publicUrl,
-                                  ),
-                                  imageWidth: imageData!.width,
-                                  imageHeight: imageData!.height,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 35),
+                        child: Center(
+                          child: SizedBox(
+                            width: 393,
+                            height: double.infinity, // 세로만 꽉 채우기
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.subBackground,
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: () {},
+                              child: !hasImage
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '이미지 없음',
+                                          style: AppTextStyles.body20Medium
+                                              .copyWith(
+                                                color: AppColors.subFont,
+                                              ),
+                                        ),
+                                      ],
+                                    )
+                                  : UploadPreview(
+                                      imageProvider: NetworkImage(
+                                        args!.publicUrl!,
+                                      ),
+                                      imageWidth: args!.width!,
+                                      imageHeight: args!.height!,
+                                    ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -110,7 +122,7 @@ class ImageUploadFinished extends StatelessWidget {
                 onPressed: hasImage
                     ? () => context.go(
                         '${Routes.metadata}/${Routes.ocrLoading}',
-                        extra: imageData,
+                        extra: args,
                       )
                     : () {},
                 enabled: hasImage,
