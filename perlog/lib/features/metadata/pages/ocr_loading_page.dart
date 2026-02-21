@@ -24,7 +24,7 @@ class _OCRLoadingState extends State<OCRLoading> {
   double _progressValue = 0.0;
   Timer? _timer;
   // 50:50 확률로 성공/실패 시뮬레이션 (나중에 API 결과로 대체)
-  final bool _isCleanImage = Random().nextDouble() < 0.7;
+  final bool _isCleanImage = Random().nextDouble() < 0.5;
 
   @override
   void initState() {
