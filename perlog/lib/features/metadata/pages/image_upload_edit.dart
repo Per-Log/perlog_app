@@ -72,9 +72,13 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
     return (image.width.toDouble(), image.height.toDouble());
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
+
+    // 활성화 여부에 따른 상태값 (업로드가 완료되었거나 필요한 조건을 충족했을 때 true로 변경하시면 됩니다)
+    // 현재 코드 기획상 에딧 페이지에서는 버튼이 항상 비활성 상태이지만, 추후 활성화될 경우를 대비해 변수로 뺐습니다.
+    final isButtonEnabled = false;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -93,21 +97,19 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: AppSpacing.vertical * 2),
+                    // 이전 버튼 위 여백 제거
                     MetadataBackButton(
                       onTap: () => context.go(
                         '${Routes.metadata}/${Routes.imageUpload}',
                       ),
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.large(context)),
                     Text(
                       '글씨가 잘 보이지 않아요.',
                       style: AppTextStyles.body22.copyWith(
                         color: AppColors.mainFont,
                       ),
                     ),
-
-                    ///SizedBox(height: AppSpacing.small(context)),
                     Text(
                       '조금 더 밝은 곳에서,',
                       style: AppTextStyles.body16.copyWith(
@@ -156,17 +158,31 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 27),
-                    BottomButton(
-                      text: '다음으로',
-                      onPressed: () {},
-                      enabled: false,
-                      backgroundColor: AppColors.background,
-                      borderColor: AppColors.subFont,
-                      textColor: AppColors.subFont,
-                    ),
                   ],
                 ),
+              ),
+            ),
+            // 하단 버튼 분리 및 캘린더 색상 정책 반영
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.horizontal,
+                0,
+                AppSpacing.horizontal,
+                screenPadding.bottom,
+              ),
+              child: BottomButton(
+                text: '다음으로',
+                onPressed: () {},
+                enabled: isButtonEnabled,
+                backgroundColor: isButtonEnabled
+                    ? AppColors.subBackground
+                    : AppColors.background,
+                borderColor: isButtonEnabled
+                    ? AppColors.subBackground
+                    : AppColors.subFont,
+                textColor: isButtonEnabled
+                    ? AppColors.mainFont
+                    : AppColors.subFont,
               ),
             ),
           ],

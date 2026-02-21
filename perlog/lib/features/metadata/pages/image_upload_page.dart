@@ -105,12 +105,12 @@ class _ImageUploadState extends State<ImageUpload> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: AppSpacing.vertical * 2),
+                    // 기존에 있던 SizedBox(height: AppSpacing.vertical * 2) 제거됨
                     MetadataBackButton(
                       onTap: () =>
                           context.go('${Routes.metadata}/${Routes.calendar}'),
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.large(context)),
                     Text(
                       '퍼로그님, 오늘 하루는 어떠셨나요?',
                       style: AppTextStyles.body22.copyWith(
@@ -126,7 +126,7 @@ class _ImageUploadState extends State<ImageUpload> {
                     ),
                     SizedBox(height: AppSpacing.vertical),
 
-                    // 2. 이미지 업로드 버튼 (이미지가 업로드되면 UI가 변경됨)
+                    // 이미지 업로드 버튼
                     Center(
                       child: SizedBox(
                         width: 393,
@@ -134,13 +134,12 @@ class _ImageUploadState extends State<ImageUpload> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: isImageUploaded
-                                ? const Color(0xFFE5D9C5) // 업로드 후 조금 더 진한 색
+                                ? const Color(0xFFE5D9C5)
                                 : AppColors.subBackground,
                             elevation: 0.0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            // 업로드 후 테마에 맞춰 테두리 추가 가능
                             side: isImageUploaded
                                 ? BorderSide(
                                     color: AppColors.mainFont,
@@ -180,32 +179,40 @@ class _ImageUploadState extends State<ImageUpload> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 27),
-
-                    // 3. 하단 버튼 (이미지 업로드 여부에 따라 색상 변경)
-                    BottomButton(
-                      text: '다음으로',
-                      onPressed: isImageUploaded
-                          ? () => context.go(
-                              '${Routes.metadata}/${Routes.ocrLoading}',
-                              extra: MetadataImageData(
-                                publicUrl: _uploadedImageUrl!,
-                                width: _imageWidth!,
-                                height: _imageHeight!,
-                              ),
-                            )
-                          : () {},
-                      enabled: isImageUploaded,
-                      backgroundColor: AppColors.background,
-                      textColor: isImageUploaded
-                          ? AppColors.mainFont
-                          : AppColors.subFont,
-                      borderColor: isImageUploaded
-                          ? AppColors.mainFont
-                          : AppColors.subFont,
-                    ),
                   ],
                 ),
+              ),
+            ),
+            // Expanded 바깥으로 분리된 BottomButton (캘린더 페이지와 동일한 위치/색상)
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.horizontal,
+                0,
+                AppSpacing.horizontal,
+                screenPadding.bottom,
+              ),
+              child: BottomButton(
+                text: '다음으로',
+                onPressed: isImageUploaded
+                    ? () => context.go(
+                        '${Routes.metadata}/${Routes.ocrLoading}',
+                        extra: MetadataImageData(
+                          publicUrl: _uploadedImageUrl!,
+                          width: _imageWidth!,
+                          height: _imageHeight!,
+                        ),
+                      )
+                    : () {},
+                enabled: isImageUploaded,
+                backgroundColor: isImageUploaded
+                    ? AppColors.subBackground
+                    : AppColors.background,
+                borderColor: isImageUploaded
+                    ? AppColors.subBackground
+                    : AppColors.subFont,
+                textColor: isImageUploaded
+                    ? AppColors.mainFont
+                    : AppColors.subFont,
               ),
             ),
           ],

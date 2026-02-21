@@ -62,7 +62,7 @@ class _OCRLoadingState extends State<OCRLoading> {
     super.dispose();
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
 
@@ -76,20 +76,20 @@ class _OCRLoadingState extends State<OCRLoading> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   screenPadding.left,
-                  screenPadding.top,
+                  screenPadding.top, // 상단 여백 달력과 동일
                   screenPadding.right,
                   0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: AppSpacing.vertical * 2),
+                    // 이전 버튼 위 여백 제거
                     MetadataBackButton(
                       onTap: () => context.go(
                         '${Routes.metadata}/${Routes.imageUpload}',
                       ),
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.large(context)),
                     Text(
                       '일기를 읽고 있어요.',
                       style: AppTextStyles.body22.copyWith(
@@ -119,9 +119,8 @@ class _OCRLoadingState extends State<OCRLoading> {
                                   children: [
                                     Text(
                                       '이미지 분석 중...',
-                                      style: AppTextStyles.body20Medium.copyWith(
-                                        color: AppColors.subFont,
-                                      ),
+                                      style: AppTextStyles.body20Medium
+                                          .copyWith(color: AppColors.subFont),
                                     ),
                                     const SizedBox(height: 8),
                                     Icon(
@@ -132,17 +131,17 @@ class _OCRLoadingState extends State<OCRLoading> {
                                   ],
                                 )
                               : UploadPreview(
-                                  imageProvider:
-                                      NetworkImage(widget.imageData!.publicUrl),
+                                  imageProvider: NetworkImage(
+                                    widget.imageData!.publicUrl,
+                                  ),
                                   imageWidth: widget.imageData!.width,
                                   imageHeight: widget.imageData!.height,
                                 ),
-                              
                         ),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    // 프로그레스 바 (이미지 하단 배치)
+                    // 프로그레스 바
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(

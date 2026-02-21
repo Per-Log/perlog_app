@@ -15,9 +15,10 @@ class ImageUploadFinished extends StatelessWidget {
 
   final MetadataImageData? imageData;
 
-  @override
+@override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
+    final hasImage = imageData != null;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -36,13 +37,13 @@ class ImageUploadFinished extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: AppSpacing.vertical * 2),
+                    // 이전 버튼 위 여백 제거
                     MetadataBackButton(
                       onTap: () => context.go(
                         '${Routes.metadata}/${Routes.imageUpload}',
                       ),
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+                    SizedBox(height: AppSpacing.large(context)),
                     Text(
                       '퍼로그님, 오늘 하루는 어떠셨나요?',
                       style: AppTextStyles.body22.copyWith(
@@ -68,50 +69,58 @@ class ImageUploadFinished extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: EdgeInsets.zero,                            
+                            padding: EdgeInsets.zero,
                           ),
                           onPressed: () {},
-                          child: imageData == null
+                          child: !hasImage
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       '이미지 없음',
-                                      style: AppTextStyles.body20Medium.copyWith(
-                                        color: AppColors.subFont,
-                                      ),
+                                      style: AppTextStyles.body20Medium
+                                          .copyWith(color: AppColors.subFont),
                                     ),
                                   ],
                                 )
                               : UploadPreview(
-                                  imageProvider: NetworkImage(imageData!.publicUrl),
+                                  imageProvider: NetworkImage(
+                                    imageData!.publicUrl,
+                                  ),
                                   imageWidth: imageData!.width,
                                   imageHeight: imageData!.height,
                                 ),
-                              
                         ),
                       ),
                     ),
-                    SizedBox(height: 27),
-                    BottomButton(
-                      text: '다음으로',
-                      onPressed: imageData == null
-                          ? () {}
-                          : () => context.go(
-                              '${Routes.metadata}/${Routes.ocrLoading}',
-                              extra: imageData,
-                            ),
-                      enabled: imageData != null,
-                      backgroundColor: AppColors.background,
-                      borderColor: imageData == null
-                          ? AppColors.subFont
-                          : AppColors.mainFont,
-                      textColor: imageData == null
-                          ? AppColors.subFont
-                          : AppColors.mainFont,
-                    ),
                   ],
                 ),
+              ),
+            ),
+            // 하단 버튼 분리 및 색상 통일
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.horizontal,
+                0,
+                AppSpacing.horizontal,
+                screenPadding.bottom,
+              ),
+              child: BottomButton(
+                text: '다음으로',
+                onPressed: hasImage
+                    ? () => context.go(
+                        '${Routes.metadata}/${Routes.ocrLoading}',
+                        extra: imageData,
+                      )
+                    : () {},
+                enabled: hasImage,
+                backgroundColor: hasImage
+                    ? AppColors.subBackground
+                    : AppColors.background,
+                borderColor: hasImage
+                    ? AppColors.subBackground
+                    : AppColors.subFont,
+                textColor: hasImage ? AppColors.mainFont : AppColors.subFont,
               ),
             ),
           ],
