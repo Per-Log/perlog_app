@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/router/routes.dart';
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/pages/pages.dart';
 
 final metadataRoutes = [
@@ -16,7 +17,8 @@ final metadataRoutes = [
       GoRoute(path: Routes.imageUpload, builder: (_, __) => const ImageUpload()),
       GoRoute(
         path: Routes.imageUploadFinished,
-        builder: (_, __) => const ImageUploadFinished(),
+        builder: (_, state) =>
+            ImageUploadFinished(imageData: state.extra as MetadataImageData?),
       ),
       GoRoute(
         path: Routes.imageUploadEdit,
@@ -24,7 +26,8 @@ final metadataRoutes = [
       ),
       GoRoute(
         path: Routes.ocrLoading,
-        builder: (_, __) => const OCRLoading(),
+        builder: (_, state) =>
+            OCRLoading(imageData: state.extra as MetadataImageData?),
       ),
       GoRoute(
         path: Routes.diaryAnalysis,

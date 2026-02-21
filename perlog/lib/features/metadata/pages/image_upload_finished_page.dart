@@ -7,9 +7,13 @@ import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
+import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class ImageUploadFinished extends StatelessWidget {
-  const ImageUploadFinished({super.key});
+  const ImageUploadFinished({super.key, this.imageData});
+
+  final MetadataImageData? imageData;
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +39,8 @@ class ImageUploadFinished extends StatelessWidget {
                     SizedBox(height: AppSpacing.vertical * 2),
                     MetadataBackButton(
                       onTap: () => context.go(
-                        Routes.imageUpload,
-                      ), // GoRouter를 사용한다면 context.pop() 추천
+                        '${Routes.metadata}/${Routes.imageUpload}',
+                      ),
                     ),
                     SizedBox(height: AppSpacing.small(context)),
                     Text(
@@ -62,41 +66,49 @@ class ImageUploadFinished extends StatelessWidget {
                             backgroundColor: AppColors.subBackground,
                             elevation: 0.0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.all(
-                                Radius.circular(10),
-                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
+                            padding: EdgeInsets.zero,                            
                           ),
                           onPressed: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '이미지 업로드 된 상태 보이기',
-                                style: AppTextStyles.body20Medium.copyWith(
-                                  color: AppColors.subFont,
+                          child: imageData == null
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '이미지 없음',
+                                      style: AppTextStyles.body20Medium.copyWith(
+                                        color: AppColors.subFont,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : UploadPreview(
+                                  imageProvider: NetworkImage(imageData!.publicUrl),
+                                  imageWidth: imageData!.width,
+                                  imageHeight: imageData!.height,
                                 ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.camera_alt_outlined,
-                                size: 28,
-                                color: AppColors.subFont,
-                              ),
-                            ],
-                          ),
+                              
                         ),
                       ),
                     ),
                     SizedBox(height: 27),
                     BottomButton(
                       text: '다음으로',
-                      onPressed: () =>
-                          context.go('${Routes.metadata}/${Routes.ocrLoading}'),
-                      enabled: true,
+                      onPressed: imageData == null
+                          ? () {}
+                          : () => context.go(
+                              '${Routes.metadata}/${Routes.ocrLoading}',
+                              extra: imageData,
+                            ),
+                      enabled: imageData != null,
                       backgroundColor: AppColors.background,
-                      borderColor: AppColors.mainFont,
-                      textColor: AppColors.mainFont,
+                      borderColor: imageData == null
+                          ? AppColors.subFont
+                          : AppColors.mainFont,
+                      textColor: imageData == null
+                          ? AppColors.subFont
+                          : AppColors.mainFont,
                     ),
                   ],
                 ),

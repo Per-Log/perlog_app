@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
@@ -5,11 +8,13 @@ import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:async';
-import 'dart:math'; // 성공/실패 시뮬레이션을 위해 추가
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
+import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class OCRLoading extends StatefulWidget {
-  const OCRLoading({super.key});
+  const OCRLoading({super.key, this.imageData});
+
+  final MetadataImageData? imageData;
 
   @override
   State<OCRLoading> createState() => _OCRLoadingState();
@@ -18,8 +23,8 @@ class OCRLoading extends StatefulWidget {
 class _OCRLoadingState extends State<OCRLoading> {
   double _progressValue = 0.0;
   Timer? _timer;
-  final bool _isSuccess = Random()
-      .nextBool(); // 50:50 확률로 성공/실패 시뮬레이션 (나중에 API 결과로 대체)
+  // 50:50 확률로 성공/실패 시뮬레이션 (나중에 API 결과로 대체)
+  final bool _isCleanImage = Random().nextDouble() < 0.7;
 
   @override
   void initState() {
@@ -42,7 +47,7 @@ class _OCRLoadingState extends State<OCRLoading> {
 
   // 성공/실패 여부에 따른 자동 페이지 이동 처리
   void _handleNavigation() {
-    if (_isSuccess) {
+    if (_isCleanImage) {
       // 성공 시: 일기 분석 페이지로 자동 이동
       context.go('${Routes.metadata}/${Routes.diaryAnalysis}');
     } else {
@@ -108,23 +113,31 @@ class _OCRLoadingState extends State<OCRLoading> {
                             color: AppColors.subBackground,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '이미지 분석 중...',
-                                style: AppTextStyles.body20Medium.copyWith(
-                                  color: AppColors.subFont,
+                          child: widget.imageData == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '이미지 분석 중...',
+                                      style: AppTextStyles.body20Medium.copyWith(
+                                        color: AppColors.subFont,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 28,
+                                      color: AppColors.subFont,
+                                    ),
+                                  ],
+                                )
+                              : UploadPreview(
+                                  imageProvider:
+                                      NetworkImage(widget.imageData!.publicUrl),
+                                  imageWidth: widget.imageData!.width,
+                                  imageHeight: widget.imageData!.height,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Icon(
-                                Icons.camera_alt_outlined,
-                                size: 28,
-                                color: AppColors.subFont,
-                              ),
-                            ],
-                          ),
+                              
                         ),
                       ),
                     ),
