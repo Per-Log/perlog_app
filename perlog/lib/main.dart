@@ -5,19 +5,17 @@ import 'core/router/app_router.dart';
 
 
 // 1. main 함수를 async로 변경
-Future<void> main() async {
-  // 2. 비동기 처리를 위해 플러터 엔진 초기화 보장
+void main() async {  // 2. 비동기 처리를 위해 플러터 엔진 초기화 보장
   WidgetsFlutterBinding.ensureInitialized();
 
   // 3. 한국어(ko_KR) 날짜 데이터가 로드될 때까지 기다림
   await initializeDateFormatting('ko_KR', null);
-  
-  const supabaseUrl = String.fromEnvironment('https://uzpfybxalroyynjhbfis.supabase.co');
-  const supabaseAnonKey = String.fromEnvironment('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6cGZ5YnhhbHJveXluamhiZmlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDM0OTYsImV4cCI6MjA4NzIxOTQ5Nn0.Sx4tsDJe30WNQz-u4QLoI4nwRrRtpJp9WDLVbQEK12s');
-  if (supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty) {
-    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-  }
 
+  await Supabase.initialize(
+    url: const String.fromEnvironment('https://uzpfybxalroyynjhbfis.supabase.co'),
+    anonKey: const String.fromEnvironment('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6cGZ5YnhhbHJveXluamhiZmlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDM0OTYsImV4cCI6MjA4NzIxOTQ5Nn0.Sx4tsDJe30WNQz-u4QLoI4nwRrRtpJp9WDLVbQEK12s'),
+  );
+  
   runApp(const MyApp());
 }
 
