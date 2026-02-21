@@ -12,8 +12,8 @@ Future<void> main() async {
   // 3. 한국어(ko_KR) 날짜 데이터가 로드될 때까지 기다림
   await initializeDateFormatting('ko_KR', null);
   
-  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  const supabaseUrl = String.fromEnvironment('https://uzpfybxalroyynjhbfis.supabase.co');
+  const supabaseAnonKey = String.fromEnvironment('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6cGZ5YnhhbHJveXluamhiZmlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDM0OTYsImV4cCI6MjA4NzIxOTQ5Nn0.Sx4tsDJe30WNQz-u4QLoI4nwRrRtpJp9WDLVbQEK12s');
   if (supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty) {
     await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
   }
