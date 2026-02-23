@@ -41,3 +41,5 @@ doc/api/
 ./perlog/linux/*
 ./perlog/windows/*
 ./perlog/macos/*s
+
+.env

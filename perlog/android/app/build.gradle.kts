@@ -1,3 +1,15 @@
+import java.util.Properties
+
+// 1. java. 을 빼고 바로 Properties()를 호출합니다.
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { 
+        localProperties.load(it) 
+    }
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -8,7 +20,7 @@ plugins {
 android {
     namespace = "com.example.perlog"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -28,6 +40,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders += mapOf(
+            "kakaoNativeKey" to (localProperties.getProperty("kakao.native.key") ?: "")
+        )
     }
 
     buildTypes {

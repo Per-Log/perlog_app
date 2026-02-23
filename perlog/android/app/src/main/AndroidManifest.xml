@@ -3,6 +3,19 @@
         android:label="perlog"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- 카카오 로그인 커스텀 URL 스킴 설정 -->
+        <activity 
+            android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
+            android:exported="true">
+            <intent-filter android:label="flutter_web_auth">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- 카카오 로그인 Redirect URI -->
+                <data android:scheme="kakao$kakaoNativeKey" android:host="oauth"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -41,5 +54,6 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <package android:name="com.kakao.talk" />
     </queries>
 </manifest>
