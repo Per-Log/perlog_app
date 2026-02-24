@@ -1,18 +1,16 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // 💡 DateFormat을 위해 추가
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart'; 
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
+import 'package:perlog/core/utils/image_uploader.dart';
 import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
-import 'package:perlog/features/metadata/services/metadata_image_storage_service.dart';
 import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class ImageUpload extends StatefulWidget {
@@ -24,8 +22,7 @@ class ImageUpload extends StatefulWidget {
 }
 
 class _ImageUploadState extends State<ImageUpload> {
-  final _picker = ImagePicker();
-  final _storageService = MetadataImageStorageService();
+  final _imageUploader = ImageUploader();
 
   bool _isUploading = false;
   String? _uploadedImageUrl;
@@ -34,58 +31,31 @@ class _ImageUploadState extends State<ImageUpload> {
   double? _imageHeight;
 
   Future<void> _handleImageUpload() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (!mounted || pickedFile == null) {
-      return;
-    }
+  if (!mounted) return;
 
-    setState(() => _isUploading = true);
+  setState(() => _isUploading = true);
 
-    final bytes = await pickedFile.readAsBytes();
-    final imageSize = await _readImageSize(bytes);
+  try {
+    final result = await _imageUploader.pickAndUploadImage();
 
-    try {
-      final uploadedImageUrl = await _storageService.uploadImageBytes(
-        bytes: bytes,
-        originalFileName: pickedFile.name,
-      );
-      if (!mounted) return;
+    if (!mounted || result == null) return;
 
-      setState(() {
-        _previewBytes = bytes;
-        _imageWidth = imageSize.$1;
-        _imageHeight = imageSize.$2;
-        _uploadedImageUrl = uploadedImageUrl;
-      });
-
-      context.go(
-        '${Routes.metadata}/${Routes.imageUploadFinished}',
-        // 💡 날짜 데이터를 유지하면서 이미지 데이터 병합
-        extra: MetadataImageData(
-          selectedDate: widget.args?.selectedDate ?? DateTime.now(),
-          publicUrl: uploadedImageUrl,
-          width: imageSize.$1,
-          height: imageSize.$2,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      if (mounted) {
-        setState(() => _isUploading = false);
-      }
+    setState(() {
+      _previewBytes = result.bytes;
+      _imageWidth = result.width;
+      _imageHeight = result.height;
+      _uploadedImageUrl = result.publicUrl;
+    });
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(e.toString())));
+  } finally {
+    if (mounted) {
+      setState(() => _isUploading = false);
     }
   }
-
-  Future<(double, double)> _readImageSize(Uint8List bytes) async {
-    final codec = await ui.instantiateImageCodec(bytes);
-    final frame = await codec.getNextFrame();
-    final image = frame.image;
-    return (image.width.toDouble(), image.height.toDouble());
-  }
+}
 
   @override
   Widget build(BuildContext context) {

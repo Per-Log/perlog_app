@@ -50,7 +50,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
               /// 프로필 이미지
               ProfileImagePicker(
                 onTap: () {
-                  // TODO: 이미지 선택 로직
+                  // TODO: 이미지 선택 로직 
                 },
               ),
 
