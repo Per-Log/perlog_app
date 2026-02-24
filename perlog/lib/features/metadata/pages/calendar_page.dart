@@ -9,6 +9,7 @@ import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:perlog/features/metadata/widgets/calendar_warning_popup.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -287,11 +288,15 @@ class _CalendarState extends State<Calendar> {
                 0,
                 AppSpacing.horizontal,
                 screenPadding.bottom,
-              ),              
+              ),
               child: BottomButton(
                 text: '날짜 설정 완료',
                 onPressed: () {
-                  context.go('${Routes.metadata}/${Routes.imageUpload}');
+                  context.go(
+                    '${Routes.metadata}/${Routes.imageUpload}',
+                    // 💡 여기서 선택된 날짜를 담아서 보냅니다.
+                    extra: MetadataImageData(selectedDate: selectedDay),
+                  );
                 },
                 enabled: true,
                 backgroundColor: AppColors.subBackground,
