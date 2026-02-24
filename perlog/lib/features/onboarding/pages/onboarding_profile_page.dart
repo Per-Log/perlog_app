@@ -27,7 +27,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   final _imageUploader = ImageUploader();
 
   Uint8List? _profilePreviewBytes;
-  String? _profileImageUrl;
+  String? _profileImageUrl; // 추후 상태관리에 필요
   bool _isUploading = false;
 
   bool get isCompleted => _nicknameController.text.trim().isNotEmpty;
@@ -189,23 +189,26 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
               ),
 
               const Spacer(),
-
-              /// 시작하기 버튼
-              BottomButton(
-                text: '시작하기',
-                enabled: isCompleted,
-                onPressed: () {
-                  context.go(Routes.home);
-                },
-                backgroundColor:
-                    isCompleted ? AppColors.subBackground : AppColors.background,
-                borderColor:
-                    isCompleted ? Colors.transparent : AppColors.subFont,
-                textColor: AppColors.mainFont,
-                textStyle: AppTextStyles.body20Medium,
-              ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: AppSpacing.bottomButtonPadding(context),
+        child: BottomButton(
+          text: '시작하기',
+          enabled: isCompleted,
+          onPressed: () {
+            context.go(Routes.home);
+          },
+          backgroundColor: isCompleted
+              ? AppColors.subBackground
+              : AppColors.background,
+          borderColor: isCompleted
+              ? Colors.transparent
+              : AppColors.subFont,
+          textColor: AppColors.mainFont,
+          textStyle: AppTextStyles.body20Medium,
         ),
       ),
     );
