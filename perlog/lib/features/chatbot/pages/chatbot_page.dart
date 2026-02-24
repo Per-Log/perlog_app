@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/text_styles.dart';
-import 'package:perlog/core/router/routes.dart';
-import 'package:go_router/go_router.dart';
+import 'package:perlog/core/constants/colors.dart'; 
 
 class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
@@ -85,34 +82,7 @@ class _ChatbotState extends State<Chatbot> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 17),
-          child: SizedBox(
-            width: 108,
-            height: 35,
-            child: Text(
-              'Per-Log',
-              style: AppTextStyles.headline28.copyWith(
-                color: AppColors.mainFont,
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => context.go(Routes.home),
-            icon: Icon(
-              Icons.home_outlined,
-              size: 30,
-              color: AppColors.mainFont,
-            ),
-          ),
-          const SizedBox(width: 17),
-        ],
-      ),
+      
       body: Column(
         children: [
           // 채팅 메시지 리스트 영역
@@ -168,7 +138,7 @@ class _ChatbotState extends State<Chatbot> {
           ),
         ],
       ),
-    );
+    ); 
   }
 
   // 4. 개선된 말풍선 위젯 (나/챗봇 구분)
