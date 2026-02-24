@@ -13,7 +13,7 @@ final metadataRoutes = [
       return null;
     },
     routes: [
-      GoRoute(path: Routes.calendar, builder: (_, __) => const Calendar()),
+      GoRoute(path: Routes.calendar, builder: (_, __) => const CalendarPage()),
       GoRoute(
         path: Routes.imageUpload,
         builder: (_, state) =>
