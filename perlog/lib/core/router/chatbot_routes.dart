@@ -7,8 +7,4 @@ final chatbotRoutes = [
     path: Routes.chatbot,
     builder: (_, __) => const Chatbot(),
   ),
-  GoRoute(
-    path: Routes.chatbotUse,
-    builder: (_, __) => const ChatbotUse(),
-  ),
 ];
