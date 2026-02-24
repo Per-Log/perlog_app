@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
@@ -5,6 +7,7 @@ import 'package:perlog/core/constants/text_styles.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/models/notification_period.dart';
 import 'package:perlog/core/router/routes.dart';
+import 'package:perlog/core/utils/image_uploader.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/onboarding/widgets/lock_setting_section.dart';
 import 'package:perlog/features/onboarding/widgets/notification_setting_section.dart';
@@ -21,6 +24,12 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   final _nicknameController = TextEditingController();
   final _focusNode = FocusNode();
 
+  final _imageUploader = ImageUploader();
+
+  Uint8List? _profilePreviewBytes;
+  String? _profileImageUrl;
+  bool _isUploading = false;
+
   bool get isCompleted => _nicknameController.text.trim().isNotEmpty;
 
   bool notificationEnabled = true;
@@ -28,6 +37,30 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   bool isPinSet = false;
 
   NotificationPeriod _period = NotificationPeriod.threeDays;
+
+  Future<void> _handleProfileImageUpload() async {
+  if (!mounted) return;
+
+  setState(() => _isUploading = true);
+
+  try {
+    final result = await _imageUploader.pickAndUploadImage();
+    if (!mounted || result == null) return;
+
+    setState(() {
+      _profilePreviewBytes = result.bytes;
+      _profileImageUrl = result.publicUrl;
+    });
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(e.toString())));
+  } finally {
+    if (mounted) {
+      setState(() => _isUploading = false);
+    };
+  }
+}
 
   @override
   void dispose() {
@@ -49,9 +82,11 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
 
               /// 프로필 이미지
               ProfileImagePicker(
-                onTap: () {
-                  // TODO: 이미지 선택 로직 
-                },
+                onTap: _isUploading ? null : _handleProfileImageUpload,
+                imageProvider: _profilePreviewBytes != null
+                    ? MemoryImage(_profilePreviewBytes!)
+                    : null,
+                isUploading: _isUploading,
               ),
 
               SizedBox(height: AppSpacing.large(context)),
