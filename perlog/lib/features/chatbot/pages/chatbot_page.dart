@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:perlog/core/constants/colors.dart'; 
+import 'package:perlog/core/constants/colors.dart';
+import 'package:perlog/core/constants/text_styles.dart'; 
 
 class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
@@ -108,21 +109,22 @@ class _ChatbotState extends State<Chatbot> {
             child: TextField(
               controller: _controller,
               onSubmitted: (_) => _sendMessage(),
-              style: TextStyle(color: AppColors.mainFont, fontSize: 13.0),
+              style: AppTextStyles.body16.copyWith(color: AppColors.mainFont),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
                 ),
                 hintText: '오늘은 어떤 하루였나요?',
-                hintStyle: TextStyle(fontSize: 12.0, color: AppColors.subFont),
+                hintStyle: AppTextStyles.body16.copyWith(color: AppColors.subFont),
                 suffixIcon: IconButton(
                   onPressed: _hasText ? _sendMessage : null,
                   icon: Icon(
                     Icons.arrow_circle_right,
+                    size: 28,
                     color: _hasText
                         ? AppColors.mainFont
-                        : AppColors.subFont.withOpacity(0.5),
+                        : AppColors.subFont,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -152,22 +154,17 @@ class _ChatbotState extends State<Chatbot> {
           maxWidth: MediaQuery.of(context).size.width * 0.7,
         ),
         decoration: BoxDecoration(
-          color: isMe ? AppColors.subBackground : AppColors.selectedBackground,
+          color: isMe ? AppColors.background : AppColors.subBackground,
           border: isMe
-              ? null
-              : Border.all(color: AppColors.subFont.withOpacity(0.3)),
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(15),
-            topRight: const Radius.circular(15),
-            bottomLeft: isMe ? const Radius.circular(15) : Radius.zero,
-            bottomRight: isMe ? Radius.zero : const Radius.circular(15),
-          ),
+              ? Border.all(color: AppColors.mainFont)
+              : null,
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
         child: Text(
           message,
           style: TextStyle(
-            color: isMe ? AppColors.mainFont : AppColors.mainFont,
-            fontSize: 14,
+            color:AppColors.mainFont,
+            fontSize: 15,
           ),
         ),
       ),
