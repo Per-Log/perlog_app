@@ -20,11 +20,6 @@ final metadataRoutes = [
             ImageUpload(args: state.extra as MetadataImageData?),
       ),
       GoRoute(
-        path: Routes.imageUploadFinished,
-        builder: (_, state) =>
-            ImageUploadFinished(args: state.extra as MetadataImageData?),
-      ),
-      GoRoute(
         path: Routes.imageUploadEdit,
         builder: (_, state) =>
             ImageUploadEdit(args: state.extra as MetadataImageData?),
