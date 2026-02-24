@@ -27,6 +27,7 @@ class Routes {
   static const imageUploadEdit = 'image-upload-edit';
   static const ocrLoading = 'ocr-loading';
   static const diaryAnalysis = 'diary-analysis';
+  static const test = 'test';
 
   /// My Diary
   static const myDiaryMain = '/my-main';
