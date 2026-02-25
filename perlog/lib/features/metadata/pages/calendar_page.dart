@@ -147,6 +147,8 @@ class _CalendarPageState extends State<CalendarPage> {
                     MetadataBackButton(
                         onTap: () => context.go(Routes.home)),
                     
+                    SizedBox(height: AppSpacing.small(context)),
+
                     // 원하는 날짜를 선택해주세요
                     CalendarHeader(selectedLabel: selectedLabel),
                     SizedBox(height: AppSpacing.medium(context)),
@@ -157,7 +159,8 @@ class _CalendarPageState extends State<CalendarPage> {
                       onPrevious: _handlePreviousMonth,
                       onNext: _handleNextMonth,
                     ),
-                    SizedBox(height: AppSpacing.medium(context)),
+                    
+                    SizedBox(height: AppSpacing.medium(context)+5),
 
                     // 캘린더
                     CalendarContent(
