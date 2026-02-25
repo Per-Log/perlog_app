@@ -1,16 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
-import 'package:perlog/core/utils/image_uploader.dart';
-import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:perlog/core/router/routes.dart';
-import 'package:go_router/go_router.dart';
+import 'package:perlog/core/utils/image_uploader.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
+
 import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
+import 'package:perlog/features/metadata/widgets/back_button.dart';
 import 'package:perlog/features/metadata/widgets/upload_preview.dart';
 
 class ImageUpload extends StatefulWidget {
@@ -31,37 +33,40 @@ class _ImageUploadState extends State<ImageUpload> {
   double? _imageHeight;
 
   Future<void> _handleImageUpload() async {
-  if (!mounted) return;
-
-  setState(() => _isUploading = true);
-
-  try {
-    final result = await _imageUploader.pickAndUploadImage();
-
-    if (!mounted || result == null) return;
-
-    setState(() {
-      _previewBytes = result.bytes;
-      _imageWidth = result.width;
-      _imageHeight = result.height;
-      _uploadedImageUrl = result.publicUrl;
-    });
-  } catch (e) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(e.toString())));
-  } finally {
-    if (mounted) {
-      setState(() => _isUploading = false);
+
+    setState(() => _isUploading = true);
+
+    try {
+      final result = await _imageUploader.pickAndUploadImage();
+
+      if (!mounted || result == null) return;
+
+      setState(() {
+        _previewBytes = result.bytes;
+        _imageWidth = result.width;
+        _imageHeight = result.height;
+        _uploadedImageUrl = result.publicUrl;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     final screenPadding = AppSpacing.screen(context);
     final isImageUploaded = _uploadedImageUrl != null;
-    final selectedDate = widget.args?.selectedDate ?? DateTime.now();
+
+    final selectedDate =
+        widget.args?.selectedDate ?? DateTime.now();
+
     final formattedDate = DateFormat(
       'yyyy년 MM월 dd일 EEEE',
       'ko_KR',
@@ -69,6 +74,7 @@ class _ImageUploadState extends State<ImageUpload> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,51 +88,62 @@ class _ImageUploadState extends State<ImageUpload> {
                   0,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
-                    // 기존에 있던 SizedBox(height: AppSpacing.vertical * 2) 제거됨
                     MetadataBackButton(
-                      onTap: () =>
-                          context.go('${Routes.metadata}/${Routes.calendar}'),
+                      onTap: () => context.go(
+                        '${Routes.metadata}/${Routes.calendar}',
+                      ),
                     ),
-                    SizedBox(height: AppSpacing.large(context)),
+
+                    SizedBox(
+                        height: AppSpacing.large(context)),
+
                     Text(
                       '퍼로그님, 오늘 하루는 어떠셨나요?',
                       style: AppTextStyles.body22.copyWith(
                         color: AppColors.mainFont,
                       ),
                     ),
-                    SizedBox(height: AppSpacing.small(context)),
+
+                    SizedBox(
+                        height: AppSpacing.small(context)),
+
                     Text(
                       formattedDate,
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),
                     ),
-                    SizedBox(height: AppSpacing.vertical),
 
-                    // 이미지 업로드 버튼
+                    SizedBox(
+                        height: AppSpacing.vertical),
+
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: 35,
-                        ), // 하단 버튼과의 여백
+                        padding:
+                            const EdgeInsets.only(bottom: 35),
                         child: Center(
                           child: SizedBox(
                             width: 393,
-                            height: double.infinity, // 세로만 꽉 채우기
+                            height: double.infinity,
                             child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isImageUploaded
-                                    ? const Color(0xFFE5D9C5)
-                                    : AppColors.subBackground,
-                                elevation: 0.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                              style:
+                                  ElevatedButton.styleFrom(
+                                backgroundColor:
+                                     AppColors.subBackground,
+                                elevation: 0,
+                                shape:
+                                    RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius
+                                          .circular(10),
                                 ),
                                 side: isImageUploaded
                                     ? BorderSide(
-                                        color: AppColors.mainFont,
+                                        color: AppColors
+                                            .mainFont,
                                         width: 1,
                                       )
                                     : BorderSide.none,
@@ -135,35 +152,46 @@ class _ImageUploadState extends State<ImageUpload> {
                               onPressed: _isUploading
                                   ? null
                                   : _handleImageUpload,
-                              child:
-                                  _previewBytes != null &&
+                              child: _previewBytes != null &&
                                       _imageWidth != null &&
-                                      _imageHeight != null
+                                      _imageHeight !=
+                                          null
                                   ? UploadPreview(
-                                      imageProvider: MemoryImage(
-                                        _previewBytes!,
-                                      ),
-                                      imageWidth: _imageWidth!,
-                                      imageHeight: _imageHeight!,
+                                      imageProvider:
+                                          MemoryImage(
+                                              _previewBytes!),
+                                      imageWidth:
+                                          _imageWidth!,
+                                      imageHeight:
+                                          _imageHeight!,
                                     )
                                   : Column(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                          MainAxisAlignment
+                                              .center,
                                       children: [
                                         Icon(
                                           _isUploading
                                               ? Icons.sync
-                                              : Icons.camera_alt_outlined,
+                                              : Icons
+                                                  .camera_alt_outlined,
                                           size: 48,
-                                          color: AppColors.subFont,
+                                          color: AppColors
+                                              .subFont,
                                         ),
-                                        const SizedBox(height: 12),
+                                        const SizedBox(
+                                            height: 12),
                                         Text(
-                                          _isUploading ? '업로드 중...' : '이미지 업로드',
-                                          style: AppTextStyles.body20Medium
-                                              .copyWith(
-                                                color: AppColors.subFont,
-                                              ),
+                                          _isUploading
+                                              ? '업로드 중...'
+                                              : '이미지 업로드',
+                                          style:
+                                              AppTextStyles
+                                                  .body20Medium
+                                                  .copyWith(
+                                            color: AppColors
+                                                .subFont,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -176,41 +204,36 @@ class _ImageUploadState extends State<ImageUpload> {
                 ),
               ),
             ),
-            // Expanded 바깥으로 분리된 BottomButton (캘린더 페이지와 동일한 위치/색상)
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.horizontal,
-                0,
-                AppSpacing.horizontal,
-                screenPadding.bottom,
-              ),
-              child: BottomButton(
-                text: '다음으로',
-                onPressed: isImageUploaded
-                    ? () => context.go(
-                        '${Routes.metadata}/${Routes.ocrLoading}',
-                        // 💡 날짜 데이터 유지
-                        extra: MetadataImageData(
-                          selectedDate: selectedDate,
-                          publicUrl: _uploadedImageUrl,
-                          width: _imageWidth,
-                          height: _imageHeight,
-                        ),
-                      )
-                    : () {},
-                enabled: isImageUploaded,
-                backgroundColor: isImageUploaded
-                    ? AppColors.subBackground
-                    : AppColors.background,
-                borderColor: isImageUploaded
-                    ? AppColors.subBackground
-                    : AppColors.subFont,
-                textColor: isImageUploaded
-                    ? AppColors.mainFont
-                    : AppColors.subFont,
-              ),
-            ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: AppSpacing.bottomButtonPadding(context),
+        child: BottomButton(
+          text: '다음으로',
+          onPressed: () {
+            if (!isImageUploaded) return;
+
+            context.go(
+              '${Routes.metadata}/${Routes.ocrLoading}',
+              extra: MetadataImageData(
+                selectedDate: selectedDate,
+                publicUrl: _uploadedImageUrl,
+                width: _imageWidth,
+                height: _imageHeight,
+              ),
+            );
+          },
+          enabled: isImageUploaded,
+          backgroundColor: isImageUploaded
+              ? AppColors.subBackground
+              : AppColors.background,
+          borderColor: isImageUploaded
+              ? AppColors.subBackground
+              : AppColors.subFont,
+          textColor: isImageUploaded
+              ? AppColors.mainFont
+              : AppColors.subFont,
         ),
       ),
     );
