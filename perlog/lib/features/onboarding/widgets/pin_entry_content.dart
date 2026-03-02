@@ -57,27 +57,30 @@ class _PinEntryContentState extends State<PinEntryContent> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: widget.contentPadding ?? AppSpacing.screen(context),
+          padding: AppSpacing.screen(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: widget.showBackButton
-                    ? GestureDetector(
-                        onTap:
-                            widget.onBack ??
-                            () => Navigator.of(context).maybePop(),
-                        child: Text(
-                          '이전',
-                          style: AppTextStyles.body16.copyWith(
-                            color: AppColors.subFont,
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                child: Visibility(
+                  visible: widget.showBackButton,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: GestureDetector(
+                    onTap: widget.onBack ??
+                        () => Navigator.of(context).maybePop(),
+                    child: Text(
+                      '이전',
+                      style: AppTextStyles.body16.copyWith(
+                        color: AppColors.subFont,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              SizedBox(height: AppSpacing.large(context)),
+              SizedBox(height: AppSpacing.large(context)+30),
               Center(
                 child: Text(
                   widget.title,
@@ -102,26 +105,32 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   );
                 }),
               ),
-              SizedBox(height: AppSpacing.large(context)),
+              SizedBox(height: AppSpacing.large(context)+20),
               _PinKeypad(
                 onDigitPressed: _addDigit,
                 onBackspacePressed: _removeDigit,
               ),
               const Spacer(),
-              BottomButton(
-                  text: widget.buttonText,
-                  enabled: _isComplete,
-                  onPressed: widget.onSubmit,
-                backgroundColor: _isComplete
-                    ? AppColors.subBackground
-                    : AppColors.background,
-                borderColor: _isComplete
-                    ? Colors.transparent
-                    : AppColors.subFont,
-                  textColor: AppColors.mainFont,
-                  textStyle: AppTextStyles.body20Medium,
-                ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: AppSpacing.bottomButtonPadding(context),
+          child: BottomButton(
+            text: widget.buttonText,
+            enabled: _isComplete,
+            onPressed: widget.onSubmit,
+            backgroundColor: _isComplete
+                ? AppColors.subBackground
+                : AppColors.background,
+            borderColor: _isComplete
+                ? Colors.transparent
+                : AppColors.subFont,
+            textColor: AppColors.mainFont,
+            textStyle: AppTextStyles.body20Medium,
           ),
         ),
       ),
