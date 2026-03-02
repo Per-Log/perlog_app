@@ -19,6 +19,7 @@ class _ChatbotState extends State<Chatbot> {
   ];
 
   bool _hasText = false;
+  static const double chatMaxWidthRatio = 0.75;
 
   @override
   void initState() {
@@ -106,41 +107,55 @@ class _ChatbotState extends State<Chatbot> {
     );
   }
 
-  Widget _buildInputField() {
-    return TextField(
+Widget _buildInputField() {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * chatMaxWidthRatio,
+    child: TextField(
       controller: _controller,
-      onSubmitted: (_) => _sendMessage(),
-      style: AppTextStyles.body16.copyWith(color: AppColors.mainFont),
+      keyboardType: TextInputType.multiline,
+      textInputAction: TextInputAction.newline,
+      minLines: 1,
+      maxLines: 5, // 원하는 만큼 조절
+      style: AppTextStyles.body16.copyWith(
+        color: AppColors.mainFont,
+      ),
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 14,
         ),
         hintText: '오늘은 어떤 하루였나요?',
-        hintStyle:
-            AppTextStyles.body16.copyWith(color: AppColors.subFont),
+        hintStyle: AppTextStyles.body16.copyWith(
+          color: AppColors.subFont,
+        ),
         suffixIcon: IconButton(
           onPressed: _hasText ? _sendMessage : null,
           icon: Icon(
             Icons.arrow_circle_right,
             size: 28,
-            color:
-                _hasText ? AppColors.mainFont : AppColors.subFont,
+            color: _hasText
+                ? AppColors.mainFont
+                : AppColors.subFont,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: AppColors.subFont, width: 1.5),
+          borderSide: BorderSide(
+            color: AppColors.subFont,
+            width: 1.5,
+          ),
           borderRadius: BorderRadius.circular(30),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: AppColors.mainFont, width: 1.5),
+          borderSide: BorderSide(
+            color: AppColors.mainFont,
+            width: 1.5,
+          ),
           borderRadius: BorderRadius.circular(30),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildChatBubble(String message, bool isMe) {
     return Align(
@@ -148,9 +163,9 @@ class _ChatbotState extends State<Chatbot> {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding:
-            const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
+          maxWidth: MediaQuery.of(context).size.width * chatMaxWidthRatio
         ),
         decoration: BoxDecoration(
           color: isMe
