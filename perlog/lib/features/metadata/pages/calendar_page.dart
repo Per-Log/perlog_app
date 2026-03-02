@@ -12,7 +12,6 @@ import 'package:perlog/features/metadata/widgets/calendar_content.dart';
 import 'package:perlog/features/metadata/widgets/calendar_header.dart';
 import 'package:perlog/features/metadata/widgets/calendar_warning_popup.dart';
 import 'package:perlog/features/metadata/widgets/month_header.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 
 class CalendarPage extends StatefulWidget {
