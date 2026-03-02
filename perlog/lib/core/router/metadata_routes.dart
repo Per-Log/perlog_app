@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/router/custom_transition_page.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/pages/pages.dart';
@@ -13,26 +14,48 @@ final metadataRoutes = [
       return null;
     },
     routes: [
-      GoRoute(path: Routes.calendar, builder: (_, __) => const CalendarPage()),
+      GoRoute(
+        path: Routes.calendar,
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const CalendarPage(),
+        ),
+      ),
       GoRoute(
         path: Routes.imageUpload,
-        builder: (_, state) =>
-            ImageUpload(args: state.extra as MetadataImageData?),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: ImageUpload(
+            args: state.extra as MetadataImageData?,
+          ),
+        ),
       ),
       GoRoute(
         path: Routes.imageUploadEdit,
-        builder: (_, state) =>
-            ImageUploadEdit(args: state.extra as MetadataImageData?),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: ImageUploadEdit(
+            args: state.extra as MetadataImageData?,
+          ),
+        ),
       ),
       GoRoute(
         path: Routes.ocrLoading,
-        builder: (_, state) =>
-            OCRLoading(args: state.extra as MetadataImageData?),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: OCRLoading(
+            args: state.extra as MetadataImageData?,
+          ),
+        ),
       ),
       GoRoute(
         path: Routes.diaryAnalysis,
-        builder: (_, state) =>
-            DiaryAnalysis(args: state.extra as MetadataImageData?),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: DiaryAnalysis(
+            args: state.extra as MetadataImageData?,
+          ),
+        ),
       ),
     ],
   ),
