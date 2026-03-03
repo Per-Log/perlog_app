@@ -1,6 +1,7 @@
-import 'dart:convert'; // JSON 파싱용
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // rootBundle용
+
+/// import 'package:http/http.dart' as http;
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
@@ -9,27 +10,44 @@ import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/core/models/analysis.dart';
 
-class Test extends StatefulWidget {
-  const Test({super.key});
+class DiaryAnalysisPage extends StatefulWidget {
+  final String diaryId; // 특정 일기의 ID를 받아 분석 결과를 조회한다고 가정
+
+  const DiaryAnalysisPage({super.key, required this.diaryId});
 
   @override
-  State<Test> createState() => _DiaryAnalysisState();
+  State<DiaryAnalysisPage> createState() => _DiaryAnalysisPageState();
 }
 
-class _DiaryAnalysisState extends State<Test> {
-  // JSON 데이터를 불러오는 함수
-  Future<EmotionReport> _loadAnalysisData() async {
-    final String response = await rootBundle.loadString(
-      'data/diary_emotions.json',
-    );
-    final List<dynamic> data = json.decode(response);
-    // 예시로 가장 최근(마지막) 분석 데이터를 가져옴
-    return EmotionReport.fromJson(data.last);
+class _DiaryAnalysisPageState extends State<DiaryAnalysisPage> {
+  // 1. 네트워크를 통해 DB/서버에서 JSON 데이터를 가져오는 함수
+  Future<EmotionReport> _fetchAnalysisData() async {
+    // 실제 서버 주소로 변경하세요 (예: FastAPI, Firebase 등)
+    final String apiUrl = 'https://api.perlog.com/analysis/${widget.diaryId}';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        // 한글 깨짐 방지를 위해 utf8.decode 사용
+        final decodedData = json.decode(utf8.decode(response.bodyBytes));
+        return EmotionReport.fromJson(decodedData);
+      } else {
+        throw Exception('서버 응답 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      // 네트워크 연결 실패 시 처리
+      throw Exception('데이터를 불러오지 못했습니다: $e');
+    }
   }
 
-  // 헥사 코드를 Color로 변환하는 헬퍼 함수
+  // 헥사 코드를 Color로 변환
   Color _hexToColor(String hex) {
-    return Color(int.parse(hex.replaceFirst('#', '0xff')));
+    try {
+      return Color(int.parse(hex.replaceFirst('#', '0xff')));
+    } catch (e) {
+      return Colors.grey; // 변환 실패 시 기본값
+    }
   }
 
   @override
@@ -40,17 +58,36 @@ class _DiaryAnalysisState extends State<Test> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: FutureBuilder<EmotionReport>(
-          future: _loadAnalysisData(), // 데이터 로드 시작
+          future: _fetchAnalysisData(), // 서버 통신 시작
           builder: (context, snapshot) {
-            // 로딩 중일 때
+            // [상태 1] 로딩 중
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            // 에러 발생 시
+
+            // [상태 2] 에러 발생
             if (snapshot.hasError) {
-              return const Center(child: Text('데이터를 불러오는 중 오류가 발생했습니다.'));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text('오류 발생: ${snapshot.error}'),
+                    TextButton(
+                      onPressed: () => setState(() {}),
+                      child: const Text('다시 시도'),
+                    ),
+                  ],
+                ),
+              );
             }
-            // 데이터 로드 완료 시
+
+            // [상태 3] 데이터 수신 완료
             final report = snapshot.data!;
 
             return SingleChildScrollView(
@@ -64,9 +101,8 @@ class _DiaryAnalysisState extends State<Test> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 1. 날짜 (JSON 데이터 활용 가능)
                     Text(
-                      '오늘의 기록,', // 날짜 데이터가 있다면 report.date 등으로 교체
+                      '오늘의 기록,',
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),
@@ -81,19 +117,33 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 32),
 
-                    // 2. 향수 설명 영역 (JSON 데이터 적용)
+                    // 2. 서버에서 받은 이미지 URL 표시
                     Row(
                       children: [
                         const SizedBox(width: 24),
-                        Image.asset(
-                          'assets/icons/perfume.png',
-                          height: 52,
-                          width: 52,
-                          color: _hexToColor(report.color), // 분석된 감정 색상 적용
-                          errorBuilder: (context, error, stackTrace) => Icon(
-                            Icons.wine_bar,
-                            size: 52,
-                            color: _hexToColor(report.color),
+                        // Image.network를 사용하여 서버의 사진을 불러옵니다.
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            report.imageUrl, // 모델에 이미지 URL 필드가 있어야 함
+                            height: 60,
+                            width: 60,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) => Icon(
+                              Icons.image,
+                              size: 52,
+                              color: _hexToColor(report.color),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 20),
@@ -109,7 +159,7 @@ class _DiaryAnalysisState extends State<Test> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                report.description, // Python에서 보낸 랜덤 워딩
+                                report.description,
                                 style: AppTextStyles.body12.copyWith(
                                   color: AppColors.mainFont,
                                 ),
@@ -122,7 +172,7 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 32),
 
-                    // 3. 해시태그 바 (JSON의 tags 리스트 활용)
+                    // 3. 해시태그 바 (서버에서 받은 키워드 리스트)
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -141,7 +191,7 @@ class _DiaryAnalysisState extends State<Test> {
                               (tag) => Text(
                                 tag,
                                 style: AppTextStyles.body18SemiBold.copyWith(
-                                  color: _hexToColor(report.color), // 강조색 적용
+                                  color: _hexToColor(report.color),
                                 ),
                               ),
                             )
@@ -151,7 +201,7 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 32),
 
-                    // 4. 메인 분석 결과 카드 (감정 그래프 구현)
+                    // 4. 감정 분석 그래프
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -169,11 +219,10 @@ class _DiaryAnalysisState extends State<Test> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          // 감정 리스트를 반복문으로 그래프 생성
                           ...report.emotions.map(
-                            (emotion) => _buildEmotionBar(
-                              emotion.label,
-                              emotion.score,
+                            (e) => _buildEmotionBar(
+                              e.label,
+                              e.score,
                               report.color,
                             ),
                           ),
@@ -183,7 +232,6 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 40),
 
-                    // 5. 하단 버튼
                     BottomButton(
                       text: '홈으로',
                       onPressed: () => context.go(Routes.home),
@@ -202,7 +250,6 @@ class _DiaryAnalysisState extends State<Test> {
     );
   }
 
-  // 감정 그래프 위젯 분리
   Widget _buildEmotionBar(String label, double score, String hexColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
