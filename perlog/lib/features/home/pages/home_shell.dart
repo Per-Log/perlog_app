@@ -23,6 +23,8 @@ class HomeShell extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,  
         elevation: 0,
         centerTitle: false,
         titleSpacing: 21,

@@ -38,6 +38,10 @@ class CalendarContent extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.calendar,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.selectedBackground, 
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
