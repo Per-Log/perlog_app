@@ -91,6 +91,8 @@ flutter:
     - assets/icons/perfume_frame.png
     - assets/icons/perfume_color.svg
     - assets/icons/perfume.png
+    - assets/icons/left_arrow.png
+    - assets/icons/right_arrow.png
 
     - assets/data/mapped.json
     - assets/data/diary_emotions.json

@@ -8,7 +8,7 @@ class PerfumeIcon extends StatelessWidget {
   const PerfumeIcon({
     super.key,
     required this.color,
-    this.size = 52, // TODO: mediaquery
+    this.size = 55, // TODO: mediaquery
   });
 
   @override
