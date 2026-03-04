@@ -43,6 +43,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   intl: ^0.20.2
   table_calendar: ^3.1.3
+  fl_chart: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +91,9 @@ flutter:
     - assets/icons/perfume_frame.png
     - assets/icons/perfume_color.svg
     - assets/icons/perfume.png
+
+    - assets/data/mapped.json
+    - assets/data/diary_emotions.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
