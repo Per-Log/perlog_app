@@ -80,7 +80,7 @@ class _NotificationSettingBody extends StatelessWidget {
           style: AppTextStyles.body20Medium
               .copyWith(color: AppColors.mainFont),
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 30),
         Expanded(
           child: NotificationPeriodSelector(
             value: period,

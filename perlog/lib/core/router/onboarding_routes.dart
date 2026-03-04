@@ -1,12 +1,15 @@
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/router/custom_transition_page.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/features/onboarding/pages/pages.dart';
 
 final onboardingRoutes = [
   GoRoute(
     path: Routes.login,
-    pageBuilder: (_, __) =>
-        const NoTransitionPage(child: KakaoLoginPage()),
+    pageBuilder: (context, state) => fadeTransitionPage(
+      key: state.pageKey,
+      child: const KakaoLoginPage(),
+    ),
   ),
 
   GoRoute(
@@ -20,19 +23,31 @@ final onboardingRoutes = [
     routes: [
       GoRoute(
         path: Routes.profile,
-        builder: (_, __) => const OnboardingProfilePage(),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const OnboardingProfilePage(),
+        ),
       ),
       GoRoute(
         path: Routes.pinSet,
-        builder: (_, __) => const PinSetPage(),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const PinSetPage(),
+        ),
       ),
       GoRoute(
         path: Routes.pinConfirm,
-        builder: (_, __) => const PinConfirmPage(),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const PinConfirmPage(),
+        ),
       ),
       GoRoute(
         path: Routes.pinCheck,
-        builder: (_, __) => const PinCheckPage(),
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const PinCheckPage(),
+        ),
       ),
     ],
   ),

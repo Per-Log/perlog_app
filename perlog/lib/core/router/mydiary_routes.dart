@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/router/custom_transition_page.dart';
 import 'package:perlog/features/mydiary/pages/pages.dart';
 import 'routes.dart';
 
@@ -12,9 +13,27 @@ final myDiaryRoutes = [
       return null;
     },
     routes: [
-      GoRoute(path: Routes.myDiary, builder: (_, __) => const MyDiary()),
-      GoRoute(path: Routes.myAnalysis, builder: (_, __) => const MyAnalysis()),
-      GoRoute(path: Routes.myCalendar, builder: (_, __) => const MyCalendar()),
+      GoRoute(
+        path: Routes.myDiary,
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const MyDiary(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.myAnalysis,
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const MyAnalysis(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.myCalendar,
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: const MyCalendar(),
+        ),
+      ),
     ],
   ),
 ];
