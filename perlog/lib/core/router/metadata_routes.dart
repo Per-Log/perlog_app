@@ -41,7 +41,6 @@ final metadataRoutes = [
           ),
         ),
       ),
-      GoRoute(path: Routes.ocrLoading, builder: (_, __) => const OCRLoading()),
       GoRoute(
         path: Routes.ocrLoading,
         pageBuilder: (context, state) => fadeTransitionPage(
