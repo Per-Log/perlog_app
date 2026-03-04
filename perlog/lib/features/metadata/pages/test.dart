@@ -8,6 +8,42 @@ import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/core/models/analysis.dart';
+import 'package:fl_chart/fl_chart.dart';
+
+Widget buildPrettyBarChart(List<EmotionScore> emotions, Color mainColor) {
+  return BarChart(
+    BarChartData(
+      alignment: BarChartAlignment.spaceAround,
+      maxY: 1.0, // 100% 기준
+      barGroups: emotions.asMap().entries.map((entry) {
+        return BarChartGroupData(
+          x: entry.key,
+          barRods: [
+            BarChartRodData(
+              toY: entry.value.score,
+              gradient: LinearGradient(
+                colors: [mainColor.withOpacity(0.3), mainColor],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+              ),
+              width: 20,
+              borderRadius: BorderRadius.circular(6), // 둥근 모서리
+              backDrawRodData: BackgroundBarChartRodData(
+                show: true,
+                toY: 1.0,
+                color: Colors.grey.withOpacity(0.1), // 배경 회색 바
+              ),
+            ),
+          ],
+        );
+      }).toList(),
+      // 격자 및 테두리 설정 생략...
+      titlesData: FlTitlesData(show: false),
+      gridData: FlGridData(show: false),
+      borderData: FlBorderData(show: false),
+    ),
+  );
+}
 
 class Test extends StatefulWidget {
   const Test({super.key});
@@ -102,7 +138,7 @@ class _DiaryAnalysisState extends State<Test> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${report.scent}가 어울리는 하루였군요!',
+                                '${report.scent}가???? 어울리는 하루였군요!',
                                 style: AppTextStyles.body18SemiBold.copyWith(
                                   color: AppColors.mainFont,
                                 ),
@@ -141,7 +177,7 @@ class _DiaryAnalysisState extends State<Test> {
                               (tag) => Text(
                                 tag,
                                 style: AppTextStyles.body18SemiBold.copyWith(
-                                  color: _hexToColor(report.color), // 강조색 적용
+                                  color: AppColors.mainFont, // 강조색 적용
                                 ),
                               ),
                             )
