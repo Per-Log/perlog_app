@@ -1,16 +1,14 @@
-// 변경 전 perlog/lib/features/main/perfume_shelf_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
-import 'package:perlog/core/models/diary_bubble.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:perlog/features/home/widgets/perfume_shelf.dart';
 import 'package:perlog/features/home/widgets/weekly_streak.dart';
+import 'package:perlog/core/utils/weekly_bubble_generator.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,17 +16,19 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
-    final formattedDate = DateFormat('yyyy년 M월 d일 E요일', 'ko_KR').format(today);
+    final formattedDate =
+        DateFormat('yyyy년 M월 d일 E요일', 'ko_KR').format(today);
 
-    final List<DiaryBubble> weeklyBubbles = [
-      DiaryBubble(date: DateTime(2025, 1, 13), hasDiary: true),
-      DiaryBubble(date: DateTime(2025, 1, 14), hasDiary: true),
-      DiaryBubble(date: DateTime(2025, 1, 15), hasDiary: true),
-      DiaryBubble(date: DateTime(2025, 1, 16), hasDiary: false),
-      DiaryBubble(date: DateTime(2025, 1, 17), hasDiary: false),
-      DiaryBubble(date: DateTime(2025, 1, 18), hasDiary: false),
-      DiaryBubble(date: DateTime(2025, 1, 19), hasDiary: false),
-    ];
+    // 임시 데이터 -> 상태관리로 이번주 일기 데이터 받기
+    final Set<DateTime> diaryDates = {
+      DateTime(2026, 3, 1),
+      DateTime(2026, 3, 2)
+    };
+
+    final weeklyBubbles = WeeklyBubbleGenerator.generate(
+      today: today,
+      diaryDates: diaryDates,
+    );
 
     final userNickName = 'SKKAI';
 
@@ -72,7 +72,7 @@ class HomePage extends StatelessWidget {
                     TextSpan(
                       text: userNickName,
                       style: AppTextStyles.body20Medium.copyWith(
-                        fontWeight: FontWeight.w600, // 강조
+                        fontWeight: FontWeight.w600,
                         color: AppColors.mainFont,
                       ),
                     ),

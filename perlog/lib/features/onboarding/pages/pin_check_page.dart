@@ -9,7 +9,7 @@ class PinCheckPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PinEntryContent(
-      title: 'PIN을 입력해주세요.',
+      title: '비밀번호를 입력해주세요.',
       buttonText: '확인',
       showBackButton: false,
       onSubmit: () {
