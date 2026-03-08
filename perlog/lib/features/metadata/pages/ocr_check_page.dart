@@ -23,7 +23,9 @@ class _OCRCheckPageState extends State<OCRCheckPage> {
   @override
   void initState() {
     super.initState();
-    _ocrTextController = TextEditingController(text: '여기에 ocr 결과 텍스트가 나옴');
+    _ocrTextController = TextEditingController(
+      text: widget.args?.ocrText ?? '여기에 ocr 결과 텍스트가 나옴',
+    );
   }
 
   @override

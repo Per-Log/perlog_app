@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
@@ -10,6 +9,7 @@ import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/widgets/upload_preview.dart';
+import 'package:perlog/features/metadata/services/google_vision_ocr_service.dart';
 
 class OCRLoading extends StatefulWidget {
   const OCRLoading({super.key, this.args});
@@ -20,37 +20,76 @@ class OCRLoading extends StatefulWidget {
 }
 
 class _OCRLoadingState extends State<OCRLoading> {
+  final _ocrService = GoogleVisionOcrService();
   double _progressValue = 0.0;
   Timer? _timer;
   // 50:50 확률로 성공/실패 시뮬레이션 (나중에 API 결과로 대체)
-  final bool _isCleanImage = Random().nextDouble() < 0.5;
+  bool _ocrCompleted = false;
+  String? _ocrText;
 
   @override
   void initState() {
     super.initState();
-    _startSimulatedLoading();
+    _startProgressAnimation();
+    _runOcr();
   }
 
-  void _startSimulatedLoading() {
-    _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+  void _startProgressAnimation() {
+    _timer = Timer.periodic(const Duration(milliseconds: 40), (_) {
+      if (!mounted) return;
       setState(() {
-        if (_progressValue < 1.0) {
-          _progressValue += 0.01;
+        if (_ocrCompleted) {
+          _progressValue = (_progressValue + 0.04).clamp(0.0, 1.0);
         } else {
-          _timer?.cancel();
-          _handleNavigation(); // 100% 도달 시 자동 이동 실행
+          _progressValue = (_progressValue + 0.01).clamp(0.0, 0.9);
         }
       });
+      if (_progressValue >= 1.0) {
+        _timer?.cancel();
+        _handleNavigation();
+      }
     });
+  }
+
+  Future<void> _runOcr() async {
+    final imageUrl = widget.args?.publicUrl;
+
+    if (imageUrl == null || imageUrl.isEmpty) {
+      _finishOcr(text: null);
+      return;
+    }
+
+    try {
+      final text = await _ocrService.extractTextFromImageUrl(imageUrl);
+      _finishOcr(text: text);
+    } catch (_) {
+      _finishOcr(text: null);
+    }
+  }
+
+  void _finishOcr({required String? text}) {
+    if (!mounted) return;
+
+    setState(() {
+      _ocrText = text;
+      _ocrCompleted = true;
+
+    });
+  }
+
+  bool get _isReadableImage {
+    final normalized = (_ocrText ?? '').replaceAll(RegExp(r'\s+'), '');
+    return normalized.length >= 10;
   }
 
   // 성공/실패 여부에 따른 자동 페이지 이동 처리
   void _handleNavigation() {
-    if (_isCleanImage) {
+    if (_isReadableImage) {
       // 성공 시: 일기 분석 페이지로 자동 이동
       context.go(
         '${Routes.metadata}/${Routes.ocrCheck}',
-        extra: widget.args,
+        extra: (widget.args ?? MetadataImageData(selectedDate: DateTime.now()))
+            .copyWith(ocrText: _ocrText),
       );
     } else {
       // 실패 시: 이미지 편집(수정) 페이지로 자동 이동
