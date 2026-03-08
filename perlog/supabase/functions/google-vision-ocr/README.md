@@ -12,8 +12,8 @@
 ```bash
 npx supabase --version
 npx supabase login
-npx supabase link --project-ref 'https://uzpfybxalroyynjhbfis.supabase.co'
-npx supabase secrets set GOOGLE_CLOUD_VISION_API_KEY="AIzaSyDXEzTllePYXl7N67pqdAooftZaXFL-8yE"
+npx supabase link --project-ref uzpfybxalroyynjhbfis
+npx supabase secrets set GOOGLE_CLOUD_VISION_API_KEY=""
 npx supabase functions deploy google-vision-ocr
 ```
 
