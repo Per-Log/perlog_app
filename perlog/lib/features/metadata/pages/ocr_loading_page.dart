@@ -49,7 +49,7 @@ class _OCRLoadingState extends State<OCRLoading> {
     if (_isCleanImage) {
       // 성공 시: 일기 분석 페이지로 자동 이동
       context.go(
-        '${Routes.metadata}/${Routes.diaryAnalysis}',
+        '${Routes.metadata}/${Routes.ocrCheck}',
         extra: widget.args,
       );
     } else {
