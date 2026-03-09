@@ -22,7 +22,7 @@ class Settings extends StatelessWidget {
               title: "계정",
               items: [
                 {
-                  "title": "나의 정보",
+                  "title": "내 정보 수정",
                   "onTap": () => context.push('${Routes.settings}/${Routes.settingsProfile}'),
                 },
                 {
