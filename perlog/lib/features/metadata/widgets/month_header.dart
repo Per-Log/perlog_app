@@ -44,7 +44,7 @@ class MonthHeader extends StatelessWidget {
           ),
           Text(
             monthLabel,
-            style: AppTextStyles.body18.copyWith(
+            style: AppTextStyles.body16Medium.copyWith(
               color: AppColors.mainFont,
               fontSize: 20,
             ),
