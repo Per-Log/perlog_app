@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/router/settings_routes.dart';
 
 import 'routes.dart';
 import 'splash_routes.dart';
@@ -19,5 +20,6 @@ final GoRouter appRouter = GoRouter(
     ...myDiaryRoutes,
     ...chatbotRoutes,
     ...debugRoutes,
+    ...settingsRoutes
   ],
 );
