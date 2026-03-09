@@ -23,11 +23,11 @@ class Settings extends StatelessWidget {
               items: [
                 {
                   "title": "나의 정보",
-                  "onTap": () => context.go('${Routes.onboarding}/${Routes.profile}'),
+                  "onTap": () => context.push('${Routes.settings}/${Routes.settingsProfile}'),
                 },
                 {
                   "title": "잠금 설정",
-                  "onTap": () => context.go('${Routes.onboarding}/${Routes.pinConfirm}'),
+                  "onTap": () => context.push('${Routes.settings}/${Routes.settingsPinCheck}'),
                 },
               ],
             ),
@@ -39,11 +39,11 @@ class Settings extends StatelessWidget {
               items: [
                 {
                   "title": "알림 주기 설정",
-                  "onTap": () {},
+                  "onTap": () {}, // 하단 바
                 },
                 {
                   "title": "시스템 알림 설정",
-                  "onTap": () {},
+                  "onTap": () {}, // 시스템 연결
                 },
               ],
             ),
@@ -55,19 +55,19 @@ class Settings extends StatelessWidget {
               items: [
                 {
                   "title": "About Perlog",
-                  "onTap": () {},
+                  "onTap": () {}, // 웹 연결 (노션)
                 },
                 {
                   "title": "앱 튜토리얼",
-                  "onTap": () {},
+                  "onTap": () => context.push('${Routes.settings}/${Routes.settingsTutorial}'),
                 },
                 {
                   "title": "개인정보 처리 방침",
-                  "onTap": () {},
+                  "onTap": () {}, // 웹 연결 (노션)
                 },
                 {
                   "title": "라이선스",
-                  "onTap": () {},
+                  "onTap": () {}, // 웹 연결 (노션) / 팝업 처리
                 },
               ],
             ),

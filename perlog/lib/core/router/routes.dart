@@ -15,6 +15,13 @@ class Routes {
   static const home = '/home';
   static const settings = '/settings';
 
+  /// Settings
+  static const settingsProfile = 'profile';
+  static const settingsPinCheck = 'pin-check';
+  static const settingsPinSet = 'pin-set';
+  static const settingsPinConfirm = 'pin-confirm';
+  static const settingsTutorial = 'tutorial';
+
   /// Chatbot
   static const chatbot = '/chatbot';
   static const chatbotUse = '/chatbot-use';
