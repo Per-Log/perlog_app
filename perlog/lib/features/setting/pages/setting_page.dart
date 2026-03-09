@@ -38,11 +38,11 @@ class Settings extends StatelessWidget {
               title: "앱 설정",
               items: [
                 {
-                  "title": "알림 설정",
+                  "title": "알림 주기 설정",
                   "onTap": () {},
                 },
                 {
-                  "title": "튜토리얼",
+                  "title": "시스템 알림 설정",
                   "onTap": () {},
                 },
               ],
@@ -55,6 +55,10 @@ class Settings extends StatelessWidget {
               items: [
                 {
                   "title": "About Perlog",
+                  "onTap": () {},
+                },
+                {
+                  "title": "앱 튜토리얼",
                   "onTap": () {},
                 },
                 {
