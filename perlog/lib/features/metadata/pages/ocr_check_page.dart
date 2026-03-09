@@ -69,7 +69,7 @@ class _OCRCheckPageState extends State<OCRCheckPage> {
                       ),
                     ),
                     Text(
-                      '잘못 읽힌 부분이 있다면, 수정할 수 있어요',
+                      '잘못 인식된 부분은 수정할 수 있어요!',
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),

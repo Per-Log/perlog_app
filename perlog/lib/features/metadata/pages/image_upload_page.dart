@@ -132,7 +132,9 @@ class _ImageUploadState extends State<ImageUpload> {
                               style:
                                   ElevatedButton.styleFrom(
                                 backgroundColor:
-                                     AppColors.subBackground,
+                                    isImageUploaded
+                                    ? const Color(0xFFF5F5F5)
+                                    : AppColors.subBackground,
                                 elevation: 0,
                                 shape:
                                     RoundedRectangleBorder(

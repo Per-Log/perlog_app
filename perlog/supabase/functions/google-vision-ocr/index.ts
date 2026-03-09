@@ -69,7 +69,7 @@ Deno.serve(async (req: Request) => {
                     requests: [
                         {
                             image: { content: encodedImage },
-                            features: [{ type: 'TEXT_DETECTION' }],
+                            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
                         },
                     ],
                 }),
