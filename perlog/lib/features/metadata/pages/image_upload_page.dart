@@ -24,6 +24,8 @@ class ImageUpload extends StatefulWidget {
 }
 
 class _ImageUploadState extends State<ImageUpload> {
+  static const double _minAllowedAspectRatio = 0.3;
+  static const double _maxAllowedAspectRatio = 3.0;
   final _imageUploader = ImageUploader();
 
   bool _isUploading = false;
@@ -31,6 +33,26 @@ class _ImageUploadState extends State<ImageUpload> {
   Uint8List? _previewBytes;
   double? _imageWidth;
   double? _imageHeight;
+  
+  bool get _hasInvalidAspectRatio {
+    if (_imageWidth == null || _imageHeight == null || _imageHeight == 0) {
+      return false;
+    }
+
+    final aspectRatio = _imageWidth! / _imageHeight!;
+    return aspectRatio < _minAllowedAspectRatio ||
+        aspectRatio > _maxAllowedAspectRatio;
+  }
+
+  MetadataImageData _buildImageData(DateTime selectedDate) {
+    return MetadataImageData(
+      selectedDate: selectedDate,
+      publicUrl: _uploadedImageUrl,
+      width: _imageWidth,
+      height: _imageHeight,
+    );
+  }
+
 
   Future<void> _handleImageUpload() async {
     if (!mounted) return;
@@ -64,8 +86,7 @@ class _ImageUploadState extends State<ImageUpload> {
     final screenPadding = AppSpacing.screen(context);
     final isImageUploaded = _uploadedImageUrl != null;
 
-    final selectedDate =
-        widget.args?.selectedDate ?? DateTime.now();
+    final selectedDate = widget.args?.selectedDate ?? DateTime.now();
 
     final formattedDate = DateFormat(
       'yyyy년 MM월 dd일 EEEE',
@@ -216,14 +237,21 @@ class _ImageUploadState extends State<ImageUpload> {
           onPressed: () {
             if (!isImageUploaded) return;
 
+            if (_hasInvalidAspectRatio) {
+              context.go(
+                '${Routes.metadata}/${Routes.imageUploadEdit}',
+                extra: _buildImageData(selectedDate).copyWith(
+                  editMessageLine1: '이미지가 너무 길어요.',
+                  editMessageLine2: '너무 긴 일기는 읽을 수가 없어요.',
+                  editMessageLine3: '조금 더 짧게 다시 찍어볼까요?',
+                ),
+              );
+              return;
+            }
+
             context.go(
               '${Routes.metadata}/${Routes.ocrLoading}',
-              extra: MetadataImageData(
-                selectedDate: selectedDate,
-                publicUrl: _uploadedImageUrl,
-                width: _imageWidth,
-                height: _imageHeight,
-              ),
+              extra: _buildImageData(selectedDate),
             );
           },
           enabled: isImageUploaded,
