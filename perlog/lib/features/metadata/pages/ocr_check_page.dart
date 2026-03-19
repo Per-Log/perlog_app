@@ -19,6 +19,9 @@ class OCRCheckPage extends StatefulWidget {
 
 class _OCRCheckPageState extends State<OCRCheckPage> {
   late final TextEditingController _ocrTextController;
+  static const double _lineGap = 40;
+  static const double _horizontalPadding = 16;
+  static const double _verticalPadding = 12;
 
   @override
   void initState() {
@@ -79,42 +82,68 @@ class _OCRCheckPageState extends State<OCRCheckPage> {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: const Color(0xFFFAFAFA),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: AppColors.subFont),
                         ),
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: CustomPaint(
-                                painter: _NotebookLinePainter(),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: TextField(
-                                controller: _ocrTextController,
-                                maxLines: null,
-                                expands: true,
-                                textAlignVertical: TextAlignVertical.top,
-                                style: AppTextStyles.body16.copyWith(
-                                  color: AppColors.mainFont,
-                                  height: 2.25,
-                                ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  isCollapsed: true,
-                                  hintText: '내용을 확인하고 수정해 주세요.',
-                                  hintStyle: AppTextStyles.body16.copyWith(
-                                    color: AppColors.subFont,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SingleChildScrollView(
+                                keyboardDismissBehavior:
+                                    ScrollViewKeyboardDismissBehavior.onDrag,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight: constraints.maxHeight,
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Positioned.fill(
+                                        child: CustomPaint(
+                                          painter: _NotebookLinePainter(
+                                            lineGap: _lineGap,
+                                            topInset: _verticalPadding,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: _horizontalPadding,
+                                          vertical: _verticalPadding,
+                                        ),
+                                        child: TextField(
+                                          controller: _ocrTextController,
+                                          minLines: 1,
+                                          maxLines: null,
+                                          textAlignVertical:
+                                              TextAlignVertical.top,
+                                          style:
+                                              AppTextStyles.body16.copyWith(
+                                            color: Colors.black,
+                                            height: _lineGap /
+                                                AppTextStyles.body16.fontSize!,
+                                          ),
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            isCollapsed: true,
+                                            hintText: '내용을 확인하고 수정해 주세요.',
+                                            hintStyle:
+                                                AppTextStyles.body16.copyWith(
+                                              color: AppColors.subFont,
+                                              height: _lineGap /
+                                                  AppTextStyles
+                                                      .body16.fontSize!,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -149,18 +178,24 @@ class _OCRCheckPageState extends State<OCRCheckPage> {
 }
 
 class _NotebookLinePainter extends CustomPainter {
+  const _NotebookLinePainter({required this.lineGap, required this.topInset});
+
+  final double lineGap;
+  final double topInset;
+
   @override
   void paint(Canvas canvas, Size size) {
-    const lineGap = 36.0;
     final paint = Paint()
-      ..color = AppColors.subFont.withOpacity(0.35)
+      ..color = const Color(0xFFD6C2A0)
       ..strokeWidth = 1;
 
-    for (double y = lineGap; y < size.height; y += lineGap) {
-      canvas.drawLine(Offset(12, y), Offset(size.width - 12, y), paint);
+    for (double y = topInset + lineGap; y < size.height; y += lineGap) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _NotebookLinePainter oldDelegate) {
+    return oldDelegate.lineGap != lineGap || oldDelegate.topInset != topInset;
+  }
 }

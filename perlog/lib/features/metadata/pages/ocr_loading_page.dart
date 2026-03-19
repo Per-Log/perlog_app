@@ -61,7 +61,7 @@ class _OCRLoadingState extends State<OCRLoading> {
 
     try {
       final text = await _ocrService.extractTextFromImageUrl(imageUrl);
-      _finishOcr(text: text);
+      _finishOcr(text: text?.replaceAll('\n', ' '));
     } catch (_) {
       _finishOcr(text: null);
     }
@@ -154,7 +154,9 @@ class _OCRLoadingState extends State<OCRLoading> {
                           height: double.infinity, // 세로만 꽉 채우기
                           child: Container(
                             decoration: BoxDecoration(
-                              color: AppColors.subBackground,
+                              color: widget.args?.publicUrl != null
+                                  ? const Color(0xFFF5F5F5)
+                                  : AppColors.subBackground,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: widget.args?.publicUrl == null

@@ -118,11 +118,19 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
                             height: double.infinity, // 세로만 꽉 채우기
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.subBackground,
+                                backgroundColor: isImageUploaded
+                                    ? const Color(0xFFF5F5F5)
+                                    : AppColors.subBackground,
                                 elevation: 0.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
+                                side: isImageUploaded
+                                    ? BorderSide(
+                                        color: AppColors.mainFont,
+                                        width: 1,
+                                      )
+                                    : BorderSide.none,
                               ),
                               onPressed: _isUploading
                                   ? null
