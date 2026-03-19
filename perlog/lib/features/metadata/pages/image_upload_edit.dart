@@ -131,6 +131,7 @@ class _ImageUploadEditState extends State<ImageUploadEdit> {
                                         width: 1,
                                       )
                                     : BorderSide.none,
+                                padding: EdgeInsets.zero,
                               ),
                               onPressed: _isUploading
                                   ? null
