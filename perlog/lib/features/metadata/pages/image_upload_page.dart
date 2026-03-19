@@ -33,7 +33,8 @@ class _ImageUploadState extends State<ImageUpload> {
   Uint8List? _previewBytes;
   double? _imageWidth;
   double? _imageHeight;
-  
+  double? _sharpnessVariance;
+
   bool get _hasInvalidAspectRatio {
     if (_imageWidth == null || _imageHeight == null || _imageHeight == 0) {
       return false;
@@ -44,6 +45,14 @@ class _ImageUploadState extends State<ImageUpload> {
         aspectRatio > _maxAllowedAspectRatio;
   }
 
+  bool get _isBlurryImage {
+    if (_sharpnessVariance == null) {
+      return false;
+    }
+
+    return _sharpnessVariance! < ImageUploader.minSharpnessVariance;
+  }
+
   MetadataImageData _buildImageData(DateTime selectedDate) {
     return MetadataImageData(
       selectedDate: selectedDate,
@@ -52,7 +61,6 @@ class _ImageUploadState extends State<ImageUpload> {
       height: _imageHeight,
     );
   }
-
 
   Future<void> _handleImageUpload() async {
     if (!mounted) return;
@@ -69,6 +77,7 @@ class _ImageUploadState extends State<ImageUpload> {
         _imageWidth = result.width;
         _imageHeight = result.height;
         _uploadedImageUrl = result.publicUrl;
+        _sharpnessVariance = result.sharpnessVariance;
       });
     } catch (e) {
       if (!mounted) return;
@@ -79,6 +88,28 @@ class _ImageUploadState extends State<ImageUpload> {
         setState(() => _isUploading = false);
       }
     }
+  }
+
+  void _goToEditPage(DateTime selectedDate) {
+    context.go(
+      '${Routes.metadata}/${Routes.imageUploadEdit}',
+      extra: _buildImageData(selectedDate).copyWith(
+        editMessageLine1: '이미지가 너무 길어요.',
+        editMessageLine2: '너무 긴 일기는 읽을 수가 없어요.',
+        editMessageLine3: '조금 더 짧게 다시 찍어볼까요?',
+      ),
+    );
+  }
+
+  void _goToBlurryImageEditPage(DateTime selectedDate) {
+    context.go(
+      '${Routes.metadata}/${Routes.imageUploadEdit}',
+      extra: _buildImageData(selectedDate).copyWith(
+        editMessageLine1: '글씨가 잘 보이지 않아요.',
+        editMessageLine2: '조금 더 밝은 곳에서,',
+        editMessageLine3: '종이가 화면에 가득 차도록 다시 찍어볼까요?',
+      ),
+    );
   }
 
   @override
@@ -238,14 +269,12 @@ class _ImageUploadState extends State<ImageUpload> {
             if (!isImageUploaded) return;
 
             if (_hasInvalidAspectRatio) {
-              context.go(
-                '${Routes.metadata}/${Routes.imageUploadEdit}',
-                extra: _buildImageData(selectedDate).copyWith(
-                  editMessageLine1: '이미지가 너무 길어요.',
-                  editMessageLine2: '너무 긴 일기는 읽을 수가 없어요.',
-                  editMessageLine3: '조금 더 짧게 다시 찍어볼까요?',
-                ),
-              );
+              _goToEditPage(selectedDate);
+              return;
+            }
+
+            if (_isBlurryImage) {
+              _goToBlurryImageEditPage(selectedDate);
               return;
             }
 
