@@ -95,6 +95,7 @@ flutter:
     - assets/icons/right_arrow.png
 
     - assets/data/mapped.json
+    - assets/data/chart_color.json
     - assets/data/diary_emotions.json
 
 

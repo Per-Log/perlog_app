@@ -44,6 +44,9 @@ Widget buildPrettyBarChart(List<EmotionScore> emotions, Color mainColor) {
     ),
   );
 }
+// ... 상단 import 생략 ...
+
+// ... 상단 import 생략 ...
 
 class Test extends StatefulWidget {
   const Test({super.key});
@@ -52,20 +55,51 @@ class Test extends StatefulWidget {
   State<Test> createState() => _DiaryAnalysisState();
 }
 
+// ... 기존 import 유지 ...
+
+// ... 상단 import 및 buildPrettyBarChart 함수 생략 (기존과 동일) ...
+
 class _DiaryAnalysisState extends State<Test> {
-  // JSON 데이터를 불러오는 함수
+  Map<String, String> _chartColors = {};
+
   Future<EmotionReport> _loadAnalysisData() async {
-    final String response = await rootBundle.loadString(
-      'data/diary_emotions.json',
-    );
-    final List<dynamic> data = json.decode(response);
-    // 예시로 가장 최근(마지막) 분석 데이터를 가져옴
+    final results = await Future.wait([
+      rootBundle.loadString('data/chart_color.json'),
+      rootBundle.loadString('data/diary_emotions.json'),
+    ]);
+
+    _chartColors = Map<String, String>.from(json.decode(results[0]));
+    final List<dynamic> data = json.decode(results[1]);
     return EmotionReport.fromJson(data.last);
   }
 
-  // 헥사 코드를 Color로 변환하는 헬퍼 함수
   Color _hexToColor(String hex) {
     return Color(int.parse(hex.replaceFirst('#', '0xff')));
+  }
+
+  Color _getIndividualColor(String label, String defaultHex) {
+    final hex = _chartColors[label] ?? defaultHex;
+    return _hexToColor(hex);
+  }
+
+  Widget _buildDonutChart(List<EmotionScore> emotions, String defaultHex) {
+    return SizedBox(
+      height: 200,
+      child: PieChart(
+        PieChartData(
+          sectionsSpace: 2,
+          centerSpaceRadius: 45,
+          sections: emotions.map((e) {
+            return PieChartSectionData(
+              color: _getIndividualColor(e.label, defaultHex),
+              value: e.score,
+              radius: 45,
+              title: '',
+            );
+          }).toList(),
+        ),
+      ),
+    );
   }
 
   @override
@@ -76,17 +110,14 @@ class _DiaryAnalysisState extends State<Test> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: FutureBuilder<EmotionReport>(
-          future: _loadAnalysisData(), // 데이터 로드 시작
+          future: _loadAnalysisData(),
           builder: (context, snapshot) {
-            // 로딩 중일 때
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            // 에러 발생 시
             if (snapshot.hasError) {
               return const Center(child: Text('데이터를 불러오는 중 오류가 발생했습니다.'));
             }
-            // 데이터 로드 완료 시
             final report = snapshot.data!;
 
             return SingleChildScrollView(
@@ -100,9 +131,9 @@ class _DiaryAnalysisState extends State<Test> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 1. 날짜 (JSON 데이터 활용 가능)
+                    // 1. 인사말 영역
                     Text(
-                      '오늘의 기록,', // 날짜 데이터가 있다면 report.date 등으로 교체
+                      '오늘의 기록,',
                       style: AppTextStyles.body16.copyWith(
                         color: AppColors.mainFont,
                       ),
@@ -117,7 +148,7 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 32),
 
-                    // 2. 향수 설명 영역 (JSON 데이터 적용)
+                    // 2. 향수 설명 영역
                     Row(
                       children: [
                         const SizedBox(width: 24),
@@ -125,7 +156,7 @@ class _DiaryAnalysisState extends State<Test> {
                           'assets/icons/perfume.png',
                           height: 52,
                           width: 52,
-                          color: _hexToColor(report.color), // 분석된 감정 색상 적용
+                          color: _hexToColor(report.color),
                           errorBuilder: (context, error, stackTrace) => Icon(
                             Icons.wine_bar,
                             size: 52,
@@ -138,14 +169,14 @@ class _DiaryAnalysisState extends State<Test> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${report.scent}가???? 어울리는 하루였군요!',
+                                '${report.scent}가 어울리는 하루였군요!',
                                 style: AppTextStyles.body18SemiBold.copyWith(
                                   color: AppColors.mainFont,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                report.description, // Python에서 보낸 랜덤 워딩
+                                report.description,
                                 style: AppTextStyles.body12.copyWith(
                                   color: AppColors.mainFont,
                                 ),
@@ -158,7 +189,7 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 32),
 
-                    // 3. 해시태그 바 (JSON의 tags 리스트 활용)
+                    // 3. 해시태그 바
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -177,7 +208,7 @@ class _DiaryAnalysisState extends State<Test> {
                               (tag) => Text(
                                 tag,
                                 style: AppTextStyles.body18SemiBold.copyWith(
-                                  color: AppColors.mainFont, // 강조색 적용
+                                  color: AppColors.mainFont,
                                 ),
                               ),
                             )
@@ -187,7 +218,14 @@ class _DiaryAnalysisState extends State<Test> {
 
                     const SizedBox(height: 32),
 
-                    // 4. 메인 분석 결과 카드 (감정 그래프 구현)
+                    // [수정] 파이 차트 영역 (해시태그 아래로 이동)
+                    Center(
+                      child: _buildDonutChart(report.emotions, report.color),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // 4. 메인 분석 결과 카드
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -204,13 +242,12 @@ class _DiaryAnalysisState extends State<Test> {
                               color: AppColors.mainFont,
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          // 감정 리스트를 반복문으로 그래프 생성
+                          const SizedBox(height: 24),
                           ...report.emotions.map(
                             (emotion) => _buildEmotionBar(
                               emotion.label,
                               emotion.score,
-                              report.color,
+                              _getIndividualColor(emotion.label, report.color),
                             ),
                           ),
                         ],
@@ -238,29 +275,49 @@ class _DiaryAnalysisState extends State<Test> {
     );
   }
 
-  // 감정 그래프 위젯 분리
-  Widget _buildEmotionBar(String label, double score, String hexColor) {
+  Widget _buildEmotionBar(String label, double score, Color barColor) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: AppTextStyles.body12),
-              Text('${(score * 100).toInt()}%', style: AppTextStyles.body12),
+              Text(
+                label,
+                style: AppTextStyles.body18SemiBold.copyWith(
+                  color: AppColors.mainFont,
+                ),
+              ),
+              Text(
+                '${(score * 100).toInt()}%',
+                style: AppTextStyles.body14.copyWith(color: AppColors.mainFont),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: score,
-              minHeight: 12,
-              backgroundColor: AppColors.background,
-              valueColor: AlwaysStoppedAnimation<Color>(_hexToColor(hexColor)),
-            ),
+          const SizedBox(height: 10),
+          Stack(
+            children: [
+              Container(
+                height: 14,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: score,
+                child: Container(
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: barColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
