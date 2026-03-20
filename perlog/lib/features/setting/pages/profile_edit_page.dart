@@ -6,11 +6,8 @@ import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/models/notification_period.dart';
-import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/core/utils/image_uploader.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
-import 'package:perlog/features/onboarding/widgets/lock_setting_section.dart';
-import 'package:perlog/features/onboarding/widgets/notification_setting_section.dart';
 import 'package:perlog/features/onboarding/widgets/profile_image_picker.dart';
 
 class ProfileEditPage extends StatefulWidget {

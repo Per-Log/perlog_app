@@ -39,12 +39,16 @@ class SettingsSection extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          ...items.map(
-            (item) => SettingsItem(
+          ...items.map((item) {
+            if (item["widget"] != null) {
+              return item["widget"] as Widget;
+            }
+
+            return SettingsItem(
               title: item["title"],
               onTap: item["onTap"],
-            ),
-          ),
+            );
+          }).toList(),
         ],
       ),
     );

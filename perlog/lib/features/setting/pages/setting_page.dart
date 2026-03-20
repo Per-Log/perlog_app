@@ -3,11 +3,21 @@ import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/core/models/notification_period.dart';
 import 'package:perlog/core/router/routes.dart';
+import 'package:perlog/features/onboarding/widgets/notification_period_sheet.dart';
 import 'package:perlog/features/setting/widgets/settings_section.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({super.key});
+
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  bool notificationEnabled = true;
+  NotificationPeriod _period = NotificationPeriod.oneDay;
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +49,21 @@ class Settings extends StatelessWidget {
               items: [
                 {
                   "title": "알림 주기 설정",
-                  "onTap": () {}, // 하단 바
+                  "onTap": () {
+                    showNotificationPeriodSheet(
+                      context: context,
+                      current: _period,
+                      onSelected: (value) {
+                        setState(() {
+                          _period = value;
+                        });
+                      },
+                    );
+                  },
                 },
                 {
                   "title": "시스템 알림 설정",
-                  "onTap": () {}, // 시스템 연결
+                  "onTap": () {},
                 },
               ],
             ),
@@ -55,7 +75,7 @@ class Settings extends StatelessWidget {
               items: [
                 {
                   "title": "About Perlog",
-                  "onTap": () {}, // 웹 연결 (노션)
+                  "onTap": () {},
                 },
                 {
                   "title": "앱 튜토리얼",
@@ -63,11 +83,11 @@ class Settings extends StatelessWidget {
                 },
                 {
                   "title": "개인정보 처리 방침",
-                  "onTap": () {}, // 웹 연결 (노션)
+                  "onTap": () {},
                 },
                 {
                   "title": "라이선스",
-                  "onTap": () {}, // 웹 연결 (노션) / 팝업 처리
+                  "onTap": () {},
                 },
               ],
             ),
