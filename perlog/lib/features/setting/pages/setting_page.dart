@@ -36,7 +36,11 @@ class _SettingsState extends State<Settings> {
                   "onTap": () => context.push('${Routes.settings}/${Routes.settingsProfile}'),
                 },
                 {
-                  "title": "잠금 설정",
+                  "title": "잠금 사용 설정",
+                  "onTap": () {},
+                },
+                {
+                  "title": "비밀번호 변경",
                   "onTap": () => context.push('${Routes.settings}/${Routes.settingsPinCheck}'),
                 },
               ],
@@ -47,6 +51,10 @@ class _SettingsState extends State<Settings> {
             SettingsSection(
               title: "앱 설정",
               items: [
+                {
+                  "title": "알림 사용 설정",
+                  "onTap": () {},
+                },
                 {
                   "title": "알림 주기 설정",
                   "onTap": () {
