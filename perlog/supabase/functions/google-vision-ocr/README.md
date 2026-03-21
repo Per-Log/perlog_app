@@ -8,13 +8,11 @@
 3. Vision API `images:annotate`에 `image.content` + `TEXT_DETECTION`으로 요청
 
 ## 배포 전 설정
+- 반드시 perlog/perlog_app/perlog/supabase 내에서 실행
+- .env 파일 포함되어있는지 확인 (경로는 상단과 동일)
 
 ```bash
-npx supabase --version
-npx supabase login
-npx supabase link --project-ref uzpfybxalroyynjhbfis
-npx supabase secrets set GOOGLE_CLOUD_VISION_API_KEY=""
-npx supabase functions deploy google-vision-ocr
+make deploy
 ```
 
 ## 호출 payload
