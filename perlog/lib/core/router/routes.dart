@@ -33,6 +33,7 @@ class Routes {
   static const imageUploadFinished = 'image-upload-finished';
   static const imageUploadEdit = 'image-upload-edit';
   static const ocrLoading = 'ocr-loading';
+  static const ocrCheck = 'ocr-check';
   static const diaryAnalysis = 'diary-analysis';
   static const test = 'test';
 

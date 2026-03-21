@@ -51,6 +51,13 @@ final metadataRoutes = [
         ),
       ),
       GoRoute(
+        path: Routes.ocrCheck,
+        pageBuilder: (context, state) => fadeTransitionPage(
+          key: state.pageKey,
+          child: OCRCheckPage(args: state.extra as MetadataImageData?),
+        ),
+      ),
+      GoRoute(
         path: Routes.diaryAnalysis,
         pageBuilder: (context, state) => fadeTransitionPage(
           key: state.pageKey,
