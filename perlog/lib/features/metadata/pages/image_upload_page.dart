@@ -24,8 +24,8 @@ class ImageUpload extends StatefulWidget {
 }
 
 class _ImageUploadState extends State<ImageUpload> {
-  static const double _minAllowedAspectRatio = 0.3;
-  static const double _maxAllowedAspectRatio = 3.0;
+  static const double _minAllowedAspectRatio = 0.4;
+  static const double _maxAllowedAspectRatio = 4.0;
   final _imageUploader = ImageUploader();
 
   bool _isUploading = false;
