@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/features/chatbot/widgets/chat_bubble.dart';
 import 'package:perlog/features/chatbot/widgets/chat_input_field.dart';
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
+import 'package:perlog/core/router/routes.dart';
 
 class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
@@ -24,10 +28,12 @@ class _ChatbotState extends State<Chatbot> {
 
   int _currentStep = 0;
   final List<String> _answers = [];
-
   late List<Map<String, dynamic>> _messages;
 
+  bool _isFinished = false;
   bool _hasText = false;
+  bool _showButton = false;
+
   static const double chatMaxWidthRatio = 0.75;
 
   @override
@@ -86,6 +92,15 @@ class _ChatbotState extends State<Chatbot> {
             'text': "오늘 이야기를 잘 들었어요. 정리해볼게요...",
             'isMe': false,
           });
+
+          _isFinished = true;
+
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (!mounted) return;
+            setState(() {
+              _showButton = true;
+            });
+          });
         }
       });
 
@@ -130,11 +145,39 @@ class _ChatbotState extends State<Chatbot> {
 
       bottomNavigationBar: Padding(
         padding: AppSpacing.bottomButtonPadding(context),
-        child: ChatInputField(
-          controller: _controller,
-          hasText: _hasText,
-          onSend: _sendMessage,
-        ),
+        child: _isFinished
+            ? AnimatedOpacity(
+                duration: const Duration(milliseconds: 400),
+                opacity: _showButton ? 1 : 0,
+                child: AnimatedSlide(
+                  duration: const Duration(milliseconds: 400),
+                  offset: _showButton
+                      ? Offset.zero
+                      : const Offset(0, 0.3), 
+                  child: BottomButton(
+                    text: "오늘의 일기 등록하기",
+                    onPressed: () {
+                      final diaryText = _answers.join('\n');
+
+                      context.go(
+                        Routes.chatbotToDiary,
+                        extra: MetadataImageData(
+                          selectedDate: DateTime.now(),
+                          ocrText: diaryText,
+                        ),
+                      );
+                    },
+                    backgroundColor: AppColors.subBackground,
+                    borderColor: AppColors.mainFont,
+                    textColor: AppColors.mainFont,
+                  ),
+                ),
+              )
+            : ChatInputField(
+                controller: _controller,
+                hasText: _hasText,
+                onSend: _sendMessage,
+              ),
       ),
     );
   }
