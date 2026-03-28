@@ -58,8 +58,6 @@ class _MyDiaryState extends State<MyDiary> {
 
     final monthLabel = DateFormat('yyyy년 MM월', 'ko_KR').format(_focusedDay);
 
-    final selectedFormattedDate = DateFormat('yyyy년 M월 d일 E요일', 'ko_KR').format(_selectedDay);
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(

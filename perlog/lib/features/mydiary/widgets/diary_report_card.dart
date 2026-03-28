@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/features/mydiary/ui/diary_fonts.dart';
 import 'package:perlog/features/mydiary/ui/diary_text_styles.dart';
