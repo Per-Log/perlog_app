@@ -6,27 +6,31 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 
 /// PIN 번호 입력을 위한 공통 레이아웃 위젯
+// PinEntryContent.dart
+
 class PinEntryContent extends StatefulWidget {
   const PinEntryContent({
     super.key,
-    required this.title, // 화면 중앙에 표시될 제목
-    required this.buttonText, // 하단 확인 버튼에 들어갈 문구
-    required this.onSubmit, // PIN 입력 완료 후 버튼을 눌렀을 때의 동작
-    this.onBack, // 이전 버튼 동작
+    required this.title,
+    required this.buttonText,
+    required this.onSubmit,
+    this.onBack,
     this.showBackButton = true,
-    this.pinLength = 4, // 입력받을 PIN의 길이
+    this.pinLength = 4,
     this.contentPadding,
   });
 
   final String title;
   final String buttonText;
-  final VoidCallback onSubmit;
+
+  /// 🔥 핵심: PIN 전달
+  final Function(String pin) onSubmit;
+
   final VoidCallback? onBack;
   final bool showBackButton;
   final int pinLength;
   final EdgeInsetsGeometry? contentPadding;
 
-  // 위 내용 받아서 아래로 상속
   @override
   State<PinEntryContent> createState() => _PinEntryContentState();
 }
@@ -36,18 +40,13 @@ class _PinEntryContentState extends State<PinEntryContent> {
 
   bool get _isComplete => _digits.length == widget.pinLength;
 
-  // pin 네 자리 이상일 시 cutting 로직
   void _addDigit(int digit) {
-    if (_digits.length >= widget.pinLength) {
-      return;
-    }
+    if (_digits.length >= widget.pinLength) return;
     setState(() => _digits.add(digit));
   }
 
   void _removeDigit() {
-    if (_digits.isEmpty) {
-      return;
-    }
+    if (_digits.isEmpty) return;
     setState(() => _digits.removeLast());
   }
 
@@ -63,24 +62,20 @@ class _PinEntryContentState extends State<PinEntryContent> {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: Visibility(
-                  visible: widget.showBackButton,
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: GestureDetector(
-                    onTap: widget.onBack ??
-                        () => Navigator.of(context).maybePop(),
-                    child: Text(
-                      '이전',
-                      style: AppTextStyles.body16.copyWith(
-                        color: AppColors.subFont,
-                      ),
+                child: GestureDetector(
+                  onTap: widget.onBack ??
+                      () => Navigator.of(context).maybePop(),
+                  child: Text(
+                    '이전',
+                    style: AppTextStyles.body16.copyWith(
+                      color: AppColors.subFont,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: AppSpacing.large(context)+30),
+
+              SizedBox(height: AppSpacing.large(context) + 30),
+
               Center(
                 child: Text(
                   widget.title,
@@ -89,7 +84,9 @@ class _PinEntryContentState extends State<PinEntryContent> {
                   ),
                 ),
               ),
+
               SizedBox(height: AppSpacing.large(context)),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(widget.pinLength, (index) {
@@ -100,29 +97,40 @@ class _PinEntryContentState extends State<PinEntryContent> {
                     margin: const EdgeInsets.symmetric(horizontal: 17),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isFilled ? AppColors.mainFont : AppColors.subFont,
+                      color: isFilled
+                          ? AppColors.mainFont
+                          : AppColors.subFont,
                     ),
                   );
                 }),
               ),
-              SizedBox(height: AppSpacing.large(context)+20),
+
+              SizedBox(height: AppSpacing.large(context) + 20),
+
               _PinKeypad(
                 onDigitPressed: _addDigit,
                 onBackspacePressed: _removeDigit,
               ),
+
               const Spacer(),
             ],
           ),
         ),
       ),
+
+      /// 🔥 핵심 버튼
       bottomNavigationBar: SafeArea(
-        top: false,
         child: Padding(
           padding: AppSpacing.bottomButtonPadding(context),
           child: BottomButton(
             text: widget.buttonText,
             enabled: _isComplete,
-            onPressed: widget.onSubmit,
+            onPressed: () {
+              if (!_isComplete) return;
+
+              final pin = _digits.join();
+              widget.onSubmit(pin);
+            },
             backgroundColor: _isComplete
                 ? AppColors.subBackground
                 : AppColors.background,

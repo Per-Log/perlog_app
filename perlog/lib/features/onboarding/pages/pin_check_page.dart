@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/features/onboarding/widgets/pin_entry_content.dart';
-import '../../../core/router/routes.dart';
+import 'package:perlog/domain/lock/lock_service.dart';
+import 'package:perlog/core/router/routes.dart';
 
 class PinCheckPage extends StatelessWidget {
   const PinCheckPage({super.key});
@@ -12,8 +13,23 @@ class PinCheckPage extends StatelessWidget {
       title: '비밀번호를 입력해주세요.',
       buttonText: '확인',
       showBackButton: false,
-      onSubmit: () {
-        // TODO: PIN 검증 로직 연결
+
+      onSubmit: (inputPin) async {
+        final savedPin = await LockService.getPin();
+
+        if (savedPin == null) {
+          context.go(Routes.home);
+          return;
+        }
+
+        if (inputPin != savedPin) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('비밀번호가 틀렸습니다.')),
+          );
+          return;
+        }
+
+        if (!context.mounted) return;
         context.go(Routes.home);
       },
     );

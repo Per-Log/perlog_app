@@ -30,6 +30,10 @@ class LockService {
     await SecureStorageService.deletePin();
   }
 
+  static Future<String?> getPin() async {
+    return await SecureStorageService.getPinHash();
+  }
+
   // 실제 잠금 상태
   static Future<bool> shouldLock() async {
   final enabled = await isLockEnabled();
