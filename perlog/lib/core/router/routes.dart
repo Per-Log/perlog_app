@@ -37,6 +37,8 @@ class Routes {
   static const ocrCheck = 'ocr-check';
   static const diaryAnalysis = 'diary-analysis';
   static const test = 'test';
+  static const test_supabase = 'test_supabase';
+
 
   /// My Diary
   static const myDiaryMain = '/my-main';
