@@ -25,6 +25,7 @@ class Routes {
   /// Chatbot
   static const chatbot = '/chatbot';
   static const chatbotUse = '/chatbot-use';
+  static const chatbotToDiary = '/chatbot-to-diary';
 
   /// Metadata
   static const metadata = '/metadata';

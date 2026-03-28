@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:perlog/features/chatbot/widgets/chat_bubble.dart';
+import 'package:perlog/features/chatbot/widgets/chat_input_field.dart';
+import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
+import 'package:perlog/core/router/routes.dart';
 
 class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
@@ -14,16 +19,31 @@ class _ChatbotState extends State<Chatbot> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final List<Map<String, dynamic>> _messages = [
-    {'text': '안녕하세요! 오늘 하루는 어떠셨나요?', 'isMe': false},
+  final List<String> _questions = [
+    "오늘 가장 기억에 남는 일을 하나만 떠올려볼까요?",
+    "그 일을 떠올렸을 때 어떤 감정이 들었나요?",
+    "그 경험이 당신에게 어떤 의미로 남을 것 같나요?",
+    "오늘 하루를 돌아봤을 때 스스로에게 해주고 싶은 말이 있다면요?",
   ];
 
+  int _currentStep = 0;
+  final List<String> _answers = [];
+  late List<Map<String, dynamic>> _messages;
+
+  bool _isFinished = false;
   bool _hasText = false;
+  bool _showButton = false;
+
   static const double chatMaxWidthRatio = 0.75;
 
   @override
   void initState() {
     super.initState();
+
+    _messages = [
+      {'text': _questions[0], 'isMe': false},
+    ];
+
     _controller.addListener(() {
       setState(() {
         _hasText = _controller.text.isNotEmpty;
@@ -50,19 +70,38 @@ class _ChatbotState extends State<Chatbot> {
 
     setState(() {
       _messages.add({'text': userText, 'isMe': true});
+      _answers.add(userText);
       _controller.clear();
     });
 
     _scrollToBottom();
 
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       if (!mounted) return;
 
       setState(() {
-        _messages.add({
-          'text': '정말 멋진 하루네요! 더 자세히 들려주실 수 있나요?',
-          'isMe': false,
-        });
+        _currentStep++;
+
+        if (_currentStep < _questions.length) {
+          _messages.add({
+            'text': _questions[_currentStep],
+            'isMe': false,
+          });
+        } else {
+          _messages.add({
+            'text': "오늘 이야기를 잘 들었어요. 정리해볼게요...",
+            'isMe': false,
+          });
+
+          _isFinished = true;
+
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (!mounted) return;
+            setState(() {
+              _showButton = true;
+            });
+          });
+        }
       });
 
       _scrollToBottom();
@@ -82,7 +121,6 @@ class _ChatbotState extends State<Chatbot> {
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: true,
 
-      /// 🔹 채팅 리스트
       body: Column(
         children: [
           Expanded(
@@ -92,96 +130,54 @@ class _ChatbotState extends State<Chatbot> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final msg = _messages[index];
-                return _buildChatBubble(msg['text'], msg['isMe']);
+
+                return ChatBubble(
+                  message: msg['text'],
+                  isMe: msg['isMe'],
+                  maxWidth:
+                      MediaQuery.of(context).size.width * chatMaxWidthRatio,
+                );
               },
             ),
           ),
         ],
       ),
 
-      /// 🔥 입력창을 여기로 이동
       bottomNavigationBar: Padding(
         padding: AppSpacing.bottomButtonPadding(context),
-        child: _buildInputField(),
-      ),
-    );
-  }
+        child: _isFinished
+            ? AnimatedOpacity(
+                duration: const Duration(milliseconds: 400),
+                opacity: _showButton ? 1 : 0,
+                child: AnimatedSlide(
+                  duration: const Duration(milliseconds: 400),
+                  offset: _showButton
+                      ? Offset.zero
+                      : const Offset(0, 0.3), 
+                  child: BottomButton(
+                    text: "오늘의 일기 등록하기",
+                    onPressed: () {
+                      final diaryText = _answers.join('\n');
 
-Widget _buildInputField() {
-  return SizedBox(
-    width: MediaQuery.of(context).size.width * chatMaxWidthRatio,
-    child: TextField(
-      controller: _controller,
-      keyboardType: TextInputType.multiline,
-      textInputAction: TextInputAction.newline,
-      minLines: 1,
-      maxLines: 5, // 원하는 만큼 조절
-      style: AppTextStyles.body16.copyWith(
-        color: AppColors.mainFont,
-      ),
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 14,
-        ),
-        hintText: '오늘은 어떤 하루였나요?',
-        hintStyle: AppTextStyles.body16.copyWith(
-          color: AppColors.subFont,
-        ),
-        suffixIcon: IconButton(
-          onPressed: _hasText ? _sendMessage : null,
-          icon: Icon(
-            Icons.arrow_circle_right,
-            size: 28,
-            color: _hasText
-                ? AppColors.mainFont
-                : AppColors.subFont,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: AppColors.subFont,
-            width: 1.5,
-          ),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: AppColors.mainFont,
-            width: 1.5,
-          ),
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-    ),
-  );
-}
-
-  Widget _buildChatBubble(String message, bool isMe) {
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        padding:
-            const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * chatMaxWidthRatio
-        ),
-        decoration: BoxDecoration(
-          color: isMe
-              ? AppColors.background
-              : AppColors.subBackground,
-          border: isMe
-              ? Border.all(color: AppColors.mainFont)
-              : null,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(15),
-          ),
-        ),
-        child: Text(
-          message,
-          style: AppTextStyles.body16.copyWith(color: AppColors.mainFont), // medium 적용할지 상의 TODO
-        ),
+                      context.go(
+                        Routes.chatbotToDiary,
+                        extra: MetadataImageData(
+                          selectedDate: DateTime.now(),
+                          ocrText: diaryText,
+                        ),
+                      );
+                    },
+                    backgroundColor: AppColors.subBackground,
+                    borderColor: AppColors.mainFont,
+                    textColor: AppColors.mainFont,
+                  ),
+                ),
+              )
+            : ChatInputField(
+                controller: _controller,
+                hasText: _hasText,
+                onSend: _sendMessage,
+              ),
       ),
     );
   }
