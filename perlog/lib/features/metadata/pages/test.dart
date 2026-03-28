@@ -8,8 +8,6 @@ import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/core/models/analysis.dart';
-
-/*
 import 'package:fl_chart/fl_chart.dart';
 
 Widget buildPrettyBarChart(List<EmotionScore> emotions, Color mainColor) {
@@ -46,7 +44,7 @@ Widget buildPrettyBarChart(List<EmotionScore> emotions, Color mainColor) {
     ),
   );
 }
-*/
+
 class Test extends StatefulWidget {
   const Test({super.key});
 
