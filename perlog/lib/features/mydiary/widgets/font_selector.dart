@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/features/mydiary/ui/diary_fonts.dart';
+import 'package:perlog/features/mydiary/ui/diary_text_styles.dart';
 
 class FontSelector extends StatelessWidget {
   final String selectedFont;
@@ -34,9 +35,9 @@ class FontSelector extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                selectedFont,
-                style: AppTextStyles.body16.copyWith(
-                  color: AppColors.mainFont,
+                DiaryFonts.getDisplayName(selectedFont),
+                style: DiaryTextStyles.preview(
+                  fontFamily: selectedFont,
                 ),
               ),
             ),

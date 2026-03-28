@@ -127,6 +127,50 @@ flutter:
       fonts:
         - asset: assets/fonts/Paperlogy-6SemiBold.ttf
           weight: 600
+          
+    - family: DiaryNanumPen
+      fonts:
+        - asset: assets/diaryfonts/NanumPen.ttf
+
+    - family: DiaryHiMelody
+      fonts:
+        - asset: assets/diaryfonts/HiMelody-Regular.ttf
+
+    - family: DiaryGriun
+      fonts:
+        - asset: assets/diaryfonts/Griun_Myoeunddobak-Rg.ttf
+
+    - family: DiaryHakgyo
+      fonts:
+        - asset: assets/diaryfonts/HakgyoansimKkokkomaR.ttf
+
+    - family: DiaryKangwon
+      fonts:
+        - asset: assets/diaryfonts/KangwoneduSaeEum.ttf
+
+    - family: DiaryMaeil
+      fonts:
+        - asset: assets/diaryfonts/Maeil_Okja.ttf
+
+    - family: DiarySSAnt
+      fonts:
+        - asset: assets/diaryfonts/SSAntRegular.ttf
+
+    - family: DiarySSRONET
+      fonts:
+        - asset: assets/diaryfonts/SSRONET_Handwritten.ttf
+
+    - family: DiaryYoonDaehan
+      fonts:
+        - asset: assets/diaryfonts/YoonChildfundkoreaDaeHan.ttf
+
+    - family: DiaryYoonManseh
+      fonts:
+        - asset: assets/diaryfonts/YoonChildfundkoreaManSeh.ttf
+
+    - family: DiaryYoonMinguk
+      fonts:
+        - asset: assets/diaryfonts/YoonChildfundkoreaMinGuk.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
