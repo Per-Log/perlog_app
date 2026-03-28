@@ -10,17 +10,17 @@ import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/core/models/analysis.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class Test extends StatefulWidget {
-  const Test({super.key});
+class TestWe extends StatefulWidget {
+  const TestWe({super.key});
 
   @override
-  State<Test> createState() => _DiaryAnalysisState();
+  State<TestWe> createState() => _DiaryAnalysisState();
 }
 
-class _DiaryAnalysisState extends State<Test> {
+class _DiaryAnalysisState extends State<TestWe> {
   Map<String, String> _chartColors = {};
+  Map<String, dynamic> _mappedData = {};
 
-  // 감정 정렬 우선순위 리스트
   final List<String> _orderedEmotionLabels = [
     "화남/분노",
     "증오/혐오",
@@ -55,15 +55,16 @@ class _DiaryAnalysisState extends State<Test> {
     "기쁨",
   ];
 
-  // 1. 데이터 로드 (현재/이전 데이터 비교를 위해 통합 로드)
   Future<Map<String, dynamic>> _loadAnalysisData() async {
     final results = await Future.wait([
       rootBundle.loadString('data/chart_color.json'),
       rootBundle.loadString('data/diary_emotions.json'),
+      rootBundle.loadString('data/mapped.json'),
     ]);
 
     _chartColors = Map<String, String>.from(json.decode(results[0]));
     final List<dynamic> emotionData = json.decode(results[1]);
+    _mappedData = json.decode(results[2]);
 
     final current = EmotionReport.fromJson(emotionData.last);
     final previous = emotionData.length > 1
@@ -73,7 +74,6 @@ class _DiaryAnalysisState extends State<Test> {
     return {"current": current, "previous": previous};
   }
 
-  // 2. 조사 판단 함수
   String _getJosa(String word, String josa1, String josa2) {
     if (word.isEmpty) return josa1;
     int lastCode = word.codeUnitAt(word.length - 1);
@@ -81,11 +81,8 @@ class _DiaryAnalysisState extends State<Test> {
     return (lastCode - 0xAC00) % 28 > 0 ? josa1 : josa2;
   }
 
-  // 3. 동적 성장 코멘트 로직
   String _getGrowthComment(EmotionReport current, EmotionReport? previous) {
     if (previous == null) return "첫 번째 기록이네요! 앞으로의 변화를 기대해 주세요.";
-
-    // 예시: 기쁨 점수 비교
     double currentJoy = current.emotions
         .firstWhere(
           (e) => e.label == '기쁨',
@@ -99,21 +96,20 @@ class _DiaryAnalysisState extends State<Test> {
         )
         .score;
 
-    if (currentJoy > prevJoy + 0.05) {
-      return "지난 기록보다 긍정적인 감정 선이 부드럽게 상승하고 있어요.";
-    } else if (currentJoy < prevJoy - 0.05) {
+    if (currentJoy > prevJoy + 0.05) return "지난 기록보다 긍정적인 감정 선이 부드럽게 상승하고 있어요.";
+    if (currentJoy < prevJoy - 0.05)
       return "오늘은 조금 가라앉은 기분이지만, 내일은 다시 피어날 거예요.";
-    } else {
-      return "평온한 감정 상태가 아주 잘 유지되고 있네요!";
-    }
+    return "평온한 감정 상태가 아주 잘 유지되고 있네요!";
   }
 
   Color _hexToColor(String hex) =>
       Color(int.parse(hex.replaceFirst('#', '0xff')));
 
-  Color _getIndividualColor(String label, String defaultHex) {
-    final hex = _chartColors[label] ?? defaultHex;
-    return _hexToColor(hex);
+  Color _getEmotionMappedColor(String label, String defaultHex) {
+    if (_mappedData.containsKey(label)) {
+      return _hexToColor(_mappedData[label]['color']);
+    }
+    return _hexToColor(defaultHex);
   }
 
   @override
@@ -169,10 +165,17 @@ class _DiaryAnalysisState extends State<Test> {
                         Row(
                           children: [
                             const SizedBox(width: 24),
-                            Icon(
-                              Icons.wine_bar,
-                              size: 52,
+                            Image.asset(
+                              'assets/icons/perfume.png',
+                              height: 52,
+                              width: 52,
                               color: mainReportColor,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(
+                                    Icons.wine_bar,
+                                    size: 52,
+                                    color: mainReportColor,
+                                  ),
                             ),
                             const SizedBox(width: 20),
                             Expanded(
@@ -210,7 +213,6 @@ class _DiaryAnalysisState extends State<Test> {
                         ),
                         const SizedBox(height: 32),
 
-                        // 메인 분석 카드 (성장 과정 + 게이지)
                         _buildMainAnalysisCard(
                           current,
                           previous,
@@ -218,7 +220,6 @@ class _DiaryAnalysisState extends State<Test> {
                         ),
                         const SizedBox(height: 20),
 
-                        // 전체 상세 감정 리스트 카드
                         _buildAllEmotionsCard(current),
                         const SizedBox(height: 20),
                       ],
@@ -226,7 +227,6 @@ class _DiaryAnalysisState extends State<Test> {
                   ),
                 ),
 
-                // 하단 버튼
                 Padding(
                   padding: EdgeInsets.fromLTRB(
                     AppSpacing.horizontal,
@@ -251,7 +251,93 @@ class _DiaryAnalysisState extends State<Test> {
     );
   }
 
-  // --- 위젯 분리 파트 ---
+  // --- 입체감(3D)과 애니메이션이 적용된 바 차트 ---
+  Widget _buildLongEmotionBar(String label, double score, Color barColor) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: AppTextStyles.body14.copyWith(color: AppColors.mainFont),
+              ),
+              Text(
+                '${(score * 100).toInt()}%',
+                style: AppTextStyles.body12.copyWith(color: Colors.grey[500]),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: score),
+            duration: const Duration(milliseconds: 1200),
+            curve: Curves.easeOutQuart, // 자연스럽게 감속하며 차오르는 효과
+            builder: (context, value, child) {
+              return Stack(
+                children: [
+                  // 배경 트랙 (그림자 효과로 깊이감 부여)
+                  Container(
+                    height: 14,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  // 실제 채워지는 3D 바
+                  FractionallySizedBox(
+                    widthFactor: value.clamp(0.0, 1.0),
+                    child: Container(
+                      height: 14,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        // 세로 그라데이션으로 원통형 입체감 구현
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            barColor.withOpacity(0.6), // 상단 하이라이트
+                            barColor, // 본체 색상
+                            barColor.withOpacity(0.8), // 하단 그림자
+                          ],
+                          stops: const [0.0, 0.4, 1.0],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: barColor.withOpacity(0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      // 하단에 살짝 광택을 더함
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.white.withOpacity(0.2),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.5],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildMainAnalysisCard(
     EmotionReport report,
@@ -302,7 +388,7 @@ class _DiaryAnalysisState extends State<Test> {
             (e) => _buildLongEmotionBar(
               e.label,
               e.score,
-              _getIndividualColor(e.label, report.color),
+              _getEmotionMappedColor(e.label, report.color),
             ),
           ),
         ],
@@ -344,7 +430,7 @@ class _DiaryAnalysisState extends State<Test> {
             (e) => _buildLongEmotionBar(
               e.label,
               e.score,
-              _getIndividualColor(e.label, report.color),
+              _getEmotionMappedColor(e.label, report.color),
             ),
           ),
         ],
@@ -352,62 +438,6 @@ class _DiaryAnalysisState extends State<Test> {
     );
   }
 
-  // 바를 길게 보여주는 통합 위젯
-  Widget _buildLongEmotionBar(String label, double score, Color barColor) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: AppTextStyles.body14.copyWith(color: AppColors.mainFont),
-              ),
-              Text(
-                '${(score * 100).toInt()}%',
-                style: AppTextStyles.body12.copyWith(color: Colors.grey[500]),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(begin: 0, end: score),
-            duration: const Duration(milliseconds: 1000),
-            builder: (context, value, child) {
-              return Stack(
-                children: [
-                  Container(
-                    height: 10,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  FractionallySizedBox(
-                    widthFactor: value,
-                    child: Container(
-                      height: 10,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [barColor.withOpacity(0.7), barColor],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 기존 차트/태그 위젯
   Widget _buildTagBar(List<String> tags) {
     return Container(
       width: double.infinity,
@@ -450,7 +480,7 @@ class _DiaryAnalysisState extends State<Test> {
               sections: emotions
                   .map(
                     (e) => PieChartSectionData(
-                      color: _getIndividualColor(e.label, defaultHex),
+                      color: _getEmotionMappedColor(e.label, defaultHex),
                       value: e.score,
                       radius: 30,
                       title: '',

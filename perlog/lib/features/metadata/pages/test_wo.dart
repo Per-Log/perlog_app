@@ -2,212 +2,190 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:fl_chart/fl_chart.dart';
+import 'package:perlog/core/constants/colors.dart';
+import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/core/constants/spacing.dart';
+import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/widgets/bottom_button.dart';
+import 'package:perlog/core/models/analysis.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-// --- [📡 API 서비스: 다인님의 FastAPI 서버용] ---
-class ApiService {
-  // 안드로이드 에뮬레이터에서 내 컴퓨터 서버에 접속하는 주소
-  static const String baseUrl = "http://10.0.2.2:8000/analyze";
+class TestWo extends StatefulWidget {
+  final String diaryText;
+  const TestWo({super.key, this.diaryText = "오늘은 정말 행복한 하루였어!"});
 
-  Future<Map<String, dynamic>> analyzeDiary(String content) async {
+  @override
+  State<TestWo> createState() => _DiaryAnalysisState();
+}
+
+class _DiaryAnalysisState extends State<TestWo> {
+  Map<String, dynamic> _mappedData = {};
+
+  // --- [핵심: Gemini 분석 결과를 받아서 Flutter 로컬 데이터와 결합] ---
+  Future<Map<String, dynamic>> _loadAnalysisFromServer() async {
+    // 1. 로컬 설정 데이터 로드 (색상/향수 매핑 테이블)
+    final mappingJson = await rootBundle.loadString('data/mapped.json');
+    _mappedData = json.decode(mappingJson);
+
+    // 2. FastAPI 서버 호출
+    final url = Uri.parse('http://localhost:8000/analyze');
     try {
       final response = await http.post(
-        Uri.parse(baseUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"user_input_data": content}),
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'user_input_data': widget.diaryText}),
       );
 
       if (response.statusCode == 200) {
-        // 서버 응답(UTF-8)을 디코딩하여 JSON으로 변환
-        return jsonDecode(utf8.decode(response.bodyBytes));
+        final data = json.decode(utf8.decode(response.bodyBytes));
+
+        // [Gemini 데이터 추출]
+        final String topEmotionLabel =
+            data['emotions'][0]['label']; // Gemini가 뽑은 1순위 감정
+        final String description = data['description'] ?? ""; // Gemini의 공감 문구
+        final List<String> tags = List<String>.from(data['tags'] ?? []);
+
+        // [로컬 매핑 데이터 적용]
+        // Gemini가 준 감정 이름을 key로 사용하여 로컬의 색상과 향수 이름을 가져옴
+        final String mappedColor =
+            _mappedData[topEmotionLabel]?['color'] ?? "#FFFFFF";
+        final String mappedScent =
+            _mappedData[topEmotionLabel]?['scent'] ?? "Unknown Scent";
+
+        final emotionsList = data['emotions'] as List;
+
+        final current = EmotionReport(
+          text: widget.diaryText, // 추가: 원문 텍스트
+          topEmotion: topEmotionLabel, // 추가: 1순위 감정명
+          scent: data['scent'] ?? "Unknown",
+          color: data['color'] ?? "#FFFFFF",
+          description: data['description'] ?? "",
+          tags: List<String>.from(data['tags'] ?? []),
+          emotions: emotionsList
+              .map(
+                (e) => EmotionScore(
+                  label: e['label'],
+                  score: (e['score'] as num).toDouble(),
+                ),
+              )
+              .toList(),
+        );
+
+        // 과거 히스토리 데이터 (나의 성장 과정용)
+        final historyJson = await rootBundle.loadString(
+          'data/diary_emotions.json',
+        );
+        final List<dynamic> historyData = json.decode(historyJson);
+        final previous = historyData.isNotEmpty
+            ? EmotionReport.fromJson(historyData.last)
+            : null;
+
+        return {"current": current, "previous": previous};
       } else {
-        throw Exception("서버 응답 오류: ${response.statusCode}");
+        throw Exception('서버 응답 오류');
       }
     } catch (e) {
-      print("❌ 연결 에러: $e");
-      return {"error": "서버 연결에 실패했습니다."};
+      debugPrint("분석 에러: $e");
+      rethrow;
     }
   }
-}
 
-class Test extends StatefulWidget {
-  const Test({super.key});
+  Color _hexToColor(String hex) =>
+      Color(int.parse(hex.replaceFirst('#', '0xff')));
 
-  @override
-  State<Test> createState() => _DiaryAnalysisState();
-}
-
-class _DiaryAnalysisState extends State<Test> {
-  Map<String, String> _chartColors = {};
-
-  // 💡 [중요] 이전 화면에서 넘겨받아야 할 일기 내용 (지금은 테스트용)
-  final String _inputDiary = "오늘 친구랑 맛있는 거 먹고 산책했는데 정말 행복하고 안심되는 하루였어.";
-
-  // 1. 데이터 로드 로직 (다인님의 서버 데이터 구조에 맞춤)
-  Future<Map<String, dynamic>> _loadAnalysisData() async {
-    // chart_color.json 로드 (기존 로직 유지)
-    final colorJson = await rootBundle.loadString('data/chart_color.json');
-    _chartColors = Map<String, String>.from(json.decode(colorJson));
-
-    // 📡 실시간 서버 호출
-    final result = await ApiService().analyzeDiary(_inputDiary);
-
-    // 성장 그래프용 더미 이전 데이터 (실제 서비스 시 DB에서 불러와야 함)
-    return {"current": result, "previous": null};
-  }
-
-  // --- [기존 유틸리티 함수 유지] ---
-  String _getJosa(String word, String josa1, String josa2) {
-    if (word.isEmpty) return josa1;
-    int lastCode = word.codeUnitAt(word.length - 1);
-    if (lastCode < 0xAC00 || lastCode > 0xD7A3) return josa1;
-    return (lastCode - 0xAC00) % 28 > 0 ? josa1 : josa2;
-  }
-
-  Color _hexToColor(String hex) {
-    if (hex.isEmpty) return Colors.grey;
-    return Color(int.parse(hex.replaceFirst('#', '0xff')));
-  }
-
-  Color _getIndividualColor(String label, String defaultHex) {
-    final hex = _chartColors[label] ?? defaultHex;
-    return _hexToColor(hex);
+  // 감정별 지정된 색상 가져오기
+  Color _getEmotionMappedColor(String label, String defaultHex) {
+    if (_mappedData.containsKey(label)) {
+      return _hexToColor(_mappedData[label]['color']);
+    }
+    return _hexToColor(defaultHex);
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenPadding = AppSpacing.screen(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9), // AppColors.background
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: FutureBuilder<Map<String, dynamic>>(
-          future: _loadAnalysisData(),
+          future: _loadAnalysisFromServer(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (snapshot.hasError ||
-                snapshot.data == null ||
-                snapshot.data!.containsKey('error')) {
+            if (snapshot.hasError) {
               return const Center(
-                child: Text('분석 데이터를 가져오지 못했습니다. 서버를 확인해주세요.'),
+                child: Text('서버와 통신할 수 없습니다.\nPython 서버가 켜져있는지 확인해주세요.'),
               );
             }
 
-            // 서버 응답 데이터 매핑
-            final current = snapshot.data!['current'];
-            final List<String> tags = List<String>.from(current['tags'] ?? []);
-            final List emotionsRaw = current['emotions'] ?? [];
-            final String description = current['description'] ?? "";
-            final String scent = current['scent'] ?? "Woody";
-            final String colorHex = current['color'] ?? "#EDCC77";
-            final String scentMsg = current['scent_message'] ?? "";
-
-            final mainReportColor = _hexToColor(colorHex);
+            final current = snapshot.data!['current'] as EmotionReport;
+            final previous = snapshot.data!['previous'] as EmotionReport?;
+            final mainReportColor = _hexToColor(current.color);
 
             return Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.fromLTRB(
+                      screenPadding.left,
+                      screenPadding.top,
+                      screenPadding.right,
+                      20,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('오늘의 기록,', style: TextStyle(fontSize: 16)),
+                        Text(
+                          '오늘의 기록,',
+                          style: AppTextStyles.body16.copyWith(
+                            color: AppColors.mainFont,
+                          ),
+                        ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           '퍼로그님의 하루예요.',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                          style: AppTextStyles.body22.copyWith(
+                            color: AppColors.mainFont,
                           ),
                         ),
                         const SizedBox(height: 32),
 
-                        // 향수 영역 (서버 데이터 scent, description 연결)
-                        Row(
-                          children: [
-                            const SizedBox(width: 24),
-                            Icon(
-                              Icons.wine_bar,
-                              size: 52,
-                              color: mainReportColor,
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '$scent${_getJosa(scent, "이", "가")} 어울리는 하루였군요!',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    description,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                        // 향수 영역: Gemini가 분석한 내용 + 매칭된 향수 이름
+                        _buildScentSection(current, mainReportColor),
                         const SizedBox(height: 32),
 
-                        // 태그 바 (서버 데이터 tags 연결)
-                        _buildTagBar(tags),
+                        // 태그 영역: Gemini가 뽑은 키워드
+                        _buildTagBar(current.tags),
                         const SizedBox(height: 32),
 
-                        // 도넛 차트 (서버 데이터 emotions 연결)
+                        // 도넛 차트
                         Center(
                           child: _buildDonutChart(
-                            emotionsRaw,
-                            colorHex,
+                            current.emotions,
+                            current.color,
                             mainReportColor,
                           ),
                         ),
                         const SizedBox(height: 32),
 
-                        // 분석 결과 메시지 (scent_message 연결)
-                        _buildMessageCard(scentMsg, mainReportColor),
+                        // 메인 분석 카드 (감정 점수 바)
+                        _buildMainAnalysisCard(
+                          current,
+                          previous,
+                          mainReportColor,
+                        ),
                         const SizedBox(height: 20),
 
-                        // 상세 감정 리스트 (emotions 연결)
-                        _buildAllEmotionsCard(emotionsRaw, colorHex),
-                        const SizedBox(height: 20),
+                        // 전체 감정 상세 기록
+                        _buildAllEmotionsCard(current),
                       ],
                     ),
                   ),
                 ),
-
-                // 하단 버튼 (유지)
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFFEEEEEE)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        '홈으로',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ),
+                _buildBottomButton(context, screenPadding),
               ],
             );
           },
@@ -216,7 +194,103 @@ class _DiaryAnalysisState extends State<Test> {
     );
   }
 
-  // --- [데이터 기반 위젯들] ---
+  // 상단 향수 섹션 위젯
+  Widget _buildScentSection(EmotionReport current, Color mainColor) {
+    return Row(
+      children: [
+        const SizedBox(width: 24),
+        Image.asset(
+          'assets/icons/perfume.png',
+          height: 52,
+          width: 52,
+          color: mainColor,
+          errorBuilder: (context, error, stackTrace) =>
+              Icon(Icons.wine_bar, size: 52, color: mainColor),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${current.scent} 향이 어울리는 하루였군요!',
+                style: AppTextStyles.body18SemiBold.copyWith(
+                  color: AppColors.mainFont,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                current.description,
+                style: AppTextStyles.body12.copyWith(color: AppColors.mainFont),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // --- [차트 및 UI 위젯들은 기존 로직 유지] ---
+  Widget _buildLongEmotionBar(String label, double score, Color barColor) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: AppTextStyles.body14.copyWith(color: AppColors.mainFont),
+              ),
+              Text(
+                '${(score * 100).toInt()}%',
+                style: AppTextStyles.body12.copyWith(color: Colors.grey[500]),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: score),
+            duration: const Duration(milliseconds: 1200),
+            curve: Curves.easeOutQuart,
+            builder: (context, value, child) {
+              return Stack(
+                children: [
+                  Container(
+                    height: 14,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: value.clamp(0.0, 1.0),
+                    child: Container(
+                      height: 14,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            barColor.withOpacity(0.6),
+                            barColor,
+                            barColor.withOpacity(0.8),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildTagBar(List<String> tags) {
     return Container(
@@ -224,60 +298,55 @@ class _DiaryAnalysisState extends State<Test> {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: const Color(0xFFF1F1F1),
+        color: AppColors.subBackground,
       ),
       child: Wrap(
         alignment: WrapAlignment.center,
-        spacing: 12,
+        spacing: 8,
         children: tags
-            .map(
-              (tag) => Text(
-                "#$tag",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            )
+            .map((t) => Text(t, style: AppTextStyles.body18SemiBold))
             .toList(),
       ),
     );
   }
 
-  Widget _buildDonutChart(List emotions, String defaultHex, Color mainColor) {
+  Widget _buildDonutChart(
+    List<EmotionScore> emotions,
+    String defaultHex,
+    Color mainColor,
+  ) {
     return SizedBox(
       height: 180,
-      child: PieChart(
-        PieChartData(
-          sectionsSpace: 2,
-          centerSpaceRadius: 50,
-          sections: emotions.map((e) {
-            return PieChartSectionData(
-              color: _getIndividualColor(e['label'], defaultHex),
-              value: (e['score'] as num).toDouble(),
-              radius: 25,
-              title: '',
-            );
-          }).toList(),
-        ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          PieChart(
+            PieChartData(
+              sectionsSpace: 4,
+              centerSpaceRadius: 50,
+              sections: emotions
+                  .map(
+                    (e) => PieChartSectionData(
+                      color: _getEmotionMappedColor(e.label, defaultHex),
+                      value: e.score,
+                      radius: 25,
+                      title: '',
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          Icon(Icons.auto_awesome, color: mainColor, size: 28),
+        ],
       ),
     );
   }
 
-  Widget _buildMessageCard(String msg, Color color) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Text(msg, style: const TextStyle(fontSize: 15, height: 1.5)),
-    );
-  }
-
-  Widget _buildAllEmotionsCard(List emotions, String defaultHex) {
+  Widget _buildMainAnalysisCard(
+    EmotionReport report,
+    EmotionReport? previous,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -287,48 +356,60 @@ class _DiaryAnalysisState extends State<Test> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '감정 분석 결과',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text('감정 분석 결과', style: AppTextStyles.body18SemiBold),
+          const SizedBox(height: 24),
+          ...report.emotions.map(
+            (e) => _buildLongEmotionBar(
+              e.label,
+              e.score,
+              _getEmotionMappedColor(e.label, report.color),
+            ),
           ),
-          const SizedBox(height: 20),
-          ...emotions.map((e) {
-            double score = (e['score'] as num).toDouble();
-            return _buildLongEmotionBar(
-              e['label'],
-              score,
-              _getIndividualColor(e['label'], defaultHex),
-            );
-          }),
         ],
       ),
     );
   }
 
-  Widget _buildLongEmotionBar(String label, double score, Color barColor) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+  Widget _buildAllEmotionsCard(EmotionReport report) {
+    final activeEmotions = report.emotions.where((e) => e.score > 0).toList();
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: const TextStyle(fontSize: 14)),
-              Text(
-                '${(score * 100).toInt()}%',
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: score,
-            backgroundColor: Colors.grey[100],
-            color: barColor,
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(4),
+          Text('상세 기록', style: AppTextStyles.body18SemiBold),
+          const SizedBox(height: 24),
+          ...activeEmotions.map(
+            (e) => _buildLongEmotionBar(
+              e.label,
+              e.score,
+              _getEmotionMappedColor(e.label, report.color),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomButton(BuildContext context, EdgeInsets padding) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.horizontal,
+        0,
+        AppSpacing.horizontal,
+        padding.bottom + 10,
+      ),
+      child: BottomButton(
+        text: '홈으로',
+        onPressed: () => context.go(Routes.home),
+        enabled: true,
+        backgroundColor: AppColors.subBackground,
+        borderColor: AppColors.subBackground,
+        textColor: AppColors.mainFont,
       ),
     );
   }

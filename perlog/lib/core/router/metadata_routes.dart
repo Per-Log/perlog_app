@@ -3,6 +3,7 @@ import 'package:perlog/core/router/custom_transition_page.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/pages/pages.dart';
+import 'package:perlog/features/metadata/pages/test_we.dart';
 
 import '../../features/metadata/pages/test_wo.dart';
 
@@ -51,7 +52,7 @@ final metadataRoutes = [
         ),
       ),
 
-      GoRoute(path: Routes.test, builder: (_, __) => const Test()),
+      GoRoute(path: Routes.test, builder: (_, __) => const TestWo()),
     ],
   ),
 ];
