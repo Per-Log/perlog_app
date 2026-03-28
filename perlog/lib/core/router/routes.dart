@@ -37,4 +37,5 @@ class Routes {
 
   // Debug
   static const paddingTest = '/padding-test';
+  static const diaryFontTest = '/diary-font-test';
 }
