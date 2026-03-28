@@ -5,6 +5,8 @@ import 'package:perlog/features/metadata/pages/metadata_image_data.dart';
 import 'package:perlog/features/metadata/pages/pages.dart';
 import 'package:perlog/features/metadata/pages/test_we.dart';
 
+import '../../features/metadata/pages/test.dart';
+import '../../features/metadata/pages/test_supabase.dart';
 import '../../features/metadata/pages/test_wo.dart';
 
 final metadataRoutes = [
@@ -57,6 +59,8 @@ final metadataRoutes = [
           child: DiaryAnalysis(args: state.extra as MetadataImageData?),
         ),
       ),
+      GoRoute(path: Routes.test, builder: (_, __) => const Test()),
+      GoRoute(path: Routes.test_supabase, builder: (_, __) => const TestSupabasePage()),
 
       GoRoute(path: Routes.test, builder: (_, __) => const TestWo()),
     ],
