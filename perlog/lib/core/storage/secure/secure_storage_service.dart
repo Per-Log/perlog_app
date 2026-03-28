@@ -5,23 +5,42 @@ class SecureStorageService {
 
   static const _storage = FlutterSecureStorage();
 
+  // 기본 CRUD
   static Future<void> write(String key, String value) async {
-    await _storage.write(key: key, value: value);
+    try {
+      await _storage.write(key: key, value: value);
+    } catch (e) {
+      throw Exception('SecureStorage write failed: $e');
+    }
   }
 
   static Future<String?> read(String key) async {
-    return await _storage.read(key: key);
+    try {
+      return await _storage.read(key: key);
+    } catch (e) {
+      throw Exception('SecureStorage read failed: $e');
+    }
   }
 
   static Future<void> delete(String key) async {
-    await _storage.delete(key: key);
+    try {
+      await _storage.delete(key: key);
+    } catch (e) {
+      throw Exception('SecureStorage delete failed: $e');
+    }
   }
 
   static Future<void> clear() async {
-    await _storage.deleteAll();
+    try {
+      await _storage.deleteAll();
+    } catch (e) {
+      throw Exception('SecureStorage clear failed: $e');
+    }
   }
 
+  // 로그인
   static const _accessTokenKey = 'access_token';
+  static const _refreshTokenKey = 'refresh_token';
 
   static Future<void> setAccessToken(String token) async {
     await write(_accessTokenKey, token);
@@ -35,8 +54,6 @@ class SecureStorageService {
     await delete(_accessTokenKey);
   }
 
-  static const _refreshTokenKey = 'refresh_token';
-
   static Future<void> setRefreshToken(String token) async {
     await write(_refreshTokenKey, token);
   }
@@ -45,6 +62,16 @@ class SecureStorageService {
     return await read(_refreshTokenKey);
   }
 
+  static Future<void> deleteRefreshToken() async {
+    await delete(_refreshTokenKey);
+  }
+
+  static Future<void> clearAuth() async {
+    await deleteAccessToken();
+    await deleteRefreshToken();
+  }
+
+  // PIN 설정
   static const _pinKey = 'pin_hash';
 
   static Future<void> setPinHash(String hash) async {
@@ -57,5 +84,10 @@ class SecureStorageService {
 
   static Future<void> deletePin() async {
     await delete(_pinKey);
+  }
+
+  static Future<bool> hasPin() async {
+    final pin = await getPinHash();
+    return pin != null;
   }
 }
