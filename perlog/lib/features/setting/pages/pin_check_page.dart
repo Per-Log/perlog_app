@@ -10,6 +10,7 @@ class PinCheckPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PinEntryContent(
+      key: UniqueKey(),
       title: '현재 비밀번호를 입력해주세요.',
       buttonText: '확인',
       showBackButton: true,

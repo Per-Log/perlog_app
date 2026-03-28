@@ -9,6 +9,7 @@ class PinSetPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PinEntryContent(
+      key: UniqueKey(),
       title: '재설정할 비밀번호를 입력해주세요.',
       buttonText: '다음',
       showBackButton: true,

@@ -11,6 +11,7 @@ class PinConfirmPage extends StatelessWidget {
     final originalPin = GoRouterState.of(context).extra as String;
 
     return PinEntryContent(
+      key: UniqueKey(),
       title: '한 번 더 입력해주세요.',
       buttonText: '변경 완료',
 
