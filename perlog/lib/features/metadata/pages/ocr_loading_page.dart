@@ -77,10 +77,14 @@ class _OCRLoadingState extends State<OCRLoading> {
     });
   }
 
-  bool get _isReadableImage {
+  int get _normalizedOcrTextLength {
     final normalized = (_ocrText ?? '').replaceAll(RegExp(r'\s+'), '');
-    return normalized.length >= 10;
+    return normalized.length;
   }
+
+  bool get _isReadableImage => _normalizedOcrTextLength > 10;
+
+  bool get _isLikelyNonDiaryImage => _normalizedOcrTextLength <= 10;
 
   // 성공/실패 여부에 따른 자동 페이지 이동 처리
   void _handleNavigation() {
@@ -93,9 +97,23 @@ class _OCRLoadingState extends State<OCRLoading> {
       );
     } else {
       // 실패 시: 이미지 편집(수정) 페이지로 자동 이동
+      final imageData =
+          widget.args ?? MetadataImageData(selectedDate: DateTime.now());
+
+      if (_isLikelyNonDiaryImage) {
+        context.go(
+          '${Routes.metadata}/${Routes.imageUploadEdit}',
+          extra: imageData.copyWith(
+            editMessageLine1: '일기가 아닌 것 같아요.',
+            editMessageLine2: '글자가 너무 적어요.',
+            editMessageLine3: '일기를 다시 찍어볼까요?',
+          ),
+        );
+        return;
+      }
       context.go(
         '${Routes.metadata}/${Routes.imageUploadEdit}',
-        extra: widget.args,
+        extra: imageData,
       );
     }
   }
