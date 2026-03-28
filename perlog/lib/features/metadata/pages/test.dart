@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:perlog/core/constants/colors.dart';
-import 'package:perlog/core/constants/text_styles.dart';
-import 'package:perlog/core/constants/spacing.dart';
+import 'package:uuid/uuid.dart';
 import 'package:perlog/features/metadata/data/diary_repository.dart';
-import 'package:perlog/core/models/profile_model.dart';
-import 'package:perlog/core/models/diary_model.dart';
-import 'package:perlog/core/models/diary_analysis_model.dart';
 
 class Test extends StatefulWidget {
   const Test({super.key});
@@ -16,164 +11,196 @@ class Test extends StatefulWidget {
 
 class _TestState extends State<Test> {
   final repo = DiaryRepository();
+  final uuid = const Uuid();
 
-  // 여기에 네가 넣은 dummy profile id를 넣으면 됨
-  static const String dummyUserId = '11111111-1111-1111-1111-111111111111';
+  String? lastUserId;
+  String? lastDiaryId;
+  String message = '아직 쓰기 테스트 전';
 
-  Future<
-    ({
-      ProfileModel? profile,
-      List<DiaryModel> diaries,
-      DiaryAnalysisModel? analysis,
-    })
-  >
-  _loadData() async {
-    final profile = await repo.fetchProfile(dummyUserId);
-    final diaries = await repo.fetchDiariesByUser(dummyUserId);
+  Future<void> _insertDummyProfile() async {
+    try {
+      final userId = uuid.v4();
 
-    DiaryAnalysisModel? analysis;
-    if (diaries.isNotEmpty) {
-      analysis = await repo.fetchAnalysisByDiaryId(diaries.first.id);
+      await repo.insertProfile(
+        id: userId,
+        nickname: '테스트유저',
+        isLockEnabled: false,
+        isNotiEnabled: true,
+      );
+
+      setState(() {
+        lastUserId = userId;
+        message = 'profiles insert 성공: $userId';
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('프로필 저장 성공')));
+    } catch (e) {
+      setState(() {
+        message = 'profiles insert 실패: $e';
+      });
     }
-
-    return (profile: profile, diaries: diaries, analysis: analysis);
   }
 
-  Color _hexToColor(String hex) {
-    return Color(int.parse(hex.replaceFirst('#', '0xff')));
+  Future<void> _insertDummyDiary() async {
+    try {
+      if (lastUserId == null) {
+        setState(() {
+          message = '먼저 profile을 insert 해주세요.';
+        });
+        return;
+      }
+
+      final diaryId = uuid.v4();
+
+      await repo.insertDiary(
+        id: diaryId,
+        userId: lastUserId!,
+        diaryDate: DateTime.now(),
+        imageUrl: 'https://example.com/test-image.jpg',
+        ocrText: '오늘은 Supabase 쓰기 테스트를 진행했다. 꽤 잘 되고 있는 것 같다.',
+        fontFamily: 'DiaryNanumPen',
+      );
+
+      setState(() {
+        lastDiaryId = diaryId;
+        message = 'diaries insert 성공: $diaryId';
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('일기 저장 성공')));
+    } catch (e) {
+      setState(() {
+        message = 'diaries insert 실패: $e';
+      });
+    }
+  }
+
+  Future<void> _insertDummyAnalysis() async {
+    try {
+      if (lastDiaryId == null) {
+        setState(() {
+          message = '먼저 diary를 insert 해주세요.';
+        });
+        return;
+      }
+
+      await repo.insertDiaryAnalysis(
+        diaryId: lastDiaryId!,
+        summary: '가볍고 만족스러운 하루',
+        topEmotion: '기쁨',
+        scent: 'Peach Breeze',
+        description: '상쾌하고 밝은 복숭아 향이 어울리는 하루예요.',
+        color: '#F7A6A6',
+        tags: ['#기쁨', '#산뜻함', '#테스트'],
+        emotionsScore: [
+          {'label': '기쁨', 'score': 0.82},
+          {'label': '평온', 'score': 0.12},
+          {'label': '슬픔', 'score': 0.06},
+        ],
+      );
+
+      setState(() {
+        message = 'diary_analyses insert 성공: $lastDiaryId';
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('분석 저장 성공')));
+    } catch (e) {
+      setState(() {
+        message = 'diary_analyses insert 실패: $e';
+      });
+    }
+  }
+
+  Future<void> _insertAllAtOnce() async {
+    try {
+      final userId = uuid.v4();
+      final diaryId = uuid.v4();
+
+      await repo.insertProfile(
+        id: userId,
+        nickname: '통합테스트유저',
+        isLockEnabled: false,
+        isNotiEnabled: true,
+      );
+
+      await repo.insertDiary(
+        id: diaryId,
+        userId: userId,
+        diaryDate: DateTime.now(),
+        imageUrl: 'https://example.com/test-image.jpg',
+        ocrText: '오늘은 쓰기/읽기 통합 테스트를 했다.',
+        fontFamily: 'DiaryNanumPen',
+      );
+
+      await repo.insertDiaryAnalysis(
+        diaryId: diaryId,
+        summary: '개발이 순조로운 하루',
+        topEmotion: '설렘',
+        scent: 'Fresh Cotton',
+        description: '새 출발 같은 맑고 깨끗한 향이 어울려요.',
+        color: '#A8D5BA',
+        tags: ['#설렘', '#개발', '#테스트'],
+        emotionsScore: [
+          {'label': '설렘', 'score': 0.64},
+          {'label': '기쁨', 'score': 0.23},
+          {'label': '불안', 'score': 0.13},
+        ],
+      );
+
+      setState(() {
+        lastUserId = userId;
+        lastDiaryId = diaryId;
+        message = '전체 insert 성공\nuserId: $userId\ndiaryId: $diaryId';
+      });
+    } catch (e) {
+      setState(() {
+        message = '전체 insert 실패: $e';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenPadding = AppSpacing.screen(context);
-
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Supabase Test'),
-        backgroundColor: AppColors.background,
+      appBar: AppBar(title: const Text('Supabase Write Test')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ElevatedButton(
+              onPressed: _insertDummyProfile,
+              child: const Text('1. profile 쓰기'),
+            ),
+            ElevatedButton(
+              onPressed: _insertDummyDiary,
+              child: const Text('2. diary 쓰기'),
+            ),
+            ElevatedButton(
+              onPressed: _insertDummyAnalysis,
+              child: const Text('3. analysis 쓰기'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _insertAllAtOnce,
+              child: const Text('한 번에 전체 쓰기'),
+            ),
+            const SizedBox(height: 24),
+            Text('lastUserId: ${lastUserId ?? '-'}'),
+            Text('lastDiaryId: ${lastDiaryId ?? '-'}'),
+            const SizedBox(height: 12),
+            Text(message),
+          ],
+        ),
       ),
-      body:
-          FutureBuilder<
-            ({
-              ProfileModel? profile,
-              List<DiaryModel> diaries,
-              DiaryAnalysisModel? analysis,
-            })
-          >(
-            future: _loadData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text('에러: ${snapshot.error}'),
-                  ),
-                );
-              }
-
-              final data = snapshot.data!;
-              final profile = data.profile;
-              final diaries = data.diaries;
-              final analysis = data.analysis;
-
-              return SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  screenPadding.left,
-                  20,
-                  screenPadding.right,
-                  40,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('프로필', style: AppTextStyles.body22),
-                    const SizedBox(height: 8),
-                    Text('nickname: ${profile?.nickname ?? '없음'}'),
-                    Text('user id: ${profile?.id ?? '없음'}'),
-
-                    const SizedBox(height: 24),
-
-                    Text('일기 목록', style: AppTextStyles.body22),
-                    const SizedBox(height: 8),
-                    Text('총 ${diaries.length}개'),
-
-                    ...diaries.map(
-                      (d) => Card(
-                        child: ListTile(
-                          title: Text(
-                            d.diaryDate.toIso8601String().split('T').first,
-                          ),
-                          subtitle: Text(
-                            d.ocrText,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    Text('최근 일기 분석', style: AppTextStyles.body22),
-                    const SizedBox(height: 8),
-                    if (analysis == null)
-                      const Text('분석 데이터 없음')
-                    else
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.subBackground,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('summary: ${analysis.summary}'),
-                            Text('topEmotion: ${analysis.topEmotion}'),
-                            Text('scent: ${analysis.scent}'),
-                            Text('description: ${analysis.description}'),
-                            Text('color: ${analysis.color}'),
-                            Wrap(
-                              spacing: 8,
-                              children: analysis.tags
-                                  .map((tag) => Chip(label: Text(tag)))
-                                  .toList(),
-                            ),
-                            const SizedBox(height: 12),
-                            ...analysis.emotionsScore.map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${e.label} ${(e.score * 100).toStringAsFixed(0)}%',
-                                    ),
-                                    LinearProgressIndicator(
-                                      value: e.score,
-                                      minHeight: 10,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        _hexToColor(analysis.color),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
     );
   }
 }
