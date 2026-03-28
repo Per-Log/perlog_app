@@ -7,7 +7,7 @@ class DiaryTextStyles {
   /// 기본 본문 스타일
   static TextStyle content({
     required String fontFamily,
-    double fontSize = 18,
+    double fontSize = 17,
     Color color = Colors.black,
   }) {
     final scale = DiaryFontConfig.fontSizeScale[fontFamily] ?? 1.0;
@@ -40,16 +40,14 @@ class DiaryTextStyles {
   /// 날짜 스타일
   static TextStyle date({
     required String fontFamily,
-    Color color = Colors.grey,
   }) {
     final scale = DiaryFontConfig.fontSizeScale[fontFamily] ?? 1.0;
 
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: 14 * scale,
+      fontSize: 18 * scale,
       fontWeight: FontWeight.w400,
-      height: 1.3,
-      color: color,
+      height: 1.3
     );
   }
 

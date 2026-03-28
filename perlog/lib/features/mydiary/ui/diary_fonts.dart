@@ -26,6 +26,35 @@ class DiaryFonts {
     yoonManseh,
     yoonMinguk,
   ];
+
+  static String getDisplayName(String font) {
+    switch (font) {
+      case nanumPen:
+        return '나눔펜';
+      case hiMelody:
+        return '하이멜로디';
+      case griun:
+        return '그리운 또박';
+      case hakgyo:
+        return '학교안심';
+      case kangwon:
+        return '강원교육 새음';
+      case maeil:
+        return '매일 옥자';
+      case ssAnt:
+        return 'SSAnt';
+      case ssronet:
+        return '손글씨';
+      case yoonDaehan:
+        return '윤대한';
+      case yoonManseh:
+        return '윤만세';
+      case yoonMinguk:
+        return '윤민국';
+      default:
+        return font;
+    }
+  }
 }
 
 class DiaryFontConfig {
@@ -43,3 +72,4 @@ class DiaryFontConfig {
     DiaryFonts.yoonMinguk: 1.0,
   };
 }
+

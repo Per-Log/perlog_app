@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/constants/text_styles.dart';
+import 'package:perlog/features/mydiary/ui/diary_fonts.dart';
+import 'package:perlog/features/mydiary/ui/diary_text_styles.dart';
 import 'package:perlog/features/mydiary/widgets/font_selector.dart';
 
 class DiaryReportCard extends StatefulWidget {
@@ -18,15 +20,10 @@ class DiaryReportCard extends StatefulWidget {
 }
 
 class _DiaryReportCardState extends State<DiaryReportCard> {
-  String selectedFont = '영덕바다체';
+  String selectedFont = DiaryFonts.nanumPen;
 
   void _showFontPicker() {
-    final fonts = [
-      '영덕바다체',
-      '프리텐다드',
-      '나눔손글씨',
-      '고딕체',
-    ];
+    final fonts = DiaryFonts.all;
 
     showModalBottomSheet(
       context: context,
@@ -36,24 +33,20 @@ class _DiaryReportCardState extends State<DiaryReportCard> {
       ),
       builder: (context) {
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ...fonts.map((font) {
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6, // 🔥 핵심
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: ListView(
+                children: fonts.map((font) {
                   final isSelected = font == selectedFont;
 
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      font,
-                      style: TextStyle(
-                        fontFamily: font == '프리텐다드' ? null : font,
-                        fontSize: 16,
-                        color: isSelected
-                            ? AppColors.mainFont
-                            : AppColors.subFont,
+                      DiaryFonts.getDisplayName(font),
+                      style: DiaryTextStyles.content(
+                        fontFamily: font,
                       ),
                     ),
                     trailing: isSelected
@@ -66,8 +59,8 @@ class _DiaryReportCardState extends State<DiaryReportCard> {
                       Navigator.pop(context);
                     },
                   );
-                }),
-              ],
+                }).toList(),
+              ),
             ),
           ),
         );
@@ -99,7 +92,6 @@ class _DiaryReportCardState extends State<DiaryReportCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// 📅 날짜
           Text(
             formattedDate,
             style: AppTextStyles.body18.copyWith(
@@ -117,12 +109,10 @@ class _DiaryReportCardState extends State<DiaryReportCard> {
           const SizedBox(height: 16),
 
           Text(
-            '오늘의 일기를 보여드립니다. (위젯 구현 필요)',
-            style: AppTextStyles.body14.copyWith(
+            '오늘의 일기를 보여드립니다.',
+            style: DiaryTextStyles.content(
+              fontFamily: selectedFont,
               color: AppColors.mainFont,
-              fontFamily: selectedFont == '프리텐다드'
-                  ? null
-                  : selectedFont,
             ),
           ),
 
@@ -194,9 +184,6 @@ class _DiaryReportCardState extends State<DiaryReportCard> {
             '파이 차트 (위젯 구현 필요)',
             style: AppTextStyles.body14.copyWith(
               color: AppColors.mainFont,
-              fontFamily: selectedFont == '프리텐다드'
-                  ? null
-                  : selectedFont,
             ),
           ),
 
@@ -206,9 +193,6 @@ class _DiaryReportCardState extends State<DiaryReportCard> {
             '그래프 (위젯 구현 필요)',
             style: AppTextStyles.body14.copyWith(
               color: AppColors.mainFont,
-              fontFamily: selectedFont == '프리텐다드'
-                  ? null
-                  : selectedFont,
             ),
           ),
         ],
