@@ -8,6 +8,7 @@ import 'package:perlog/core/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/core/widgets/bottom_button.dart';
 import 'package:perlog/core/models/analysis.dart';
+
 /*
 import 'package:fl_chart/fl_chart.dart';
 
