@@ -49,6 +49,9 @@ dependencies:
   flutter_dotenv: ^6.0.0
   image: ^4.2.0
   uuid: ^4.5.1
+  shared_preferences: ^2.5.5
+  flutter_secure_storage: ^10.0.0
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:
@@ -100,6 +103,7 @@ flutter:
     - assets/icons/right_arrow.png
 
     - assets/data/mapped.json
+    - assets/data/chart_color.json
     - assets/data/diary_emotions.json
 
 

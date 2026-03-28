@@ -11,7 +11,7 @@ class BottomButton extends StatelessWidget {
   final Color textColor;
   final TextStyle? textStyle;
 
-  final Widget? trailing; // 우측 아이콘
+  final Widget? trailing;
 
   const BottomButton({
     super.key,
@@ -28,30 +28,37 @@ class BottomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: enabled ? onPressed : null,
-      child: Container(
-        height: 56,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: borderColor),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              text,
-              style: (textStyle ??
-                      AppTextStyles.body18SemiBold)
-                  .copyWith(color: textColor),
-            ),
+      /// 🔥 핵심: 여기서만 제어
+      onTap: enabled ? onPressed : () {},
 
-            if (trailing != null) ...[
-              const SizedBox(width: 20),
-              trailing!,
+      child: Opacity(
+        /// 🔥 UX 개선 (선택)
+        opacity: enabled ? 1.0 : 0.5,
+
+        child: Container(
+          height: 56,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: borderColor),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                text,
+                style: (textStyle ??
+                        AppTextStyles.body18SemiBold)
+                    .copyWith(color: textColor),
+              ),
+
+              if (trailing != null) ...[
+                const SizedBox(width: 20),
+                trailing!,
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/router/routes.dart';
+import 'package:perlog/domain/app_start/app_start_service.dart';
+import 'package:perlog/domain/app_start/app_route_result.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -19,56 +21,41 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _routeAfterSplash() async {
-
     await Future.delayed(const Duration(seconds: 2));
+
+    final result = await AppStartService.getInitialRoute();
+
     if (!mounted) return;
 
-    // TODO: splash 이후 라우팅용 상태관리
-    // final bool isFirstLaunch = false;
-    // final bool isLoggedIn = true;
-    // final bool hasPin = true;
+    switch (result) {
+      case AppRouteResult.login:
+        context.go(Routes.login);
+        break;
 
-    // if (isFirstLaunch || !isLoggedIn) {
-    //   // 최초 접속 or 로그아웃 상태
-    //   context.go(Routes.login);
-    //   return;
-    // }
+      case AppRouteResult.onboarding:
+        context.go('${Routes.onboarding}/${Routes.profile}');
+        break;
 
-    // if (hasPin) {
-    //   // PIN 설정된 사용자
-    //   context.go('${Routes.onboarding}/${Routes.pinConfirm}');
-    //   return;
-    // }
+      case AppRouteResult.pinCheck:
+        context.go('${Routes.onboarding}/${Routes.pinCheck}');
+        break;
 
-
-    // [테스트용 상태 설정]
-    const bool isLoggedIn = false; // 로그인 가정
-    const bool hasPin = false;     // PIN 가정
-
-    if (!isLoggedIn) {
-      // 로그인이 안 되어 있으면 -> 로그인 화면으로
-      context.go(Routes.login);
-      return;
+      case AppRouteResult.home:
+        context.go(Routes.home);
+        break;
     }
-
-    if (hasPin) {
-      // PIN이 설정되어 있으면 -> 비밀번호 입력(확인) 화면으로
-      // 일단 비밀번호 재확인 페이지로 라우팅 해놓음
-      context.go('${Routes.onboarding}/${Routes.pinCheck}');
-      return;
-    }
-
-      context.go('${Routes.onboarding}/${Routes.profile}');
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
         child: Text(
           'Per-Log',
-          style: AppTextStyles.headline50.copyWith(color: AppColors.mainFont)
+          style: AppTextStyles.headline50.copyWith(
+            color: AppColors.mainFont,
+          ),
         ),
       ),
     );

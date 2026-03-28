@@ -9,9 +9,33 @@ import 'package:intl/intl.dart';
 import 'package:perlog/features/home/widgets/perfume_shelf.dart';
 import 'package:perlog/features/home/widgets/weekly_streak.dart';
 import 'package:perlog/core/utils/weekly_bubble_generator.dart';
+import 'package:perlog/domain/onboarding/onboarding_service.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String _nickname = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNickname();
+  }
+
+  Future<void> _loadNickname() async {
+    final nickname = await OnboardingService.getNickname();
+
+    if (!mounted) return;
+
+    setState(() {
+      _nickname = nickname ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +43,15 @@ class HomePage extends StatelessWidget {
     final formattedDate =
         DateFormat('yyyy년 M월 d일 E요일', 'ko_KR').format(today);
 
-    // 임시 데이터 -> 상태관리로 이번주 일기 데이터 받기
     final Set<DateTime> diaryDates = {
-      DateTime(2026, 3, 1),
-      DateTime(2026, 3, 2)
+      DateTime(2026, 3, 23),
+      DateTime(2026, 3, 26),
     };
 
     final weeklyBubbles = WeeklyBubbleGenerator.generate(
       today: today,
       diaryDates: diaryDates,
     );
-
-    final userNickName = 'SKKAI';
 
     return Container(
       color: AppColors.background,
@@ -70,7 +91,7 @@ class HomePage extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: userNickName,
+                      text: _nickname,
                       style: AppTextStyles.body20Medium.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.mainFont,
