@@ -8,15 +8,22 @@ class PinSetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        return PinEntryContent(
-          title: '재설정할 비밀번호를 입력해주세요.',
-          buttonText: '변경',
-          onBack: () {
-            context.pop();
-          },
-          onSubmit: () {
-            context.go('${Routes.settings}/${Routes.settingsPinConfirm}');
-          },
+    return PinEntryContent(
+      title: '재설정할 비밀번호를 입력해주세요.',
+      buttonText: '다음',
+      showBackButton: true,
+
+      onSubmit: (pin) async {
+        final result = await context.push(
+          '${Routes.settings}/${Routes.settingsPinConfirm}',
+          extra: pin,
         );
+
+        if (result == true) {
+          if (!context.mounted) return;
+          context.pop(true);
+        }
+      },
+    );
   }
 }

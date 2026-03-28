@@ -15,12 +15,17 @@ class PinSetPage extends StatelessWidget {
       onBack: () {
         context.pop(false);
       },
-      
-      onSubmit: (pin) {
-        context.push(
+
+      onSubmit: (pin) async {
+        final result = await context.push(
           '${Routes.onboarding}/${Routes.pinConfirm}',
           extra: pin,
         );
+
+        if (result == true) {
+          if (!context.mounted) return;
+          context.pop(true);
+        }
       },
     );
   }
