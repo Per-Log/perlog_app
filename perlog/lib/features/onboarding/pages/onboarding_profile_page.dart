@@ -33,6 +33,8 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   String? _profileImageUrl;
   bool _isUploading = false;
 
+  bool _isLoading = false; // 추가: DB 통신 중 로딩 상태 관리
+
   bool notificationEnabled = true;
   bool lockEnabled = false;
   bool isPinSet = false;
@@ -116,19 +118,42 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
 
   // 온보딩 완료
   Future<void> _handleSubmit() async {
-    if (!isCompleted) return;
+    if (!isCompleted || _isLoading) return;
 
-    await OnboardingService.completeOnboarding(
-      nickname: _nicknameController.text.trim(),
-      notificationEnabled: notificationEnabled,
-      period: _period,
-      profileImageUrl: _profileImageUrl,
-    );
+    setState(() => _isLoading = true); // 로딩 시작
 
-    await LockService.setLockEnabled(lockEnabled);
+    try {
+      // 1. 설정된 PIN 번호 가져오기
+      String? savedPinCode;
+      if (lockEnabled && isPinSet) {
+        savedPinCode = await LockService.getPin();
+      }
 
-    if (!mounted) return;
-    context.go(Routes.home);
+      // 2. 서비스 호출 (로컬 + DB 저장)
+      await OnboardingService.completeOnboarding(
+        nickname: _nicknameController.text.trim(),
+        notificationEnabled: notificationEnabled,
+        period: _period,
+        profileImageUrl: _profileImageUrl,
+        lockEnabled: lockEnabled, // 추가
+        pinCode: savedPinCode, // 추가
+      );
+
+      await LockService.setLockEnabled(lockEnabled);
+
+      if (!mounted) return;
+      context.go(Routes.home);
+    } catch (e) {
+      if (!mounted) return;
+      // 에러 발생 시 사용자에게 알림
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('프로필 저장에 실패했습니다. 다시 시도해주세요.')));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false); // 로딩 종료
+      }
+    }
   }
 
   @override
@@ -249,8 +274,8 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
       bottomNavigationBar: Padding(
         padding: AppSpacing.bottomButtonPadding(context),
         child: BottomButton(
-          text: '시작하기',
-          enabled: isCompleted,
+          text: _isLoading ? '저장 중...' : '시작하기',
+          enabled: isCompleted && !_isLoading,
           onPressed: _handleSubmit,
           backgroundColor: isCompleted
               ? AppColors.subBackground
