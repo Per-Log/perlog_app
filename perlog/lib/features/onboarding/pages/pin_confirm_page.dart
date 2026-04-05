@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:perlog/features/onboarding/widgets/pin_entry_content.dart';
 import 'package:perlog/domain/lock/lock_service.dart';
+import 'package:perlog/core/utils/security_utils.dart';
 
 class PinConfirmPage extends StatelessWidget {
   const PinConfirmPage({super.key});
@@ -26,8 +27,10 @@ class PinConfirmPage extends StatelessWidget {
           );
           return;
         }
+
+        final hashedPin = SecurityUtils.hashPin(confirmPin);
         
-        await LockService.setPin(confirmPin);
+        await LockService.setPin(hashedPin);
 
         if (!context.mounted) return;
         context.pop(true);
