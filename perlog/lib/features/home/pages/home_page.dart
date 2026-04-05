@@ -10,6 +10,7 @@ import 'package:perlog/features/home/widgets/perfume_shelf.dart';
 import 'package:perlog/features/home/widgets/weekly_streak.dart';
 import 'package:perlog/core/utils/weekly_bubble_generator.dart';
 import 'package:perlog/domain/onboarding/onboarding_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,12 +29,40 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadNickname() async {
-    final nickname = await OnboardingService.getNickname();
+    try {
+      final supabase = Supabase.instance.client;
+      final userId = supabase.auth.currentUser?.id;
 
+      if (userId != null) {
+        // 1. Supabase DB의 profiles 테이블에서 현재 유저의 nickname만 가져오기
+        final data = await supabase
+            .from('profiles')
+            .select('nickname')
+            .eq('id', userId)
+            .single();
+
+        if (!mounted) return;
+
+        setState(() {
+          _nickname = data['nickname'] as String;
+        });
+      } else {
+        // 유저 정보가 없을 경우 (예외 처리)
+        _loadLocalNicknameFallback();
+      }
+    } catch (e) {
+      print('DB에서 닉네임 불러오기 실패: $e');
+      // 2. 오프라인이거나 DB 에러 시 로컬에 저장된 닉네임으로 대체 (안전망)
+      _loadLocalNicknameFallback();
+    }
+  }
+
+  // 로컬 저장소에서 닉네임을 불러오는 예비 메서드
+  Future<void> _loadLocalNicknameFallback() async {
+    final localNickname = await OnboardingService.getNickname();
     if (!mounted) return;
-
     setState(() {
-      _nickname = nickname ?? '';
+      _nickname = localNickname ?? '';
     });
   }
 

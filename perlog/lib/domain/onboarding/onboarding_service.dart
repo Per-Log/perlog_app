@@ -1,7 +1,8 @@
-import 'package:supabase_flutter/supabase_flutter.dart'; // 추가
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:perlog/core/storage/pref/pref_keys.dart';
 import 'package:perlog/core/storage/pref/pref_service.dart';
 import 'package:perlog/core/models/notification_period.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OnboardingService {
   OnboardingService._();
@@ -114,6 +115,30 @@ class OnboardingService {
     } catch (e) {
       print('Supabase 프로필 저장 에러: $e');
       rethrow; // UI 단에서 에러 스낵바를 띄우기 위해 에러를 던짐
+    }
+  }
+
+  /// 프로필 정보 업데이트 (DB & 로컬)
+  static Future<void> updateProfile({
+    required String nickname,
+    String? profileImageUrl,
+  }) async {
+    final supabase = Supabase.instance.client;
+    //final userId = supabase.auth.currentUser?.id;
+    final userId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+
+    if (userId == null) throw Exception('로그인 정보가 없습니다.');
+
+    // 1. Supabase DB 업데이트
+    await supabase.from('profiles').update({
+      'nickname': nickname,
+      if (profileImageUrl != null) 'profile_image_url': profileImageUrl,
+    }).eq('id', userId);
+
+    // 2. 로컬 저장소(SharedPrefs) 동기화
+    await setNickname(nickname);
+    if (profileImageUrl != null) {
+      await setProfileImageUrl(profileImageUrl);
     }
   }
 }
