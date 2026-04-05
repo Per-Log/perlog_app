@@ -16,12 +16,13 @@ void main() async {  // 2. 비동기 처리를 위해 플러터 엔진 초기화
   await initializeDateFormatting('ko_KR', null);
 
   await Supabase.initialize(
-    url: 'SUPABASE_URL',
-    anonKey: 'SUPABASE_ANON_KEY',
+    url: dotenv.get("SUPABASE_URL"),
+    anonKey: dotenv.get("SUPABASE_ANON_KEY"),
   );
 
   KakaoSdk.init(
-    nativeAppKey: 'KAKAO_NATIVE_APP_KEY',
+    nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"),
+    javaScriptAppKey: dotenv.get("KAKAO_JAVASCRIPT_APP_KEY"),
   );
 
   runApp(const MyApp());

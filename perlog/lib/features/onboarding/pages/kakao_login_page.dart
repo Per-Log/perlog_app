@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:perlog/core/auth/kakao_auth.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
@@ -11,16 +12,17 @@ class KakaoLoginPage extends StatelessWidget {
 
   // 임시 로그인 처리
   Future<void> _handleLogin(BuildContext context) async {
-    // TODO: 카카오 로그인 연동 예정
-    const fakeToken = 'test_token';
+  final userId = await kakaoLogin();
 
-    await AuthService.login(accessToken: fakeToken);
+  if (userId == null) return;
 
-    if (!context.mounted) return;
+  // 여기서 AuthService 연결
+  await AuthService.login(accessToken: userId);
 
-    // 로그인 이후 흐름은 Splash 로직 재사용
-    context.go(Routes.splash);
-  }
+  if (!context.mounted) return;
+
+  context.go(Routes.splash);
+}
 
   @override
   Widget build(BuildContext context) {
