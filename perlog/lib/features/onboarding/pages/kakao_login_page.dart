@@ -1,28 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:perlog/core/auth/kakao_auth.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:perlog/core/constants/colors.dart';
 import 'package:perlog/core/constants/text_styles.dart';
 import 'package:perlog/core/constants/spacing.dart';
 import 'package:perlog/core/router/routes.dart';
 import 'package:perlog/domain/auth/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class KakaoLoginPage extends StatelessWidget {
   const KakaoLoginPage({super.key});
 
-  // 임시 로그인 처리
   Future<void> _handleLogin(BuildContext context) async {
-  final userId = await kakaoLogin();
+    try {
+      debugPrint('[LOGIN] 카카오 로그인 시작');
 
-  if (userId == null) return;
+      // 카카오 유저 정보 가져오기
+      final user = await UserApi.instance.me();
+      final userId = "kakao_${user.id}";
+      debugPrint('[LOGIN] userId 생성: $userId');
 
-  // 여기서 AuthService 연결
-  await AuthService.login(accessToken: userId);
+      // SharedPreferences 저장
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("userId", userId);
 
-  if (!context.mounted) return;
+      // TODO : Supabase 연동
 
-  context.go(Routes.splash);
-}
+      // Auth 상태 반영
+      await AuthService.login(accessToken: userId);
+      debugPrint('[LOGIN] AuthService 로그인 완료');
+
+      if (!context.mounted) return;
+
+      context.go(Routes.splash);
+
+    } catch (e) {
+      debugPrint('[LOGIN ERROR] $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
