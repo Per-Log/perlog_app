@@ -15,10 +15,22 @@ class KakaoLoginPage extends StatelessWidget {
     try {
       debugPrint('[LOGIN] 카카오 로그인 시작');
 
-      // 카카오 유저 정보 가져오기
-      final user = await UserApi.instance.me();
-      final userId = "kakao_${user.id}";
-      debugPrint('[LOGIN] userId 생성: $userId');
+      // flutter run -d chrome --web-port=3000 --dart-define=DEV=true
+
+      String userId;
+      const bool isDev = bool.fromEnvironment('DEV');
+
+      if (isDev) {
+        userId = "dev_user_1";
+        debugPrint('[LOGIN] DEV MODE');
+      } else {
+        debugPrint('[LOGIN] 카카오 로그인 시작');
+
+        // 카카오 유저 정보 가져오기
+        final user = await UserApi.instance.me();
+        userId = "kakao_${user.id}";
+        debugPrint('[LOGIN] userId 생성: $userId');
+      }
 
       // SharedPreferences 저장
       final prefs = await SharedPreferences.getInstance();
@@ -33,7 +45,6 @@ class KakaoLoginPage extends StatelessWidget {
       if (!context.mounted) return;
 
       context.go(Routes.splash);
-
     } catch (e) {
       debugPrint('[LOGIN ERROR] $e');
     }
