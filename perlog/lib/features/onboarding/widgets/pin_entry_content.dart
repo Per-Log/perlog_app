@@ -23,7 +23,6 @@ class PinEntryContent extends StatefulWidget {
   final String title;
   final String buttonText;
 
-  /// 🔥 핵심: PIN 전달
   final Function(String pin) onSubmit;
 
   final VoidCallback? onBack;
@@ -60,21 +59,26 @@ class _PinEntryContentState extends State<PinEntryContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: widget.onBack ??
-                      () => Navigator.of(context).maybePop(),
-                  child: Text(
-                    '이전',
-                    style: AppTextStyles.body16.copyWith(
-                      color: AppColors.subFont,
+              if (widget.showBackButton)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: widget.onBack ??
+                        () => Navigator.of(context).maybePop(),
+                    child: Text(
+                      '이전',
+                      style: AppTextStyles.body16.copyWith(
+                        color: AppColors.subFont,
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: AppSpacing.large(context) + 30),
+                SizedBox(
+                  height: widget.showBackButton
+                      ? AppSpacing.large(context) + 30
+                      : AppSpacing.large(context) + 60,
+                ),
 
               Center(
                 child: Text(
@@ -118,7 +122,6 @@ class _PinEntryContentState extends State<PinEntryContent> {
         ),
       ),
 
-      /// 🔥 핵심 버튼
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: AppSpacing.bottomButtonPadding(context),
